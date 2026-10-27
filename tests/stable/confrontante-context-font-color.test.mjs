@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+
+const editor = readFileSync('assets/js/core/technical-document-editor.js', 'utf8');
+const renderer = readFileSync('assets/js/features/mapas/confrontantes.js', 'utf8');
+const start = editor.indexOf('  function segmentFontColor(');
+const end = editor.indexOf('  function applyConfrontanteLabelColor(', start);
+assert.ok(start >= 0 && end > start, 'A prioridade de cores individuais deve ter uma função compartilhada');
+const code = `function confrontanteLabelColor(value) { return /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value).toLowerCase() : '#111827'; }\n${editor.slice(start, end)}\nglobalThis.resolve = segmentFontColor;`;
+const sandbox = vm.createContext({});
+vm.runInContext(code, sandbox);
+const { resolve } = sandbox;
+assert.equal(resolve({ labelColor: '#ffffff', labelColorCustomized: true }, '#111827'), '#ffffff', 'Branco selecionado individualmente deve prevalecer');
+assert.equal(resolve({ labelColor: '#111827', labelColorCustomized: true }, '#ffffff'), '#111827', 'Preto individual também deve prevalecer contra cor global branca');
+assert.equal(resolve({ labelColor: '#111827' }, '#ffffff'), '#ffffff', 'Confrontante sem personalização continua seguindo a cor geral');
+assert.equal(resolve({ labelColor: '#fef08a' }, '#111827'), '#fef08a', 'Cor de cadastro legada não deve ser sobrescrita pela cor global');
+assert.match(editor, /data-confrontante-context-menu hidden><label class="sv-polygon-context-color"><span>Cor da fonte<\/span><input type="color"[^>]*data-confrontante-context-color/, 'Cor da fonte deve aparecer dentro do menu de clique direito');
+assert.match(editor, /syncConfrontanteContextColor\(\);menu\.hidden=false/, 'Ao selecionar um confrontante, o seletor exibe a cor correspondente');
+assert.ok(editor.includes("confrontanteColor?.addEventListener('pointerdown',()=>checkpoint())"), 'Mudança de cor deve registrar histórico');
+assert.match(editor, /segment\.labelColor=confrontanteLabelColor\(event\.target\.value\);segment\.labelColorCustomized=true;/, 'Mudança deve afetar o segmento selecionado');
+assert.match(editor, /group\.dataset\.labelColorCustomized='1';applyConfrontanteLabelColor\(group,segment\.labelColor\)/, 'Prévia deve atualizar imediatamente');
+assert.match(editor, /labelColorCustomized:segment\.labelColorCustomized===true/, 'Flag de cor individual deve ser persistida nos metadados do projeto');
+assert.match(renderer, /labelColor: resolvedLabelColor\(entry\.labelColor, entry\.labelColorCustomized\)/, 'Documentos devem reconstruir a cor individual e distinguir branco explícito de herdado');
+assert.match(renderer, /fill="\$\{labelColor\}" paint-order="stroke fill" stroke="\$\{labelHalo\}"/, 'SVG deve respeitar cor e halo de contraste');
+console.log('PASS confrontante-context-font-color: seletor contextual, prioridade individual, branco/preto, salvamento e saída SVG.');

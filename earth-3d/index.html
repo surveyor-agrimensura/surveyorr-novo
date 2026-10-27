@@ -1,0 +1,35 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head><link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin><link rel="dns-prefetch" href="//api.surveyorr.com.br"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="dns-prefetch" href="//cdn.jsdelivr.net"><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' https:; manifest-src 'self'; upgrade-insecure-requests"><script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script><meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="utf-8">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071a3d">
+  <title>Earth 3D — Surveyor</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cesium@1.131.0/Build/Cesium/Widgets/widgets.css">
+  <link rel="stylesheet" href="/assets/css/features/earth-3d/earth-3d.css?v=1.0.0-rc.185.74"><link rel="stylesheet" href="/assets/css/core/utilities.css?v=1.0.0-rc.185.74"></head>
+<body>
+  <main class="earth-shell">
+    <header class="earth-toolbar">
+      <a class="earth-brand" href="/earth-3d/" data-earth-brand><img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="Surveyor"></a>
+      <input id="earthCoordinates" value="-13.1289990, -39.5347670" aria-label="Latitude e longitude">
+      <button id="earthLocate" class="primary">Localizar</button>
+      <button id="earthMyLocation">Minha localização</button>
+      <label class="earth-basemap-label">Visualização<select id="earthBasemap"><option value="satellite">Satélite</option><option value="streets">Mapa</option><option value="terrain">Relevo</option></select></label>
+      <button id="earthFit">Enquadrar imóvel</button>
+      <button id="earthHome">Visão global</button>
+      <a id="earthBack" class="back" href="/mapa/">Voltar ao mapa</a>
+    </header>
+    <div id="cesiumContainer"></div>
+    <section id="earthStatus" class="earth-status">Inicializando globo 3D…</section>
+    <section class="earth-help">Arraste para girar • roda do mouse para zoom • Ctrl + arrastar para inclinar</section>
+  </main>
+  <script src="/assets/js/features/earth-3d/config.js?v=1.0.0-rc.185.74"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cesium@1.131.0/Build/Cesium/Cesium.js"></script>
+  <script src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/features/earth-3d/earth-3d.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+/* Surveyor v21.9.433 — controles administrativos de senha e e-mail */
+.password-generator-row{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) auto auto;
+  gap:8px;
+  align-items:center;
+  margin-top:6px;
+}
+.password-generator-row input{margin-top:0}
+.password-generator-row .tiny-button{min-height:42px;white-space:nowrap}
+.account-change-summary{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:8px 14px;
+  padding:15px 16px;
+  margin:12px 0 18px;
+  border:1px solid var(--line,#dbe4f0);
+  border-radius:12px;
+  background:#f8fbff;
+}
+.account-change-summary span{color:#64748b;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.account-change-summary strong{color:#0f2a44;overflow-wrap:anywhere}
+.account-confirm-check{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:10px;
+  align-items:start;
+  padding:12px 14px;
+  border:1px solid var(--line,#dbe4f0);
+  border-radius:11px;
+  background:#fff;
+}
+.account-confirm-check input{width:18px;height:18px;margin:2px 0 0}
+.account-confirm-check span,.account-confirm-check b,.account-confirm-check small{display:block}
+.account-confirm-check small{margin-top:3px;color:#64748b;font-weight:500;line-height:1.45}
+.account-change-warning{
+  margin:16px 0;
+  padding:12px 14px;
+  border-left:4px solid #2563eb;
+  border-radius:8px;
+  background:#eef5ff;
+  color:#334155;
+  font-size:13px;
+}
+.user-actions .email-change-button{border-color:#bfd4ff;background:#eef5ff;color:#1d4ed8}
+@media(max-width:720px){
+  .password-generator-row{grid-template-columns:1fr 1fr}
+  .password-generator-row input{grid-column:1/-1}
+  .account-change-summary{grid-template-columns:1fr}
+}
+
+/* v21.9.433 — alteração de e-mail visível dentro da edição do usuário */
+.user-email-access-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center}
+.user-email-access-row .tiny-button{min-height:42px;white-space:nowrap}
+.user-wizard-dialog.editing-user #userEmail{background:#f4f7fb;color:#334155;cursor:not-allowed}
+@media(max-width:700px){.user-email-access-row{grid-template-columns:1fr}.user-email-access-row .tiny-button{width:100%}}

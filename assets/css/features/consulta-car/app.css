@@ -1,0 +1,283 @@
+/* Surveyor v21.11.5 — Consulta CAR integrada ao Worker/R2 — 2026-08-20 */
+body[data-page="consulta-car.html"]{background:#f7f9fc;color:#0f172a}
+body[data-page="consulta-car.html"] .workspace-main{padding:28px 32px 38px;max-width:1540px;margin:0 auto;width:100%}
+body[data-page="consulta-car.html"] .consulta-car-page-head{margin:0 0 18px;padding:0 2px;min-height:auto;align-items:flex-end;border:0;background:transparent;box-shadow:none}
+body[data-page="consulta-car.html"] .consulta-car-page-head h1{font-size:28px;letter-spacing:-.03em;margin:4px 0 6px;color:#0b1731}
+body[data-page="consulta-car.html"] .consulta-car-page-head p{max-width:780px;margin:0;color:#64748b;font-size:13px}
+.consulta-car-kicker,.consulta-car-eyebrow{display:block;color:#0f62e8;font-size:10px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+
+.consulta-car-search-card{border:1px solid #d9e3ef;background:linear-gradient(180deg,#fff 0%,#fbfdff 100%);border-radius:18px;padding:22px;box-shadow:0 14px 36px rgba(15,23,42,.06)}
+.consulta-car-search-intro{display:grid;gap:14px;align-items:center;padding-bottom:18px;border-bottom:1px solid #edf1f6}
+.consulta-car-search-intro h2,.consulta-car-section-head h2{margin:3px 0 0;color:#0f172a;font-size:17px;letter-spacing:-.02em}
+.consulta-car-search-intro p{margin:5px 0 0;color:#6b7a90;font-size:12px;line-height:1.5}
+.consulta-car-mark{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:#effaf3;border:1px solid #d8f0df;color:#168343}
+.consulta-car-mark svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.consulta-car-api-state{display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:0 10px;border-radius:999px;background:#f8fafc;border:1px solid #e2e8f0;color:#64748b;font-size:10px;font-weight:800;white-space:nowrap}
+.consulta-car-api-state>span{width:7px;height:7px;border-radius:50%;background:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.12)}
+.consulta-car-api-state[data-state="ok"]{color:#166534;background:#f0fdf4;border-color:#bbf7d0}.consulta-car-api-state[data-state="ok"]>span{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.consulta-car-api-state[data-state="loading"]{color:#1d4ed8;background:#eff6ff;border-color:#bfdbfe}.consulta-car-api-state[data-state="loading"]>span{background:#3b82f6;animation:consultaCarPulse 1s infinite}
+.consulta-car-api-state[data-state="error"]{color:#b42318;background:#fff5f4;border-color:#fecaca}.consulta-car-api-state[data-state="error"]>span{background:#ef4444}
+@keyframes consultaCarPulse{50%{opacity:.35}}
+
+.consulta-car-mode{display:flex;gap:6px;margin:18px 0 14px}
+.consulta-car-mode button{border:1px solid transparent;background:transparent;color:#64748b;padding:8px 12px;border-radius:9px;font:800 11px/1 inherit;cursor:pointer}
+.consulta-car-mode button:hover{background:#f4f7fb;color:#0f172a}.consulta-car-mode button.active{background:#edf4ff;border-color:#d6e7ff;color:#0f62e8}
+.consulta-car-form{display:grid;grid-template-columns:150px minmax(240px,1fr) minmax(300px,1.3fr) 160px;gap:12px;align-items:end}
+.consulta-car-form label{display:grid;gap:7px;color:#334155;font-size:10px;font-weight:850}
+.consulta-car-form input,.consulta-car-form select{height:44px;border:1px solid #d7e1eb;border-radius:10px;background:#fff;color:#0f172a;padding:0 12px;font:600 12px/1 inherit;outline:none;transition:border-color .15s ease,box-shadow .15s ease}
+.consulta-car-form input:focus,.consulta-car-form select:focus{border-color:#7db0f5;box-shadow:0 0 0 3px rgba(15,98,232,.08)}
+.consulta-car-form input:disabled{background:#f8fafc;color:#94a3b8}
+.consulta-car-search-btn{height:44px;border:0;border-radius:10px;background:linear-gradient(180deg,#1769e8,#0f5edc);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font:850 11px/1 inherit;cursor:pointer;box-shadow:0 8px 18px rgba(15,98,232,.18)}
+.consulta-car-search-btn:hover{filter:brightness(.98);transform:translateY(-1px)}.consulta-car-search-btn:disabled{opacity:.62;cursor:wait;transform:none}
+.consulta-car-search-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.consulta-car-helper{margin:12px 0 0;font-size:10px}.consulta-car-helper strong{color:#334155}
+
+.consulta-car-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));}
+.consulta-car-stats article{border:1px solid #dce5ef;background:#fff;border-radius:14px;display:flex;gap:11px;}
+.consulta-car-stats strong{display:block;color:#0f172a;letter-spacing:-.02em}.consulta-car-stats small{display:block;font-size:10px}
+.metric-icon{display:grid;place-items:center;font-weight:900}.metric-icon.blue{background:#eef5ff;color:#0f62e8}.metric-icon.green{background:#effaf3;color:#15803d}.metric-icon.cyan{background:#eefbff;color:#0e7490}.metric-icon.forest{background:#ecfdf5;color:#047857}.metric-icon.amber{background:#fff8e7;color:#a16207}
+
+.consulta-car-workspace{display:grid;gap:14px;align-items:stretch}
+.consulta-car-map-card,.consulta-car-results-card{position:relative;border:1px solid #d9e3ef;background:#fff;border-radius:17px;padding:16px;box-shadow:0 10px 28px rgba(15,23,42,.045);min-width:0}
+.consulta-car-section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.consulta-car-section-head h2{font-size:15px}
+.consulta-car-map-actions{display:flex;gap:7px}.consulta-car-map-actions button{border:1px solid #d8e2ed;background:#fff;color:#334155;border-radius:8px;min-height:32px;padding:0 10px;font:800 9px/1 inherit;cursor:pointer}.consulta-car-map-actions button:hover:not(:disabled){background:#f6f9fd}.consulta-car-map-actions button:disabled{opacity:.45;cursor:not-allowed}
+.consulta-car-map{height:460px;border:1px solid #d9e3ef;border-radius:13px;overflow:hidden;background:#eaf0f5;z-index:1}.consulta-car-map .leaflet-control-zoom a{color:#0f172a}.consulta-car-map .leaflet-control-attribution{font-size:8px}
+.consulta-car-map-empty{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);z-index:500;max-width:310px;padding:10px 13px;border-radius:10px;background:rgba(255,255,255,.92);border:1px solid #dfe7ef;box-shadow:0 10px 26px rgba(15,23,42,.12);color:#64748b;text-align:center;font-size:10px;pointer-events:none}.consulta-car-map-empty.hidden{display:none}
+.consulta-car-map-legend{display:flex;gap:16px;align-items:center;margin-top:10px;color:#64748b;font-size:9px}.consulta-car-map-legend span{display:inline-flex;align-items:center;gap:6px}.consulta-car-map-legend i{display:inline-block;width:14px;height:7px;border-radius:3px}.legend-car{}.legend-public{}
+
+.consulta-car-results-card{display:flex;flex-direction:column;}.consulta-car-result-count{min-width:28px;height:28px;padding:0 8px;border-radius:999px;display:grid;place-items:center;background:#eef5ff;color:#0f62e8;font-size:10px;font-weight:900}
+.consulta-car-result-body{overflow:auto;padding-right:2px}.consulta-car-empty-state{height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#64748b;padding:30px}.consulta-car-empty-state strong{color:#334155;font-size:13px}.consulta-car-empty-state p{font-size:10px;line-height:1.5;max-width:240px}.consulta-car-empty-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#f4f7fb;border:1px solid #e1e8f0;color:#64748b;font-size:22px;margin-bottom:10px}
+.consulta-car-result-list{display:grid;gap:9px}.consulta-car-result-item{border:1px solid #e0e7ef;border-radius:12px;background:#fff;cursor:pointer;transition:.15s ease}.consulta-car-result-item:hover,.consulta-car-result-item.active{border-color:#9fc3f5;background:#f8fbff;box-shadow:0 5px 14px rgba(15,98,232,.06)}
+.consulta-car-result-item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.consulta-car-result-item-head strong{color:#0f172a;word-break:break-word}.consulta-car-badge{flex:none;padding:4px 6px;border-radius:999px;background:#eef5ff;color:#0f62e8;font-size:8px;font-weight:900;text-transform:uppercase}
+.consulta-car-result-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px;margin-top:10px}.consulta-car-result-meta div{min-width:0}.consulta-car-result-meta small{display:block;color:#94a3b8;font-size:8px;text-transform:uppercase;letter-spacing:.05em;font-weight:800}.consulta-car-result-meta span{display:block;color:#475569;font-size:9px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.consulta-car-info-strip{margin-top:14px;border:1px solid #dbe5ef;background:#f8fbff;border-radius:13px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:18px}.consulta-car-info-strip div{display:grid;gap:3px}.consulta-car-info-strip strong{font-size:10px;color:#0f172a}.consulta-car-info-strip span{font-size:9px;color:#6b7a90}.consulta-car-info-strip code{font-size:8.5px;background:#eef3f8;padding:2px 4px;border-radius:4px}.consulta-car-info-strip a{white-space:nowrap;color:#0f62e8;text-decoration:none;font-size:9px;font-weight:850}
+
+body[data-page="consulta-car.html"] .leaflet-container{font-family:Inter,Segoe UI,Arial,sans-serif}
+body[data-page="consulta-car.html"] .leaflet-popup-content-wrapper{border-radius:11px;box-shadow:0 10px 28px rgba(15,23,42,.15)}
+body[data-page="consulta-car.html"] .leaflet-popup-content{font-size:10px;line-height:1.45;color:#334155}.consulta-car-popup-title{font-weight:900;color:#0f172a;margin-bottom:4px}
+
+@media(max-width:1180px){.consulta-car-form{grid-template-columns:120px 1fr 1.25fr 145px}.consulta-car-workspace{grid-template-columns:1fr}.consulta-car-results-card{}.consulta-car-result-body{}.consulta-car-empty-state{height:240px}}
+@media(max-width:900px){body[data-page="consulta-car.html"] .workspace-main{padding:20px 16px 30px}.consulta-car-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.consulta-car-form{grid-template-columns:1fr 1fr}.consulta-car-search-btn{width:100%}.consulta-car-search-intro{grid-template-columns:46px minmax(0,1fr)}.consulta-car-api-state{grid-column:1/-1;justify-self:start}.consulta-car-mark{width:46px;height:46px}.consulta-car-map{height:380px}}
+@media(max-width:620px){.consulta-car-form{grid-template-columns:1fr}.consulta-car-stats{grid-template-columns:1fr}.consulta-car-workspace{grid-template-columns:1fr}.consulta-car-page-head{display:block}.consulta-car-page-head .top-actions{margin-top:12px}.consulta-car-info-strip{align-items:flex-start;flex-direction:column}.consulta-car-map{height:330px}.consulta-car-result-meta{grid-template-columns:1fr}}
+
+/* Base local JSONL — 2026-08-21 */
+.consulta-car-details{margin-top:10px;border-top:1px solid #e7edf4;padding-top:9px}
+.consulta-car-details summary{cursor:pointer;color:#0f62e8;font-size:9px;font-weight:850;user-select:none;list-style-position:inside}
+.consulta-car-env-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 9px;margin-top:9px}
+.consulta-car-env-grid>div{border:1px solid #e4ebf3;background:#f8fbff;border-radius:8px;padding:7px 8px;min-width:0}
+.consulta-car-env-grid small{display:block;color:#8090a6;font-size:7.5px;text-transform:uppercase;letter-spacing:.035em;font-weight:800}
+.consulta-car-env-grid span{display:block;margin-top:2px;color:#1e293b;font-size:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.consulta-car-source-row{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:9px;color:#718096;font-size:8px}
+@media(max-width:620px){.consulta-car-env-grid{grid-template-columns:1fr}}
+
+/* Surveyor Consulta CAR — geometria oficial + UX amigável — 2026-08-21 */
+.consulta-car-overview-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:18px 2px 9px}
+.consulta-car-overview-head h2{margin:3px 0 0;font-size:15px;letter-spacing:-.02em;color:#0f172a}
+.consulta-car-stats-context{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border:1px solid #d9e6f5;background:#f7fbff;border-radius:999px;font-size:9px;font-weight:850;white-space:nowrap}
+
+.consulta-car-stats{gap:10px;margin:0 0 15px}
+.consulta-car-stats article{position:relative;overflow:hidden;min-height:96px;padding:15px 14px;border-color:#e0e8f1;box-shadow:0 7px 22px rgba(15,23,42,.04);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.consulta-car-stats article:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.07);border-color:#cad9ea}
+.consulta-car-stats article::after{content:"";position:absolute;right:-22px;bottom:-28px;width:82px;height:82px;border-radius:50%;opacity:.38;pointer-events:none}
+.consulta-car-stats .stat-imoveis::after{background:#dcecff}.consulta-car-stats .stat-reserva::after{background:#dcf5e5}.consulta-car-stats .stat-app::after{background:#d9f4f8}.consulta-car-stats .stat-vegetacao::after{background:#d8f3e7}.consulta-car-stats .stat-consolidada::after{background:#fff0c7}
+.consulta-car-stats strong{line-height:1.05}.consulta-car-stats small{font-size:10px;font-weight:800;color:#43536a;margin-top:5px}.consulta-car-stats em{display:block;margin-top:3px;font-style:normal;font-weight:700}
+.metric-icon{position:relative;z-index:1;width:38px;height:38px;border-radius:12px;font-size:17px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+
+.consulta-car-map-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.consulta-car-geometry-state{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 9px;border:1px solid #dfe7ef;border-radius:999px;background:#f8fafc;color:#64748b;font-size:8.5px;font-weight:850;white-space:nowrap}
+.consulta-car-geometry-state::before{content:"";width:6px;height:6px;border-radius:50%;background:#94a3b8}
+.consulta-car-geometry-state[data-state="loading"]{color:#1d4ed8;background:#eff6ff;border-color:#c8dcfb}.consulta-car-geometry-state[data-state="loading"]::before{background:#3b82f6;animation:consultaCarPulse 1s infinite}
+.consulta-car-geometry-state[data-state="ok"]{color:#166534;background:#f0fdf4;border-color:#c8efd3}.consulta-car-geometry-state[data-state="ok"]::before{background:#22c55e}
+.consulta-car-geometry-state[data-state="fallback"]{color:#7c5b08;background:#fff9e9;border-color:#f3df9d}.consulta-car-geometry-state[data-state="fallback"]::before{background:#dca80a}
+.consulta-car-geometry-state[data-state="error"]{color:#b42318;background:#fff5f4;border-color:#fecaca}.consulta-car-geometry-state[data-state="error"]::before{background:#ef4444}
+
+.consulta-car-results-card{max-height:625px}
+.consulta-car-result-body{min-height:450px}
+.consulta-car-result-count[hidden]{display:none}
+
+.consulta-car-property-card{display:grid;gap:11px;border:0;background:transparent;padding:1px 1px 4px}
+.consulta-car-property-hero{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid #dbe6f1;border-radius:13px;background:linear-gradient(135deg,#f8fbff,#fff)}
+.consulta-car-location-chip{display:flex;align-items:center;gap:10px;min-width:0}
+.consulta-car-location-chip>span:last-child{display:grid;gap:2px;min-width:0}.consulta-car-location-chip strong{font-size:12px;color:#0f172a}.consulta-car-location-chip small{font-size:8.5px;color:#6d7c91;font-weight:800}
+.consulta-car-status-soft{flex:none;padding:5px 8px;border-radius:999px;background:#eef8f1;border:1px solid #d2ebda;color:#257240;font-size:8px;font-weight:900}
+
+.consulta-car-ba-flag{position:relative;display:inline-block;flex:none;width:31px;height:21px;border-radius:4px;overflow:hidden;border:1px solid rgba(15,23,42,.12);box-shadow:0 2px 5px rgba(15,23,42,.08);background:repeating-linear-gradient(to bottom,#fff 0 25%,#d92d35 25% 50%,#fff 50% 75%,#d92d35 75% 100%)}
+.consulta-car-ba-flag::before{content:"";position:absolute;left:0;top:0;width:43%;height:50%;background:#1c4f9b}
+.consulta-car-ba-flag::after{content:"";position:absolute;left:3px;top:1.5px;width:8px;height:7px;background:#fff;clip-path:polygon(50% 0,100% 88%,0 88%)}
+.consulta-car-ba-flag i{display:none}
+
+.consulta-car-property-code{display:grid;gap:4px;padding:10px 11px;border:1px solid #e2e9f1;border-radius:11px;background:#fff}
+.consulta-car-property-code span{font-size:7.5px;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;font-weight:850}.consulta-car-property-code strong{font-size:10.5px;line-height:1.35;color:#16233a;word-break:break-all}
+.consulta-car-property-main-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.consulta-car-property-main-grid>div{min-height:59px;padding:10px;border:1px solid #e4eaf1;border-radius:11px;background:#fbfdff}
+.consulta-car-property-main-grid small{display:block;font-size:7.5px;text-transform:uppercase;letter-spacing:.045em;color:#91a0b2;font-weight:850}.consulta-car-property-main-grid strong{display:block;margin-top:4px;font-size:10px;color:#22324a;white-space:normal;line-height:1.35}
+
+.consulta-car-env-head{display:flex;align-items:center;justify-content:space-between;margin-top:2px;padding:3px 1px}.consulta-car-env-head div{display:grid;gap:2px}.consulta-car-env-head strong{font-size:10px;color:#18253a}.consulta-car-env-head span{font-size:8px;color:#8795a8}
+.consulta-car-sigef-summary{display:grid;gap:8px;margin-top:4px;padding-top:4px;border-top:1px solid #e8edf4}.consulta-car-section-heading{display:grid;gap:2px;padding:2px 1px}.consulta-car-section-heading strong{font-size:10px;color:#18253a}.consulta-car-section-heading small{font-size:8px;color:#8795a8}
+.consulta-car-env-grid-rich{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.consulta-car-env-grid-rich>div{position:relative;overflow:hidden;min-height:55px;padding:9px 9px 8px;background:#fff;border-color:#e3eaf2}
+.consulta-car-env-grid-rich>div::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#cbd5e1}.consulta-car-env-grid-rich>div.app::before{background:#24a6ba}.consulta-car-env-grid-rich>div.reserva::before{background:#26a269}.consulta-car-env-grid-rich>div.vegetacao::before{background:#13855a}.consulta-car-env-grid-rich>div.consolidada::before{background:#d59a20}.consulta-car-env-grid-rich>div.hidro::before{background:#3b82f6}
+.consulta-car-env-grid-rich small{font-size:7.3px}.consulta-car-env-grid-rich span{font-size:10px;color:#1d2d44}
+.consulta-car-source-row{padding-top:8px;border-top:1px solid #edf1f5;justify-content:space-between}
+
+.consulta-car-municipality-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 11px;border:1px solid #dbe6f1;border-radius:11px;background:#f8fbff;margin-bottom:2px}.consulta-car-municipality-summary strong{font-size:10px;color:#0f62e8}.consulta-car-municipality-summary span{font-size:8px;color:#77869a;text-align:right}
+.consulta-car-result-item{padding:11px}.consulta-car-result-item-head strong{font-size:9.5px}.consulta-car-result-location{display:flex;align-items:center;gap:7px;margin-top:8px;color:#526277;font-size:8.5px;font-weight:800}.consulta-car-result-location .consulta-car-ba-flag{width:24px;height:16px;border-radius:3px}.consulta-car-result-location .consulta-car-ba-flag::after{left:2px;top:1px;width:6px;height:5px}
+.consulta-car-result-meta.compact{grid-template-columns:1fr 1fr;margin-top:8px}
+
+.consulta-car-map-legend{justify-content:space-between}.legend-car{}.legend-public{background:#cbd5e1}
+
+@media(max-width:1180px){.consulta-car-map-tools{justify-content:flex-start}.consulta-car-results-card{max-height:none}.consulta-car-result-body{min-height:270px}}
+@media(max-width:900px){.consulta-car-overview-head{align-items:flex-start;flex-direction:column}.consulta-car-stats-context{align-self:flex-start}.consulta-car-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.consulta-car-overview-head{margin-top:14px}.consulta-car-stats{grid-template-columns:1fr}.consulta-car-property-main-grid,.consulta-car-env-grid-rich{grid-template-columns:1fr}.consulta-car-property-hero{align-items:flex-start;flex-direction:column}.consulta-car-map-tools{align-items:flex-start;flex-direction:column}}
+
+
+/* Surveyor Consulta CAR — limpeza de mensagens internas + panorama oficial — 2026-08-21 */
+.consulta-car-search-intro{grid-template-columns:52px minmax(0,1fr)}
+.consulta-car-helper{color:#64748b}
+
+/* Sem consulta, o mapa usa toda a largura. O painel de imóvel só nasce depois da busca. */
+.consulta-car-workspace{grid-template-columns:1fr}
+.consulta-car-workspace.has-results{grid-template-columns:minmax(0,1.55fr) minmax(360px,.8fr)}
+.consulta-car-results-card[hidden]{display:none}
+
+/* Indicadores nacionais: números completos e leitura mais amigável. */
+.consulta-car-stats article{align-items:flex-start;padding-top:16px}
+.consulta-car-stats article>div{position:relative;z-index:1;min-width:0}
+.consulta-car-stats strong{font-size:18px;white-space:nowrap}
+.consulta-car-stats small{font-size:10px}
+.consulta-car-stats em{font-size:8.5px;line-height:1.35;color:#748399}
+
+/* O usuário não vê estados técnicos da implementação. */
+.consulta-car-api-state,.consulta-car-geometry-state,.consulta-car-source-row,.consulta-car-info-strip{display:none}
+
+/* Aviso de fonte exibido ao entrar na área de Consulta Pública CAR. */
+body.consulta-car-modal-open{overflow:hidden}
+.consulta-car-source-modal[hidden]{display:none}
+.consulta-car-source-modal{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:22px;background:rgba(7,18,37,.42);backdrop-filter:blur(4px)}
+.consulta-car-source-modal-card{width:min(520px,100%);border:1px solid #d9e5f1;border-radius:20px;background:#fff;padding:24px;box-shadow:0 26px 80px rgba(15,23,42,.24)}
+.consulta-car-source-modal-icon{width:50px;height:50px;display:grid;place-items:center;border-radius:15px;margin-bottom:14px;background:#effaf3;border:1px solid #d8f0df;color:#168343}
+.consulta-car-source-modal-icon svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.consulta-car-source-modal-card h2{margin:5px 0 9px;color:#0f172a;font-size:21px;letter-spacing:-.025em}
+.consulta-car-source-modal-card p{margin:0;color:#5f6f84;font-size:12px;line-height:1.65}
+.consulta-car-source-modal-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:20px}
+.consulta-car-source-modal-actions a{min-height:38px;display:inline-flex;align-items:center;padding:0 12px;border-radius:9px;color:#0f62e8;text-decoration:none;font-size:10px;font-weight:850}
+.consulta-car-source-modal-actions a:hover{background:#f2f7ff}
+.consulta-car-source-modal-actions button{min-width:88px;height:38px;border:0;border-radius:9px;background:#0f62e8;color:#fff;font:850 11px/1 inherit;cursor:pointer;box-shadow:0 7px 16px rgba(15,98,232,.18)}
+.consulta-car-source-modal-actions button:hover{background:#0b58d2}
+
+@media(max-width:1180px){.consulta-car-workspace.has-results{grid-template-columns:1fr}}
+@media(max-width:620px){.consulta-car-source-modal-actions{align-items:stretch;flex-direction:column-reverse}.consulta-car-source-modal-actions a,.consulta-car-source-modal-actions button{width:100%;justify-content:center}}
+
+/* Surveyor Consulta CAR — Bahia + satélite + camada de imóveis rurais — 2026-08-21 */
+.consulta-car-stats-context{background:#f7fbff;border-color:#d9e8f8;color:#205a9e}
+.consulta-car-form select#consultaCarUf{font-weight:850;color:#0f3f79;background:#f8fbff}
+.consulta-car-form select#consultaCarUf option{font-weight:750}
+
+/* O seletor nativo de camadas do Leaflet recebe acabamento do Surveyor. */
+.consulta-car-map .leaflet-control-layers{border:1px solid rgba(15,23,42,.12);border-radius:10px;box-shadow:0 8px 22px rgba(15,23,42,.14);overflow:hidden}
+.consulta-car-map .leaflet-control-layers-toggle{width:36px;height:36px;background-size:20px 20px}
+.consulta-car-map .leaflet-control-layers-expanded{padding:10px 12px;background:rgba(255,255,255,.96);backdrop-filter:blur(7px);font:750 10px/1.45 Inter,system-ui,sans-serif;color:#26364d}
+.consulta-car-map .leaflet-control-layers-expanded label{display:flex;align-items:center;gap:6px;margin:4px 0}
+.consulta-car-map .leaflet-control-layers-separator{border-top-color:#e4ebf2;margin:7px -2px}
+
+/* Legenda: camada pública em amarelo e seleção do usuário em azul. */
+.legend-rural{}
+.legend-car{}
+
+/* Pop-up pequeno ao clicar no imóvel consultado ou em um imóvel da camada CAR. */
+.consulta-car-popup-card{display:grid;gap:6px;padding:2px 1px}
+.consulta-car-popup-card strong{color:#0f172a;font:850 12px/1.3 Inter,system-ui,sans-serif}
+.consulta-car-popup-card small{color:#65758a;font:700 8px/1.45 Inter,system-ui,sans-serif;word-break:break-all}
+.consulta-car-popup-card button{margin-top:3px;min-height:32px;border:0;border-radius:8px;background:#0f62e8;color:#fff;padding:0 11px;cursor:pointer;font:850 9px/1 Inter,system-ui,sans-serif;box-shadow:0 5px 12px rgba(15,98,232,.18)}
+.consulta-car-popup-card button:hover{background:#0b57ce}
+.consulta-car-map .leaflet-popup-content{margin:12px 13px}
+.consulta-car-map .leaflet-popup-content-wrapper{border-radius:12px;box-shadow:0 10px 28px rgba(15,23,42,.18)}
+
+/* Ações úteis na ficha, sem prometer o download oficial de demonstrativo. */
+.consulta-car-property-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px}
+.consulta-car-property-actions button,.consulta-car-property-actions a{min-height:34px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;padding:0 11px;font:850 9px/1 Inter,system-ui,sans-serif;text-decoration:none;cursor:pointer}
+.consulta-car-property-actions button{border:1px solid #cfe0f8;background:#f4f8ff;color:#0f62e8}
+.consulta-car-property-actions button:hover{background:#eaf2ff}
+.consulta-car-property-actions a{border:1px solid #dfe6ee;background:#fff;color:#415268}
+.consulta-car-property-actions a:hover{background:#f8fafc}
+
+.consulta-car-results-highlight{animation:consultaCarResultHighlight 1.3s ease}
+@keyframes consultaCarResultHighlight{0%,100%{box-shadow:0 0 0 rgba(15,98,232,0)}35%{box-shadow:0 0 0 4px rgba(15,98,232,.16),0 16px 34px rgba(15,98,232,.12)}}
+
+@media(max-width:620px){.consulta-car-property-actions{align-items:stretch;flex-direction:column}.consulta-car-property-actions button,.consulta-car-property-actions a{width:100%}}
+
+
+/* 2026-08-21 — controle de mapa próprio do Surveyor; substitui o seletor nativo do Leaflet. */
+.consulta-car-map .leaflet-control-layers{display:none}
+.consulta-car-layer-control{position:relative;margin-top:10px;margin-right:10px;border:0;background:transparent;box-shadow:none;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.consulta-car-layer-toggle{width:40px;height:40px;display:grid;place-items:center;border:1px solid rgba(15,23,42,.12);border-radius:11px;background:rgba(255,255,255,.97);color:#13233c;cursor:pointer;box-shadow:0 8px 24px rgba(15,23,42,.16);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.consulta-car-layer-toggle:hover,.consulta-car-layer-control.is-open .consulta-car-layer-toggle{border-color:#9fc3f6;color:#0f62e8;box-shadow:0 10px 26px rgba(15,98,232,.16)}
+.consulta-car-layer-toggle:active{transform:scale(.97)}
+.consulta-car-layer-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.consulta-car-layer-panel{position:absolute;right:0;top:48px;width:244px;padding:11px;border:1px solid #dce5ef;border-radius:14px;background:rgba(255,255,255,.985);box-shadow:0 18px 42px rgba(15,23,42,.2);backdrop-filter:blur(10px);color:#17233a}
+.consulta-car-layer-panel[hidden]{display:none}
+.consulta-car-layer-title{padding:3px 5px 7px;color:#748399;font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.consulta-car-layer-option{position:relative;display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;gap:9px;margin:0;padding:9px;border:1px solid transparent;border-radius:10px;background:transparent;color:#23334a;cursor:pointer;min-height:54px;box-sizing:border-box}
+.consulta-car-layer-option:hover{background:#f6f9fd}
+.consulta-car-layer-option.is-active{background:#f3f7ff;border-color:#d8e6fb}
+.consulta-car-layer-option input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;margin:0}
+.consulta-car-layer-option>span:last-of-type{display:grid;gap:2px;min-width:0}
+.consulta-car-layer-option strong{font:850 10px/1.2 Inter,system-ui,sans-serif;color:#18263b}
+.consulta-car-layer-option small{font:650 8px/1.35 Inter,system-ui,sans-serif;color:#7a899c}
+.consulta-car-radio,.consulta-car-check{width:17px;height:17px;display:block;border:1.5px solid #b8c5d5;background:#fff;box-sizing:border-box}
+.consulta-car-radio{border-radius:50%}
+.consulta-car-layer-option.is-active .consulta-car-radio{border:5px solid #0f62e8}
+.consulta-car-check{border-radius:5px;position:relative}
+.consulta-car-overlay-option.is-active .consulta-car-check{background:#0f62e8;border-color:#0f62e8}
+.consulta-car-overlay-option.is-active .consulta-car-check::after{content:"";position:absolute;left:4px;top:1px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.consulta-car-layer-separator{height:1px;background:#e8edf3;margin:8px 3px}
+.consulta-car-layer-swatch{width:18px;height:9px;border-radius:999px;background:#f3df00;border:2px solid #c9b900;box-shadow:0 0 0 2px rgba(243,223,0,.13)}
+
+/* A camada geral do CAR deve ser amarela; o imóvel pesquisado usa azul forte + halo branco. */
+.consulta-car-map .consulta-car-rural-wms{filter:invert(91%) sepia(99%) saturate(3600%) hue-rotate(1deg) brightness(108%) contrast(106%);mix-blend-mode:normal}
+.consulta-car-map .consulta-car-selected-wms{filter:invert(35%) sepia(95%) saturate(4200%) hue-rotate(210deg) brightness(96%) contrast(110%)}
+.legend-rural{background:#f3df00;border:1px solid #c4b400}
+.legend-car{background:#0b63f6;border:1px solid #064cbf;box-shadow:0 0 0 2px rgba(255,255,255,.95),0 0 0 3px rgba(11,99,246,.22)}
+
+/* Pop-up aparece somente no perímetro selecionado. */
+.consulta-car-popup-kicker{display:block;color:#0f62e8;font:900 7.5px/1.2 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.consulta-car-popup-card{min-width:220px}
+
+@media(max-width:620px){.consulta-car-layer-panel{width:min(230px,calc(100vw - 44px));right:0}.consulta-car-layer-option{min-height:50px}}
+
+
+/* 2026-08-21 — seleção inequívoca do imóvel consultado no mapa. */
+.consulta-car-selected-marker-wrap{background:transparent;border:0}
+.consulta-car-selected-marker{position:relative;display:block;width:34px;height:34px;border:4px solid #fff;border-radius:50% 50% 50% 0;background:#075eea;box-shadow:0 8px 18px rgba(0,62,170,.34),0 0 0 2px rgba(7,94,234,.32);transform:rotate(-45deg);box-sizing:border-box}
+.consulta-car-selected-marker::after{content:"";position:absolute;inset:5px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 4px #075eea}
+.consulta-car-selected-marker-dot{position:absolute;inset:0;display:block}
+.consulta-car-selected-pulse{animation:consultaCarSelectedPulse 1.7s ease-out infinite;transform-origin:center}
+@keyframes consultaCarSelectedPulse{0%{stroke-opacity:.55;fill-opacity:.12}70%{stroke-opacity:.08;fill-opacity:.025}100%{stroke-opacity:0;fill-opacity:0}}
+.consulta-car-selected-tooltip{border:1px solid #bdd4fb;border-radius:999px;background:rgba(255,255,255,.97);color:#0b57ce;box-shadow:0 7px 18px rgba(15,98,232,.18);padding:5px 9px;font:850 8.5px/1 Inter,system-ui,sans-serif;white-space:nowrap}
+.consulta-car-selected-tooltip::before{border-top-color:rgba(255,255,255,.97)}
+.consulta-car-result-selected-badge{display:none;flex:none;border-radius:999px;background:#0f62e8;color:#fff;padding:4px 7px;font-size:7.5px;font-weight:900;letter-spacing:.02em;white-space:nowrap}
+.consulta-car-result-item.active{border-color:#0f62e8;background:#f3f7ff;box-shadow:0 0 0 2px rgba(15,98,232,.10),0 8px 20px rgba(15,98,232,.10)}
+.consulta-car-result-item.active .consulta-car-result-selected-badge{display:inline-flex;align-items:center}
+
+/* 2026-08-21 — ícone amigável da Consulta Pública CAR no cabeçalho. */
+body[data-page="consulta-car.html"] .consulta-car-page-head>div:first-child:before{
+  background-image:url('/assets/module-icons/consulta-car-title.svg');
+  background-color:#effaf3;
+  background-size:25px 25px;
+  background-position:center;
+  background-repeat:no-repeat;
+  box-shadow:inset 0 0 0 1px #d8f0df;
+}
+
+/* 2026-08-28 — consulta rural 100% online: atributos oficiais completos */
+.consulta-car-official-fields{margin-top:14px;border:1px solid #dbe5f1;border-radius:14px;background:#fbfdff;overflow:hidden}
+.consulta-car-official-fields>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:800;color:#17345f;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.consulta-car-official-fields>summary::-webkit-details-marker{display:none}
+.consulta-car-official-fields>summary::after{content:'+';font-size:18px;line-height:1;color:#2563eb}
+.consulta-car-official-fields[open]>summary::after{content:'−'}
+.consulta-car-official-fields-scroll{max-height:310px;overflow:auto;border-top:1px solid #e7eef7;background:#fff}
+.consulta-car-official-fields table{width:100%;border-collapse:collapse;font-size:12px}
+.consulta-car-official-fields th,.consulta-car-official-fields td{padding:9px 12px;border-bottom:1px solid #edf2f7;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.consulta-car-official-fields th{width:38%;color:#51657e;font-weight:700;background:#f8fbff}
+.consulta-car-official-fields td{color:#162942;font-weight:650}

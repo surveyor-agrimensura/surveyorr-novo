@@ -1,0 +1,4143 @@
+{
+  "description": "Regras CSS redefinidas no contexto global da mesma folha; não comprova bug visual",
+  "total": 237,
+  "by_file": {
+    "assets/css/admin/app.css": 3,
+    "assets/css/admin/documents.css": 8,
+    "assets/css/admin/organization.css": 5,
+    "assets/css/core/documents.css": 1,
+    "assets/css/core/layout.css": 48,
+    "assets/css/core/suite.css": 20,
+    "assets/css/core/ui.css": 4,
+    "assets/css/features/assinatura-digital/app.css": 12,
+    "assets/css/features/consulta-car/app.css": 28,
+    "assets/css/features/customizacao/app.css": 92,
+    "assets/css/features/earth-3d/earth-3d.css": 3,
+    "assets/css/features/mapa/layer-location.css": 5,
+    "assets/css/features/mapa/territorial-navigator.css": 1,
+    "assets/css/features/memorial/memorial-preview.css": 1,
+    "assets/css/features/public-project/public-project.css": 4,
+    "assets/home-hero.css": 2
+  },
+  "conflicts": [
+    {
+      "file": "assets/css/admin/app.css",
+      "selector": ".admin-ops-section",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 14,
+          "value": "14px"
+        },
+        {
+          "line": 22,
+          "value": "12px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/app.css",
+      "selector": ".admin-ops-section>summary",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 14,
+          "value": "16px 0"
+        },
+        {
+          "line": 23,
+          "value": "14px 16px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/app.css",
+      "selector": "#toggleSelectedLayerGroup",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 15,
+          "value": "150px"
+        },
+        {
+          "line": 20,
+          "value": "160px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "selector": ".plan-documents-section",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 1,
+          "value": "14px"
+        },
+        {
+          "line": 4,
+          "value": "8px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "selector": ".plan-documents-section h3",
+      "property": "color",
+      "rules": [
+        {
+          "line": 1,
+          "value": "#0b2c5f"
+        },
+        {
+          "line": 5,
+          "value": "#172033"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "selector": ".plan-doc-preview",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 1,
+          "value": "14px"
+        },
+        {
+          "line": 6,
+          "value": "8px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "selector": ".plan-doc-preview",
+      "property": "background",
+      "rules": [
+        {
+          "line": 1,
+          "value": "#f8fafc"
+        },
+        {
+          "line": 6,
+          "value": "#f1f5f9"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "selector": ".plan-documents-actions",
+      "property": "justify-content",
+      "rules": [
+        {
+          "line": 1,
+          "value": "flex-end"
+        },
+        {
+          "line": 22,
+          "value": "flex-start"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "selector": ".workspace-personal-storage",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 92,
+          "value": "3px"
+        },
+        {
+          "line": 97,
+          "value": "5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "selector": ".workspace-personal-storage",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 92,
+          "value": "120px"
+        },
+        {
+          "line": 97,
+          "value": "150px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "selector": ".user-integrity-badge",
+      "property": "margin-top",
+      "rules": [
+        {
+          "line": 105,
+          "value": "5px"
+        },
+        {
+          "line": 118,
+          "value": "3px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/organization.css",
+      "selector": ".workspace-team-dialog .workspace-team-summary",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 41,
+          "value": "repeat(5,minmax(110px,1fr))"
+        },
+        {
+          "line": 55,
+          "value": "repeat(4,minmax(130px,1fr))"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/organization.css",
+      "selector": ".workspace-team-dialog .workspace-team-summary article",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 42,
+          "value": "10px 11px"
+        },
+        {
+          "line": 56,
+          "value": "9px 10px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/organization.css",
+      "selector": ".workspace-team-dialog .workspace-subuser-form",
+      "property": "margin-top",
+      "rules": [
+        {
+          "line": 43,
+          "value": "10px"
+        },
+        {
+          "line": 60,
+          "value": "12px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/organization.css",
+      "selector": ".workspace-team-dialog",
+      "property": "width",
+      "rules": [
+        {
+          "line": 53,
+          "value": "min(1120px,calc(100vw - 32px))"
+        },
+        {
+          "line": 94,
+          "value": "min(980px,calc(100vw - 32px))"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/organization.css",
+      "selector": ".workspace-team-dialog",
+      "property": "max-height",
+      "rules": [
+        {
+          "line": 53,
+          "value": "min(88vh,820px)"
+        },
+        {
+          "line": 94,
+          "value": "min(90vh,780px)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/documents.css",
+      "selector": "body.sv-document-inline-personalization .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-sheet",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 1838,
+          "value": "720px"
+        },
+        {
+          "line": 1838,
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ":root",
+      "property": "--radius",
+      "rules": [
+        {
+          "line": 6,
+          "value": "6px"
+        },
+        {
+          "line": 424,
+          "value": "2px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ":root",
+      "property": "--radius-sm",
+      "rules": [
+        {
+          "line": 6,
+          "value": "4px"
+        },
+        {
+          "line": 424,
+          "value": "2px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-brand small",
+      "property": "line-height",
+      "rules": [
+        {
+          "line": 172,
+          "value": "1.2"
+        },
+        {
+          "line": 276,
+          "value": "1.15"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 188,
+          "value": "minmax(320px,560px) minmax(0,1fr) auto"
+        },
+        {
+          "line": 263,
+          "value": "minmax(340px,560px) minmax(0,1fr) auto"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-shell-v131 .recent-list",
+      "property": "border",
+      "rules": [
+        {
+          "line": 234,
+          "value": "0"
+        },
+        {
+          "line": 463,
+          "value": "1px solid var(--wk-line)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-shell-v131 .recent-list>a",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 235,
+          "value": "34px 1fr"
+        },
+        {
+          "line": 464,
+          "value": "38px minmax(0,1fr) auto"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-shell-v131 .recent-list>a",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 235,
+          "value": "11px 0"
+        },
+        {
+          "line": 464,
+          "value": "12px 14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-shell-v131 .recent-list>a",
+      "property": "background",
+      "rules": [
+        {
+          "line": 235,
+          "value": "transparent"
+        },
+        {
+          "line": 464,
+          "value": "#fff"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar-actions .notification-bell",
+      "property": "border",
+      "rules": [
+        {
+          "line": 269,
+          "value": "1px solid transparent"
+        },
+        {
+          "line": 551,
+          "value": "1px solid #dbe4ef"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar-actions .notification-bell",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 269,
+          "value": "999px"
+        },
+        {
+          "line": 551,
+          "value": "4px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar-actions .notification-bell span",
+      "property": "right",
+      "rules": [
+        {
+          "line": 272,
+          "value": "-2px"
+        },
+        {
+          "line": 552,
+          "value": "-5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar-actions .notification-bell span",
+      "property": "top",
+      "rules": [
+        {
+          "line": 272,
+          "value": "-4px"
+        },
+        {
+          "line": 552,
+          "value": "-7px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": "body.workspace-shell-v131.sv-dashboard-page .workspace-dashboard-grid",
+      "property": "align-items",
+      "rules": [
+        {
+          "line": 282,
+          "value": "start"
+        },
+        {
+          "line": 477,
+          "value": "stretch"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": "body.workspace-shell-v131.sv-dashboard-page .workspace-dashboard-grid",
+      "property": "margin-bottom",
+      "rules": [
+        {
+          "line": 477,
+          "value": "34px"
+        },
+        {
+          "line": 1206,
+          "value": "18px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-about",
+      "property": "display",
+      "rules": [
+        {
+          "line": 786,
+          "value": "grid"
+        },
+        {
+          "line": 840,
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".sv-home-tools-menu",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 1105,
+          "value": "repeat(4,minmax(0,1fr))"
+        },
+        {
+          "line": 1506,
+          "value": "repeat(3,minmax(240px,1fr))"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".sv-home-tools-menu",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 1105,
+          "value": "28px"
+        },
+        {
+          "line": 1506,
+          "value": "18px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": "body[data-page=\"index.html\"] .workspace-topbar.sv-home-topbar,\nbody.sv-toolmenu-page .workspace-topbar.sv-home-topbar",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 1140,
+          "value": "18px"
+        },
+        {
+          "line": 1689,
+          "value": "20px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand",
+      "property": "width",
+      "rules": [
+        {
+          "line": 1557,
+          "value": "48px"
+        },
+        {
+          "line": 1716,
+          "value": "54px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 1557,
+          "value": "48px"
+        },
+        {
+          "line": 1716,
+          "value": "54px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a",
+      "property": "width",
+      "rules": [
+        {
+          "line": 1564,
+          "value": "46px"
+        },
+        {
+          "line": 1720,
+          "value": "52px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a",
+      "property": "max-width",
+      "rules": [
+        {
+          "line": 1564,
+          "value": "46px"
+        },
+        {
+          "line": 1720,
+          "value": "52px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 1564,
+          "value": "46px"
+        },
+        {
+          "line": 1720,
+          "value": "52px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a",
+      "property": "height",
+      "rules": [
+        {
+          "line": 1564,
+          "value": "44px"
+        },
+        {
+          "line": 1720,
+          "value": "52px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 1564,
+          "value": "5px 7px"
+        },
+        {
+          "line": 1720,
+          "value": "8px 9px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a",
+      "property": "border",
+      "rules": [
+        {
+          "line": 1564,
+          "value": "1px solid transparent"
+        },
+        {
+          "line": 1720,
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a",
+      "property": "background",
+      "rules": [
+        {
+          "line": 1564,
+          "value": "#fff"
+        },
+        {
+          "line": 1720,
+          "value": "transparent"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a:hover,\n.workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a:focus-visible",
+      "property": "width",
+      "rules": [
+        {
+          "line": 1580,
+          "value": "255px"
+        },
+        {
+          "line": 1730,
+          "value": "258px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a:hover,\n.workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a:focus-visible",
+      "property": "max-width",
+      "rules": [
+        {
+          "line": 1580,
+          "value": "255px"
+        },
+        {
+          "line": 1730,
+          "value": "258px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a:hover,\n.workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand>a:focus-visible",
+      "property": "box-shadow",
+      "rules": [
+        {
+          "line": 1580,
+          "value": "0 10px 26px rgba(15,23,42,.10)"
+        },
+        {
+          "line": 1730,
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand img",
+      "property": "width",
+      "rules": [
+        {
+          "line": 1587,
+          "value": "31px"
+        },
+        {
+          "line": 1738,
+          "value": "34px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand img",
+      "property": "height",
+      "rules": [
+        {
+          "line": 1587,
+          "value": "31px"
+        },
+        {
+          "line": 1738,
+          "value": "34px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand img",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 1587,
+          "value": "31px"
+        },
+        {
+          "line": 1738,
+          "value": "34px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-brand.sv-compact-brand img",
+      "property": "flex",
+      "rules": [
+        {
+          "line": 1587,
+          "value": "0 0 31px"
+        },
+        {
+          "line": 1738,
+          "value": "0 0 34px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-brand-copy",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 1590,
+          "value": "184px"
+        },
+        {
+          "line": 1744,
+          "value": "188px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-brand-copy strong",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 1602,
+          "value": "14px"
+        },
+        {
+          "line": 1747,
+          "value": "15px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-brand-copy small",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 1603,
+          "value": "9px"
+        },
+        {
+          "line": 1750,
+          "value": "9.5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-home-nav.sv-compact-nav",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 1605,
+          "value": "7px"
+        },
+        {
+          "line": 1755,
+          "value": "10px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-item.active",
+      "property": "background",
+      "rules": [
+        {
+          "line": 1637,
+          "value": "#edf5ff"
+        },
+        {
+          "line": 1780,
+          "value": "#fff"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-item.active",
+      "property": "border-color",
+      "rules": [
+        {
+          "line": 1637,
+          "value": "#b5d0f7"
+        },
+        {
+          "line": 1780,
+          "value": "#d8e2ef"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-item.active",
+      "property": "color",
+      "rules": [
+        {
+          "line": 1637,
+          "value": "#0a5fd7"
+        },
+        {
+          "line": 1780,
+          "value": "#0f2440"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-icon",
+      "property": "width",
+      "rules": [
+        {
+          "line": 1640,
+          "value": "20px"
+        },
+        {
+          "line": 1785,
+          "value": "21px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-icon",
+      "property": "height",
+      "rules": [
+        {
+          "line": 1640,
+          "value": "20px"
+        },
+        {
+          "line": 1785,
+          "value": "21px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-icon",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 1640,
+          "value": "20px"
+        },
+        {
+          "line": 1785,
+          "value": "21px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-icon",
+      "property": "flex",
+      "rules": [
+        {
+          "line": 1640,
+          "value": "0 0 20px"
+        },
+        {
+          "line": 1785,
+          "value": "0 0 21px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-icon svg",
+      "property": "width",
+      "rules": [
+        {
+          "line": 1643,
+          "value": "20px"
+        },
+        {
+          "line": 1791,
+          "value": "21px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-icon svg",
+      "property": "height",
+      "rules": [
+        {
+          "line": 1643,
+          "value": "20px"
+        },
+        {
+          "line": 1791,
+          "value": "21px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "selector": ".workspace-topbar.sv-home-topbar .sv-compact-nav-label",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 1646,
+          "value": "12px"
+        },
+        {
+          "line": 1795,
+          "value": "12.5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".customization-layout",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 42,
+          "value": "340px minmax(0,1fr)"
+        },
+        {
+          "line": 59,
+          "value": "minmax(280px,360px) minmax(0,1fr)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".document-preview",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 42,
+          "value": "360px"
+        },
+        {
+          "line": 59,
+          "value": "520px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".notification-center",
+      "property": "z-index",
+      "rules": [
+        {
+          "line": 55,
+          "value": "80"
+        },
+        {
+          "line": 307,
+          "value": "5000"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".notification-panel",
+      "property": "z-index",
+      "rules": [
+        {
+          "line": 55,
+          "value": "999"
+        },
+        {
+          "line": 311,
+          "value": "99999"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".notification-bell.has-unread",
+      "property": "border-color",
+      "rules": [
+        {
+          "line": 310,
+          "value": "#bfdbfe"
+        },
+        {
+          "line": 346,
+          "value": "#fecaca"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".notification-bell.has-unread",
+      "property": "background",
+      "rules": [
+        {
+          "line": 310,
+          "value": "#eff6ff"
+        },
+        {
+          "line": 346,
+          "value": "#fff1f2"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".notification-bell.has-unread",
+      "property": "color",
+      "rules": [
+        {
+          "line": 310,
+          "value": "#2563eb"
+        },
+        {
+          "line": 346,
+          "value": "#dc2626"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-layout",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 314,
+          "value": "minmax(320px,420px) minmax(620px,1fr)"
+        },
+        {
+          "line": 609,
+          "value": "minmax(500px,.86fr) minmax(740px,1.14fr)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-layout",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 314,
+          "value": "22px"
+        },
+        {
+          "line": 609,
+          "value": "20px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-form,\nbody[data-page=\"customizacao.html\"] .customization-preview-panel",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 324,
+          "value": "18px"
+        },
+        {
+          "line": 621,
+          "value": "14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-preview-panel",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 336,
+          "value": "calc(100vh - 160px)"
+        },
+        {
+          "line": 635,
+          "value": "calc(100vh - 150px)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .document-preview",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 338,
+          "value": "560px"
+        },
+        {
+          "line": 648,
+          "value": "720px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .document-preview",
+      "property": "max-height",
+      "rules": [
+        {
+          "line": 338,
+          "value": "none"
+        },
+        {
+          "line": 648,
+          "value": "calc(100vh - 210px)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .document-preview",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 338,
+          "value": "22px"
+        },
+        {
+          "line": 373,
+          "value": "26px"
+        },
+        {
+          "line": 648,
+          "value": "18px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .document-preview",
+      "property": "border",
+      "rules": [
+        {
+          "line": 338,
+          "value": "1px dashed #cfe0ff"
+        },
+        {
+          "line": 373,
+          "value": "1px solid #d5e2f3"
+        },
+        {
+          "line": 648,
+          "value": "1px solid #d5e2f3"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .document-preview",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 338,
+          "value": "16px"
+        },
+        {
+          "line": 373,
+          "value": "16px"
+        },
+        {
+          "line": 648,
+          "value": "14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": "body[data-page=\"customizacao.html\"] .document-preview",
+      "property": "background",
+      "rules": [
+        {
+          "line": 338,
+          "value": "linear-gradient(180deg,#fff,#fbfdff)"
+        },
+        {
+          "line": 373,
+          "value": "#edf3fb"
+        },
+        {
+          "line": 648,
+          "value": "#edf3fb"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".car-project-picker-simple",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 967,
+          "value": "minmax(260px,520px) minmax(0,1fr)"
+        },
+        {
+          "line": 1034,
+          "value": "minmax(260px,520px) minmax(0,1fr) auto"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".car-simple-tabs",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 969,
+          "value": "repeat(4,minmax(0,1fr))"
+        },
+        {
+          "line": 1021,
+          "value": "repeat(3,minmax(0,1fr))"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "selector": ".car-map-layer-row label",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 995,
+          "value": "auto minmax(0,1fr)"
+        },
+        {
+          "line": 1012,
+          "value": "auto auto minmax(0,1fr)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/ui.css",
+      "selector": ".project-card-preview .project-preview-tiles",
+      "property": "z-index",
+      "rules": [
+        {
+          "line": 2058,
+          "value": "0"
+        },
+        {
+          "line": 2520,
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/ui.css",
+      "selector": ".project-card-preview .project-cloud-pill",
+      "property": "z-index",
+      "rules": [
+        {
+          "line": 2061,
+          "value": "5"
+        },
+        {
+          "line": 2523,
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/ui.css",
+      "selector": "body.sv-toolmenu-page .sv-home-nav.sv-compact-nav>a,\nbody.sv-toolmenu-page .sv-home-nav.sv-compact-nav .sv-home-tools-btn,\nbody.sv-toolmenu-page .workspace-topbar-actions .sv-pwa-install-button,\nbody[data-page=\"index.html\"] .sv-home-nav.sv-compact-nav>a,\nbody[data-page=\"index.html\"] .sv-home-nav.sv-compact-nav .sv-home-tools-btn,\nbody[data-page=\"index.html\"] .workspace-topbar-actions .sv-pwa-install-button",
+      "property": "justify-content",
+      "rules": [
+        {
+          "line": 2973,
+          "value": "flex-start"
+        },
+        {
+          "line": 3189,
+          "value": "center"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/ui.css",
+      "selector": "body.sv-toolmenu-page .sv-home-nav.sv-compact-nav>a,\nbody.sv-toolmenu-page .sv-home-nav.sv-compact-nav .sv-home-tools-btn,\nbody.sv-toolmenu-page .workspace-topbar-actions .sv-pwa-install-button,\nbody[data-page=\"index.html\"] .sv-home-nav.sv-compact-nav>a,\nbody[data-page=\"index.html\"] .sv-home-nav.sv-compact-nav .sv-home-tools-btn,\nbody[data-page=\"index.html\"] .workspace-topbar-actions .sv-pwa-install-button",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 3023,
+          "value": "7px"
+        },
+        {
+          "line": 3189,
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head",
+      "property": "margin",
+      "rules": [
+        {
+          "line": 3,
+          "value": "0 auto 18px"
+        },
+        {
+          "line": 30,
+          "value": "0 auto 14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 3,
+          "value": "8px 0 0"
+        },
+        {
+          "line": 30,
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child",
+      "property": "padding-left",
+      "rules": [
+        {
+          "line": 4,
+          "value": "54px"
+        },
+        {
+          "line": 41,
+          "value": "56px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child:before",
+      "property": "top",
+      "rules": [
+        {
+          "line": 5,
+          "value": "0"
+        },
+        {
+          "line": 50,
+          "value": "50%"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child:before",
+      "property": "width",
+      "rules": [
+        {
+          "line": 5,
+          "value": "40px"
+        },
+        {
+          "line": 50,
+          "value": "44px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child:before",
+      "property": "height",
+      "rules": [
+        {
+          "line": 5,
+          "value": "40px"
+        },
+        {
+          "line": 50,
+          "value": "44px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child:before",
+      "property": "border",
+      "rules": [
+        {
+          "line": 5,
+          "value": "1px solid #dbe3ee"
+        },
+        {
+          "line": 50,
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child:before",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 5,
+          "value": "12px"
+        },
+        {
+          "line": 50,
+          "value": "13px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child:before",
+      "property": "background",
+      "rules": [
+        {
+          "line": 5,
+          "value": "#fff url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111827' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z'/%3E%3Cpath d='M14 2v5h5'/%3E%3Cpath d='m9 16 2-2 4 4'/%3E%3Cpath d='m13 14 3-3 2 2'/%3E%3C/svg%3E\") center/20px 20px no-repeat"
+        },
+        {
+          "line": 50,
+          "value": "transparent url(\"/assets/module-icons/assinatura-digital.svg\") center/44px 44px no-repeat"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head h1",
+      "property": "line-height",
+      "rules": [
+        {
+          "line": 6,
+          "value": "1.2"
+        },
+        {
+          "line": 61,
+          "value": "1.15"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head p",
+      "property": "margin",
+      "rules": [
+        {
+          "line": 7,
+          "value": "5px 0 0"
+        },
+        {
+          "line": 67,
+          "value": "3px 0 0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head p",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 7,
+          "value": "13px"
+        },
+        {
+          "line": 67,
+          "value": "12px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-search-intro",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 10,
+          "value": "52px minmax(0,1fr) auto"
+        },
+        {
+          "line": 136,
+          "value": "52px minmax(0,1fr)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-helper",
+      "property": "color",
+      "rules": [
+        {
+          "line": 33,
+          "value": "#728096"
+        },
+        {
+          "line": 137,
+          "value": "#64748b"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 35,
+          "value": "12px"
+        },
+        {
+          "line": 79,
+          "value": "10px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats",
+      "property": "margin",
+      "rules": [
+        {
+          "line": 35,
+          "value": "14px 0"
+        },
+        {
+          "line": 79,
+          "value": "0 0 15px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats article",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 36,
+          "value": "82px"
+        },
+        {
+          "line": 80,
+          "value": "96px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats article",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 36,
+          "value": "14px"
+        },
+        {
+          "line": 80,
+          "value": "15px 14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats article",
+      "property": "align-items",
+      "rules": [
+        {
+          "line": 36,
+          "value": "center"
+        },
+        {
+          "line": 145,
+          "value": "flex-start"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats article",
+      "property": "box-shadow",
+      "rules": [
+        {
+          "line": 36,
+          "value": "0 6px 18px rgba(15,23,42,.035)"
+        },
+        {
+          "line": 80,
+          "value": "0 7px 22px rgba(15,23,42,.04)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats strong",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 37,
+          "value": "17px"
+        },
+        {
+          "line": 84,
+          "value": "19px"
+        },
+        {
+          "line": 147,
+          "value": "18px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats small",
+      "property": "margin-top",
+      "rules": [
+        {
+          "line": 37,
+          "value": "4px"
+        },
+        {
+          "line": 84,
+          "value": "5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats small",
+      "property": "color",
+      "rules": [
+        {
+          "line": 37,
+          "value": "#6b7a90"
+        },
+        {
+          "line": 84,
+          "value": "#43536a"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".metric-icon",
+      "property": "width",
+      "rules": [
+        {
+          "line": 38,
+          "value": "34px"
+        },
+        {
+          "line": 85,
+          "value": "38px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".metric-icon",
+      "property": "height",
+      "rules": [
+        {
+          "line": 38,
+          "value": "34px"
+        },
+        {
+          "line": 85,
+          "value": "38px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".metric-icon",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 38,
+          "value": "10px"
+        },
+        {
+          "line": 85,
+          "value": "12px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".metric-icon",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 38,
+          "value": "16px"
+        },
+        {
+          "line": 85,
+          "value": "17px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-workspace",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 40,
+          "value": "minmax(0,1.55fr) minmax(360px,.8fr)"
+        },
+        {
+          "line": 140,
+          "value": "1fr"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".legend-car",
+      "property": "background",
+      "rules": [
+        {
+          "line": 46,
+          "value": "#0f62e8"
+        },
+        {
+          "line": 128,
+          "value": "#1261d8"
+        },
+        {
+          "line": 186,
+          "value": "#1261d8"
+        },
+        {
+          "line": 241,
+          "value": "#0b63f6"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".legend-public",
+      "property": "background",
+      "rules": [
+        {
+          "line": 46,
+          "value": "#22a55b"
+        },
+        {
+          "line": 128,
+          "value": "#cbd5e1"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-results-card",
+      "property": "max-height",
+      "rules": [
+        {
+          "line": 48,
+          "value": "555px"
+        },
+        {
+          "line": 95,
+          "value": "625px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-result-body",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 49,
+          "value": "390px"
+        },
+        {
+          "line": 96,
+          "value": "450px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-result-item",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 50,
+          "value": "12px"
+        },
+        {
+          "line": 125,
+          "value": "11px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-result-item-head strong",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 51,
+          "value": "11px"
+        },
+        {
+          "line": 125,
+          "value": "9.5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats-context",
+      "property": "color",
+      "rules": [
+        {
+          "line": 77,
+          "value": "#4d6684"
+        },
+        {
+          "line": 173,
+          "value": "#205a9e"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats em",
+      "property": "color",
+      "rules": [
+        {
+          "line": 84,
+          "value": "#91a0b3"
+        },
+        {
+          "line": 149,
+          "value": "#748399"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-stats em",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 84,
+          "value": "8px"
+        },
+        {
+          "line": 149,
+          "value": "8.5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".legend-rural",
+      "property": "background",
+      "rules": [
+        {
+          "line": 185,
+          "value": "#d9df00"
+        },
+        {
+          "line": 240,
+          "value": "#f3df00"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".legend-rural",
+      "property": "border",
+      "rules": [
+        {
+          "line": 185,
+          "value": "1px solid #a6ad00"
+        },
+        {
+          "line": 240,
+          "value": "1px solid #c4b400"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "selector": ".consulta-car-popup-card",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 189,
+          "value": "205px"
+        },
+        {
+          "line": 245,
+          "value": "220px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-grid",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 60,
+          "value": "repeat(2,minmax(0,1fr))"
+        },
+        {
+          "line": 610,
+          "value": "repeat(3,minmax(0,1fr))"
+        },
+        {
+          "line": 1158,
+          "value": "repeat(3,minmax(0,1fr))"
+        },
+        {
+          "line": 1285,
+          "value": "repeat(2,minmax(330px,1fr))"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-grid",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 60,
+          "value": "12px"
+        },
+        {
+          "line": 610,
+          "value": "18px"
+        },
+        {
+          "line": 811,
+          "value": "14px"
+        },
+        {
+          "line": 952,
+          "value": "14px"
+        },
+        {
+          "line": 1158,
+          "value": "14px"
+        },
+        {
+          "line": 1285,
+          "value": "16px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 66,
+          "value": "44px minmax(0,1fr) auto"
+        },
+        {
+          "line": 370,
+          "value": "48px minmax(0,1fr)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card",
+      "property": "grid-template-areas",
+      "rules": [
+        {
+          "line": 66,
+          "value": "\"icon content status\"\n    \"icon progress progress\""
+        },
+        {
+          "line": 370,
+          "value": "\"icon content\"\n    \"icon status\"\n    \"progress progress\""
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 66,
+          "value": "104px"
+        },
+        {
+          "line": 370,
+          "value": "126px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 66,
+          "value": "15px 16px"
+        },
+        {
+          "line": 370,
+          "value": "16px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card:hover,\nbody[data-page=\"customizacao.html\"] .custom-target-card:focus-visible",
+      "property": "transform",
+      "rules": [
+        {
+          "line": 85,
+          "value": "translateY(-2px)"
+        },
+        {
+          "line": 644,
+          "value": "translateY(-2px)"
+        },
+        {
+          "line": 878,
+          "value": "translateY(-1px)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card:hover,\nbody[data-page=\"customizacao.html\"] .custom-target-card:focus-visible",
+      "property": "border-color",
+      "rules": [
+        {
+          "line": 85,
+          "value": "#67a0ff"
+        },
+        {
+          "line": 644,
+          "value": "#cfe0fb"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card:hover,\nbody[data-page=\"customizacao.html\"] .custom-target-card:focus-visible",
+      "property": "box-shadow",
+      "rules": [
+        {
+          "line": 85,
+          "value": "0 14px 28px rgba(15,91,220,.10)"
+        },
+        {
+          "line": 644,
+          "value": "0 14px 32px rgba(37,99,235,.08)"
+        },
+        {
+          "line": 878,
+          "value": "0 10px 22px rgba(37,99,235,.07)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card.active",
+      "property": "background",
+      "rules": [
+        {
+          "line": 92,
+          "value": "#eef5ff"
+        },
+        {
+          "line": 650,
+          "value": "#f8fbff"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card.active",
+      "property": "border-color",
+      "rules": [
+        {
+          "line": 92,
+          "value": "#0f5bdc"
+        },
+        {
+          "line": 650,
+          "value": "#93c5fd"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-step",
+      "property": "display",
+      "rules": [
+        {
+          "line": 387,
+          "value": "inline-flex"
+        },
+        {
+          "line": 655,
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon",
+      "property": "width",
+      "rules": [
+        {
+          "line": 404,
+          "value": "48px"
+        },
+        {
+          "line": 658,
+          "value": "60px"
+        },
+        {
+          "line": 829,
+          "value": "52px"
+        },
+        {
+          "line": 969,
+          "value": "48px"
+        },
+        {
+          "line": 1079,
+          "value": "46px"
+        },
+        {
+          "line": 1187,
+          "value": "46px"
+        },
+        {
+          "line": 1306,
+          "value": "52px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon",
+      "property": "height",
+      "rules": [
+        {
+          "line": 404,
+          "value": "48px"
+        },
+        {
+          "line": 658,
+          "value": "60px"
+        },
+        {
+          "line": 829,
+          "value": "52px"
+        },
+        {
+          "line": 969,
+          "value": "48px"
+        },
+        {
+          "line": 1079,
+          "value": "46px"
+        },
+        {
+          "line": 1187,
+          "value": "46px"
+        },
+        {
+          "line": 1306,
+          "value": "52px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 404,
+          "value": "48px"
+        },
+        {
+          "line": 658,
+          "value": "60px"
+        },
+        {
+          "line": 829,
+          "value": "52px"
+        },
+        {
+          "line": 969,
+          "value": "48px"
+        },
+        {
+          "line": 1079,
+          "value": "46px"
+        },
+        {
+          "line": 1187,
+          "value": "46px"
+        },
+        {
+          "line": 1306,
+          "value": "52px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon",
+      "property": "border",
+      "rules": [
+        {
+          "line": 404,
+          "value": "1px solid #c7dafd"
+        },
+        {
+          "line": 658,
+          "value": "0"
+        },
+        {
+          "line": 1187,
+          "value": "1px solid #e3e8ef"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 404,
+          "value": "14px"
+        },
+        {
+          "line": 658,
+          "value": "18px"
+        },
+        {
+          "line": 829,
+          "value": "16px"
+        },
+        {
+          "line": 969,
+          "value": "14px"
+        },
+        {
+          "line": 1187,
+          "value": "13px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon",
+      "property": "background",
+      "rules": [
+        {
+          "line": 404,
+          "value": "#edf4ff"
+        },
+        {
+          "line": 658,
+          "value": "#eff6ff"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon",
+      "property": "color",
+      "rules": [
+        {
+          "line": 404,
+          "value": "#0f5bdc"
+        },
+        {
+          "line": 658,
+          "value": "transparent"
+        },
+        {
+          "line": 1187,
+          "value": "transparent"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content",
+      "property": "display",
+      "rules": [
+        {
+          "line": 422,
+          "value": "block"
+        },
+        {
+          "line": 1090,
+          "value": "grid"
+        },
+        {
+          "line": 1218,
+          "value": "grid"
+        },
+        {
+          "line": 1315,
+          "value": "flex"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > b",
+      "property": "margin",
+      "rules": [
+        {
+          "line": 428,
+          "value": "0 0 5px"
+        },
+        {
+          "line": 701,
+          "value": "0 0 8px"
+        },
+        {
+          "line": 842,
+          "value": "0 0 6px"
+        },
+        {
+          "line": 982,
+          "value": "0 0 5px"
+        },
+        {
+          "line": 1100,
+          "value": "0"
+        },
+        {
+          "line": 1225,
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > b",
+      "property": "color",
+      "rules": [
+        {
+          "line": 428,
+          "value": "#334155"
+        },
+        {
+          "line": 701,
+          "value": "#0f172a"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > b",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 428,
+          "value": "15px"
+        },
+        {
+          "line": 701,
+          "value": "16px"
+        },
+        {
+          "line": 842,
+          "value": "14px"
+        },
+        {
+          "line": 982,
+          "value": "14px"
+        },
+        {
+          "line": 1100,
+          "value": "14px"
+        },
+        {
+          "line": 1225,
+          "value": "14px"
+        },
+        {
+          "line": 1343,
+          "value": "15px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > b",
+      "property": "line-height",
+      "rules": [
+        {
+          "line": 428,
+          "value": "1.25"
+        },
+        {
+          "line": 701,
+          "value": "1.25"
+        },
+        {
+          "line": 842,
+          "value": "1.22"
+        },
+        {
+          "line": 982,
+          "value": "1.25"
+        },
+        {
+          "line": 1100,
+          "value": "1.22"
+        },
+        {
+          "line": 1225,
+          "value": "1.28"
+        },
+        {
+          "line": 1343,
+          "value": "1.28"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > span",
+      "property": "display",
+      "rules": [
+        {
+          "line": 435,
+          "value": "block"
+        },
+        {
+          "line": 848,
+          "value": "-webkit-box"
+        },
+        {
+          "line": 1105,
+          "value": "-webkit-box"
+        },
+        {
+          "line": 1230,
+          "value": "-webkit-box"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > span",
+      "property": "color",
+      "rules": [
+        {
+          "line": 435,
+          "value": "#64748b"
+        },
+        {
+          "line": 708,
+          "value": "#64748b"
+        },
+        {
+          "line": 848,
+          "value": "#6b7280"
+        },
+        {
+          "line": 1230,
+          "value": "#64748b"
+        },
+        {
+          "line": 1348,
+          "value": "#64748b"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > span",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 435,
+          "value": "12px"
+        },
+        {
+          "line": 708,
+          "value": "13px"
+        },
+        {
+          "line": 848,
+          "value": "12px"
+        },
+        {
+          "line": 988,
+          "value": "12px"
+        },
+        {
+          "line": 1105,
+          "value": "12px"
+        },
+        {
+          "line": 1230,
+          "value": "11.5px"
+        },
+        {
+          "line": 1348,
+          "value": "12px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > span",
+      "property": "line-height",
+      "rules": [
+        {
+          "line": 435,
+          "value": "1.42"
+        },
+        {
+          "line": 708,
+          "value": "1.45"
+        },
+        {
+          "line": 848,
+          "value": "1.38"
+        },
+        {
+          "line": 988,
+          "value": "1.38"
+        },
+        {
+          "line": 1105,
+          "value": "1.35"
+        },
+        {
+          "line": 1230,
+          "value": "1.42"
+        },
+        {
+          "line": 1348,
+          "value": "1.48"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 442,
+          "value": "7px"
+        },
+        {
+          "line": 857,
+          "value": "6px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 442,
+          "value": "27px"
+        },
+        {
+          "line": 713,
+          "value": "28px"
+        },
+        {
+          "line": 857,
+          "value": "24px"
+        },
+        {
+          "line": 992,
+          "value": "25px"
+        },
+        {
+          "line": 1240,
+          "value": "24px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status",
+      "property": "margin",
+      "rules": [
+        {
+          "line": 442,
+          "value": "0"
+        },
+        {
+          "line": 1240,
+          "value": "1px 0 0"
+        },
+        {
+          "line": 1356,
+          "value": "1px 0 0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 442,
+          "value": "4px 9px"
+        },
+        {
+          "line": 713,
+          "value": "4px 10px"
+        },
+        {
+          "line": 857,
+          "value": "3px 9px"
+        },
+        {
+          "line": 992,
+          "value": "3px 9px"
+        },
+        {
+          "line": 1240,
+          "value": "3px 9px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status",
+      "property": "background",
+      "rules": [
+        {
+          "line": 442,
+          "value": "#fff7f7"
+        },
+        {
+          "line": 713,
+          "value": "#effcf3"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status",
+      "property": "color",
+      "rules": [
+        {
+          "line": 442,
+          "value": "#991b1b"
+        },
+        {
+          "line": 713,
+          "value": "#15803d"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status::before",
+      "property": "width",
+      "rules": [
+        {
+          "line": 460,
+          "value": "7px"
+        },
+        {
+          "line": 863,
+          "value": "6px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status::before",
+      "property": "height",
+      "rules": [
+        {
+          "line": 460,
+          "value": "7px"
+        },
+        {
+          "line": 863,
+          "value": "6px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status::before",
+      "property": "background",
+      "rules": [
+        {
+          "line": 460,
+          "value": "#dc2626"
+        },
+        {
+          "line": 722,
+          "value": "#16a34a"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 476,
+          "value": "minmax(0,1fr) auto"
+        },
+        {
+          "line": 1248,
+          "value": "minmax(0,1fr) 30px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 476,
+          "value": "9px"
+        },
+        {
+          "line": 733,
+          "value": "12px"
+        },
+        {
+          "line": 868,
+          "value": "10px"
+        },
+        {
+          "line": 997,
+          "value": "10px"
+        },
+        {
+          "line": 1248,
+          "value": "10px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress",
+      "property": "margin-top",
+      "rules": [
+        {
+          "line": 476,
+          "value": "2px"
+        },
+        {
+          "line": 733,
+          "value": "auto"
+        },
+        {
+          "line": 1119,
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress > .custom-target-progress-bar",
+      "property": "height",
+      "rules": [
+        {
+          "line": 485,
+          "value": "7px"
+        },
+        {
+          "line": 737,
+          "value": "6px"
+        },
+        {
+          "line": 871,
+          "value": "5px"
+        },
+        {
+          "line": 1000,
+          "value": "5px"
+        },
+        {
+          "line": 1258,
+          "value": "5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress > .custom-target-progress-bar",
+      "property": "background",
+      "rules": [
+        {
+          "line": 485,
+          "value": "#e2e8f0"
+        },
+        {
+          "line": 737,
+          "value": "#e5e7eb"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress > small",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 498,
+          "value": "34px"
+        },
+        {
+          "line": 874,
+          "value": "30px"
+        },
+        {
+          "line": 1003,
+          "value": "26px"
+        },
+        {
+          "line": 1263,
+          "value": "30px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress > small",
+      "property": "color",
+      "rules": [
+        {
+          "line": 498,
+          "value": "#475569"
+        },
+        {
+          "line": 747,
+          "value": "#0f172a"
+        },
+        {
+          "line": 1263,
+          "value": "#0f172a"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress > small",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 498,
+          "value": "11px"
+        },
+        {
+          "line": 874,
+          "value": "10px"
+        },
+        {
+          "line": 1003,
+          "value": "10.5px"
+        },
+        {
+          "line": 1263,
+          "value": "10.5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-progress > small",
+      "property": "font-weight",
+      "rules": [
+        {
+          "line": 498,
+          "value": "850"
+        },
+        {
+          "line": 747,
+          "value": "900"
+        },
+        {
+          "line": 1263,
+          "value": "800"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-chooser",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 545,
+          "value": "18px"
+        },
+        {
+          "line": 920,
+          "value": "14px"
+        },
+        {
+          "line": 1149,
+          "value": "16px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-progress-summary",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 548,
+          "value": "104px minmax(0,1fr) auto"
+        },
+        {
+          "line": 783,
+          "value": "84px minmax(0,1fr) auto"
+        },
+        {
+          "line": 923,
+          "value": "86px minmax(0,1fr) auto"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-progress-summary",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 548,
+          "value": "24px"
+        },
+        {
+          "line": 783,
+          "value": "18px"
+        },
+        {
+          "line": 923,
+          "value": "18px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-progress-summary",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 548,
+          "value": "22px 24px"
+        },
+        {
+          "line": 783,
+          "value": "18px 20px"
+        },
+        {
+          "line": 923,
+          "value": "18px 20px"
+        },
+        {
+          "line": 1154,
+          "value": "18px 20px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-progress-summary",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 548,
+          "value": "22px"
+        },
+        {
+          "line": 783,
+          "value": "18px"
+        },
+        {
+          "line": 923,
+          "value": "18px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] #customizationProgressLabel",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 563,
+          "value": "15px"
+        },
+        {
+          "line": 795,
+          "value": "14px"
+        },
+        {
+          "line": 929,
+          "value": "14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] #customizationProgressHeadline",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 570,
+          "value": "18px"
+        },
+        {
+          "line": 798,
+          "value": "17px"
+        },
+        {
+          "line": 932,
+          "value": "16px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] #customizationProgressText",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 578,
+          "value": "14px"
+        },
+        {
+          "line": 801,
+          "value": "13px"
+        },
+        {
+          "line": 935,
+          "value": "13px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] #customizationProgressText",
+      "property": "line-height",
+      "rules": [
+        {
+          "line": 578,
+          "value": "1.5"
+        },
+        {
+          "line": 935,
+          "value": "1.4"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] #customizationProgressOutput",
+      "property": "width",
+      "rules": [
+        {
+          "line": 585,
+          "value": "96px"
+        },
+        {
+          "line": 789,
+          "value": "84px"
+        },
+        {
+          "line": 939,
+          "value": "78px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] #customizationProgressOutput",
+      "property": "height",
+      "rules": [
+        {
+          "line": 585,
+          "value": "96px"
+        },
+        {
+          "line": 789,
+          "value": "84px"
+        },
+        {
+          "line": 939,
+          "value": "78px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] #customizationProgressOutput",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 585,
+          "value": "96px"
+        },
+        {
+          "line": 789,
+          "value": "84px"
+        },
+        {
+          "line": 939,
+          "value": "78px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] #customizationProgressOutput",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 585,
+          "value": "24px"
+        },
+        {
+          "line": 789,
+          "value": "20px"
+        },
+        {
+          "line": 939,
+          "value": "20px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-review-btn",
+      "property": "min-width",
+      "rules": [
+        {
+          "line": 602,
+          "value": "148px"
+        },
+        {
+          "line": 804,
+          "value": "132px"
+        },
+        {
+          "line": 945,
+          "value": "124px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-review-btn",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 602,
+          "value": "46px"
+        },
+        {
+          "line": 804,
+          "value": "40px"
+        },
+        {
+          "line": 945,
+          "value": "40px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-review-btn",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 602,
+          "value": "0 18px"
+        },
+        {
+          "line": 804,
+          "value": "0 16px"
+        },
+        {
+          "line": 945,
+          "value": "0 14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .customization-review-btn",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 602,
+          "value": "14px"
+        },
+        {
+          "line": 804,
+          "value": "12px"
+        },
+        {
+          "line": 945,
+          "value": "12px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 614,
+          "value": "178px"
+        },
+        {
+          "line": 814,
+          "value": "154px"
+        },
+        {
+          "line": 955,
+          "value": "150px"
+        },
+        {
+          "line": 1058,
+          "value": "146px"
+        },
+        {
+          "line": 1162,
+          "value": "138px"
+        },
+        {
+          "line": 1290,
+          "value": "150px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 614,
+          "value": "22px 22px 18px"
+        },
+        {
+          "line": 814,
+          "value": "18px 18px 16px"
+        },
+        {
+          "line": 955,
+          "value": "18px 18px 14px"
+        },
+        {
+          "line": 1058,
+          "value": "16px 40px 14px 16px"
+        },
+        {
+          "line": 1162,
+          "value": "16px 42px 14px 16px"
+        },
+        {
+          "line": 1290,
+          "value": "18px 44px 16px 18px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 614,
+          "value": "22px"
+        },
+        {
+          "line": 814,
+          "value": "18px"
+        },
+        {
+          "line": 955,
+          "value": "18px"
+        },
+        {
+          "line": 1162,
+          "value": "16px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "box-shadow",
+      "rules": [
+        {
+          "line": 614,
+          "value": "0 10px 24px rgba(15,23,42,.05)"
+        },
+        {
+          "line": 814,
+          "value": "0 8px 20px rgba(15,23,42,.045)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 614,
+          "value": "66px minmax(0,1fr) 16px"
+        },
+        {
+          "line": 814,
+          "value": "56px minmax(0,1fr) 12px"
+        },
+        {
+          "line": 955,
+          "value": "54px minmax(0,1fr) 14px"
+        },
+        {
+          "line": 1058,
+          "value": "48px minmax(0,1fr)"
+        },
+        {
+          "line": 1162,
+          "value": "48px minmax(0,1fr)"
+        },
+        {
+          "line": 1290,
+          "value": "58px minmax(0,1fr)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "grid-template-areas",
+      "rules": [
+        {
+          "line": 614,
+          "value": "\"icon content arrow\"\n    \"status status status\"\n    \"progress progress progress\""
+        },
+        {
+          "line": 1058,
+          "value": "\"icon content\"\n    \"status status\"\n    \"progress progress\""
+        },
+        {
+          "line": 1162,
+          "value": "\"icon content\"\n    \"status status\"\n    \"progress progress\""
+        },
+        {
+          "line": 1290,
+          "value": "\"icon content\"\n    \"status status\"\n    \"progress progress\""
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "row-gap",
+      "rules": [
+        {
+          "line": 614,
+          "value": "14px"
+        },
+        {
+          "line": 814,
+          "value": "12px"
+        },
+        {
+          "line": 955,
+          "value": "10px"
+        },
+        {
+          "line": 1162,
+          "value": "9px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "column-gap",
+      "rules": [
+        {
+          "line": 614,
+          "value": "18px"
+        },
+        {
+          "line": 814,
+          "value": "14px"
+        },
+        {
+          "line": 955,
+          "value": "14px"
+        },
+        {
+          "line": 1162,
+          "value": "14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card::after",
+      "property": "margin-top",
+      "rules": [
+        {
+          "line": 633,
+          "value": "4px"
+        },
+        {
+          "line": 825,
+          "value": "2px"
+        },
+        {
+          "line": 965,
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card::after",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 633,
+          "value": "32px"
+        },
+        {
+          "line": 825,
+          "value": "26px"
+        },
+        {
+          "line": 965,
+          "value": "26px"
+        },
+        {
+          "line": 1069,
+          "value": "24px"
+        },
+        {
+          "line": 1177,
+          "value": "20px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card.active",
+      "property": "box-shadow",
+      "rules": [
+        {
+          "line": 650,
+          "value": "0 16px 32px rgba(37,99,235,.10)"
+        },
+        {
+          "line": 883,
+          "value": "0 12px 24px rgba(37,99,235,.08)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon::before",
+      "property": "display",
+      "rules": [
+        {
+          "line": 671,
+          "value": "grid"
+        },
+        {
+          "line": 1204,
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-icon::before",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 671,
+          "value": "29px"
+        },
+        {
+          "line": 835,
+          "value": "24px"
+        },
+        {
+          "line": 975,
+          "value": "23px"
+        },
+        {
+          "line": 1087,
+          "value": "22px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > b",
+      "property": "font-weight",
+      "rules": [
+        {
+          "line": 701,
+          "value": "900"
+        },
+        {
+          "line": 842,
+          "value": "850"
+        },
+        {
+          "line": 1343,
+          "value": "850"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-status",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 713,
+          "value": "11px"
+        },
+        {
+          "line": 857,
+          "value": "10px"
+        },
+        {
+          "line": 992,
+          "value": "10.5px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .document-picker-summary",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 751,
+          "value": "18px"
+        },
+        {
+          "line": 1007,
+          "value": "16px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .main > header.top h1",
+      "property": "font-size",
+      "rules": [
+        {
+          "line": 772,
+          "value": "22px"
+        },
+        {
+          "line": 910,
+          "value": "20px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .panel.customization-layout",
+      "property": "max-width",
+      "rules": [
+        {
+          "line": 780,
+          "value": "1320px"
+        },
+        {
+          "line": 917,
+          "value": "1280px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card,\nbody[data-page=\"customizacao.html\"] .custom-target-card.is-featured",
+      "property": "overflow",
+      "rules": [
+        {
+          "line": 814,
+          "value": "hidden"
+        },
+        {
+          "line": 955,
+          "value": "visible"
+        },
+        {
+          "line": 1162,
+          "value": "hidden"
+        },
+        {
+          "line": 1290,
+          "value": "hidden"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > span",
+      "property": "-webkit-box-orient",
+      "rules": [
+        {
+          "line": 848,
+          "value": "vertical"
+        },
+        {
+          "line": 1105,
+          "value": "vertical"
+        },
+        {
+          "line": 1230,
+          "value": "vertical"
+        },
+        {
+          "line": 1348,
+          "value": "initial"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > span",
+      "property": "-webkit-line-clamp",
+      "rules": [
+        {
+          "line": 848,
+          "value": "2"
+        },
+        {
+          "line": 1105,
+          "value": "2"
+        },
+        {
+          "line": 1230,
+          "value": "2"
+        },
+        {
+          "line": 1348,
+          "value": "unset"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content > span",
+      "property": "overflow",
+      "rules": [
+        {
+          "line": 848,
+          "value": "hidden"
+        },
+        {
+          "line": 1105,
+          "value": "hidden"
+        },
+        {
+          "line": 1230,
+          "value": "hidden"
+        },
+        {
+          "line": 1348,
+          "value": "visible"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .document-picker-summary",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 1007,
+          "value": "14px 16px"
+        },
+        {
+          "line": 1369,
+          "value": "15px 18px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card::after",
+      "property": "right",
+      "rules": [
+        {
+          "line": 1069,
+          "value": "16px"
+        },
+        {
+          "line": 1177,
+          "value": "15px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card::after",
+      "property": "bottom",
+      "rules": [
+        {
+          "line": 1069,
+          "value": "14px"
+        },
+        {
+          "line": 1177,
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card::after",
+      "property": "top",
+      "rules": [
+        {
+          "line": 1069,
+          "value": "auto"
+        },
+        {
+          "line": 1177,
+          "value": "17px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content",
+      "property": "gap",
+      "rules": [
+        {
+          "line": 1090,
+          "value": "4px"
+        },
+        {
+          "line": 1218,
+          "value": "5px"
+        },
+        {
+          "line": 1315,
+          "value": "6px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content",
+      "property": "padding",
+      "rules": [
+        {
+          "line": 1090,
+          "value": "0"
+        },
+        {
+          "line": 1218,
+          "value": "0 6px 0 0"
+        },
+        {
+          "line": 1315,
+          "value": "1px 4px 0 0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "selector": "body[data-page=\"customizacao.html\"] .custom-target-card > .custom-target-content",
+      "property": "overflow",
+      "rules": [
+        {
+          "line": 1218,
+          "value": "visible"
+        },
+        {
+          "line": 1315,
+          "value": "hidden"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/earth-3d/earth-3d.css",
+      "selector": "body.embedded .earth-toolbar",
+      "property": "border-radius",
+      "rules": [
+        {
+          "line": 136,
+          "value": "0"
+        },
+        {
+          "line": 246,
+          "value": "14px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/earth-3d/earth-3d.css",
+      "selector": "body.embedded .earth-help",
+      "property": "bottom",
+      "rules": [
+        {
+          "line": 137,
+          "value": "8px"
+        },
+        {
+          "line": 262,
+          "value": "10px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/earth-3d/earth-3d.css",
+      "selector": "body.embedded .earth-status",
+      "property": "bottom",
+      "rules": [
+        {
+          "line": 138,
+          "value": "8px"
+        },
+        {
+          "line": 263,
+          "value": "10px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/mapa/layer-location.css",
+      "selector": "#layerCatalogDialog .catalog-state-browser.layers-visible",
+      "property": "grid-template-columns",
+      "rules": [
+        {
+          "line": 35,
+          "value": "minmax(300px,36%) minmax(360px,1fr) 300px"
+        },
+        {
+          "line": 222,
+          "value": "minmax(360px,1fr) minmax(280px,380px) 300px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/mapa/layer-location.css",
+      "selector": "body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-list",
+      "property": "height",
+      "rules": [
+        {
+          "line": 52,
+          "value": "100%"
+        },
+        {
+          "line": 110,
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/mapa/layer-location.css",
+      "selector": "body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer",
+      "property": "min-height",
+      "rules": [
+        {
+          "line": 115,
+          "value": "50px"
+        },
+        {
+          "line": 224,
+          "value": "36px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/mapa/layer-location.css",
+      "selector": "body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer",
+      "property": "justify-content",
+      "rules": [
+        {
+          "line": 115,
+          "value": "space-between"
+        },
+        {
+          "line": 224,
+          "value": "flex-start"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/mapa/layer-location.css",
+      "selector": "body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer .catalog-footer-actions",
+      "property": "display",
+      "rules": [
+        {
+          "line": 129,
+          "value": "flex"
+        },
+        {
+          "line": 229,
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/mapa/territorial-navigator.css",
+      "selector": "body[data-page=\"mapa.html\"].surveyor-territorial-mode .sv-map-search-host #coordSearch",
+      "property": "background",
+      "rules": [
+        {
+          "line": 146,
+          "value": "#fff"
+        },
+        {
+          "line": 260,
+          "value": "rgba(255,255,255,.88)"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/memorial/memorial-preview.css",
+      "selector": ".memorial-pdf-preview-error",
+      "property": "color",
+      "rules": [
+        {
+          "line": 55,
+          "value": "#475569"
+        },
+        {
+          "line": 69,
+          "value": "#b91c1c"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/public-project/public-project.css",
+      "selector": ".public-header",
+      "property": "background",
+      "rules": [
+        {
+          "line": 1,
+          "value": "#173b76"
+        },
+        {
+          "line": 5,
+          "value": "#fff"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/public-project/public-project.css",
+      "selector": ".public-header",
+      "property": "color",
+      "rules": [
+        {
+          "line": 1,
+          "value": "#fff"
+        },
+        {
+          "line": 5,
+          "value": "#0f243f"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/public-project/public-project.css",
+      "selector": ".public-sidebar",
+      "property": "background",
+      "rules": [
+        {
+          "line": 1,
+          "value": "#fff"
+        },
+        {
+          "line": 5,
+          "value": "#eaf2ff"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/public-project/public-project.css",
+      "selector": ".public-sidebar",
+      "property": "border-right",
+      "rules": [
+        {
+          "line": 1,
+          "value": "1px solid #cbd5e1"
+        },
+        {
+          "line": 5,
+          "value": "1px solid #d7e2f1"
+        }
+      ]
+    },
+    {
+      "file": "assets/home-hero.css",
+      "selector": "body[data-page=\"index.html\"]",
+      "property": "height",
+      "rules": [
+        {
+          "line": 13,
+          "value": "100vh"
+        },
+        {
+          "line": 13,
+          "value": "100dvh"
+        }
+      ]
+    },
+    {
+      "file": "assets/home-hero.css",
+      "selector": "body[data-page=\"index.html\"] .home-suite,\nbody[data-page=\"index.html\"] .suite,\nbody[data-page=\"index.html\"] .workspace-main,\nbody[data-page=\"index.html\"] .main",
+      "property": "height",
+      "rules": [
+        {
+          "line": 22,
+          "value": "100vh"
+        },
+        {
+          "line": 22,
+          "value": "100dvh"
+        }
+      ]
+    }
+  ]
+}

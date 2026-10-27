@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin>
+  <link rel="dns-prefetch" href="//api.surveyorr.com.br">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' https:; manifest-src 'self'; upgrade-insecure-requests">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#082653">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <title>Entrar — Surveyor</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="/assets/css/core/login.css?v=1.0.0-rc.185.74">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script>
+</head>
+<body data-page="login.html" class="login-page login-page-surveyor">
+  <div id="loginLoadingOverlay" class="login-loading-overlay is-visible" role="status" aria-label="Carregando" aria-live="polite" aria-busy="true">
+    <div class="login-loading-card" aria-hidden="true">
+      <span class="login-loading-spinner"></span>
+    </div>
+  </div>
+
+  <div class="login-page-shell">
+    <header class="login-site-header">
+      <div class="login-header-inner">
+        <a class="login-brand" href="/" aria-label="Surveyor — Página inicial">
+          <img class="login-brand-wordmark" src="/assets/nome.png?v=1.0.0-rc.185.74" alt="SURVEYOR">
+        </a>
+        <nav class="login-header-nav" aria-label="Links institucionais">
+          <a href="https://loja.surveyorr.com.br/">Planos e preços</a>
+          <a href="/suporte/">Ajuda</a>
+          <a href="/privacidade/">Privacidade</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="login-main">
+      <section class="login-auth-card" aria-labelledby="loginTitle">
+        <div class="login-card-inner">
+          <div class="login-logo" aria-hidden="true">
+            <img src="/assets/nome.png?v=1.0.0-rc.185.74" alt="">
+          </div>
+
+          <div class="login-default-content">
+            <h1 id="loginTitle">Entre na sua conta</h1>
+            <p class="login-subtitle">Use seu e-mail e senha para acessar o Surveyor.</p>
+
+            <form id="loginForm" class="login-form" novalidate>
+              <label class="login-field" for="loginEmail">
+                <span>E-mail</span>
+                <input id="loginEmail" type="email" autocomplete="username" required placeholder="voce@empresa.com">
+              </label>
+
+              <label class="login-field" for="loginPassword">
+                <span>Senha</span>
+                <span class="login-password-wrap">
+                  <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Sua senha">
+                  <button id="toggleLoginPassword" class="login-password-toggle" type="button" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
+                </span>
+              </label>
+
+              <div class="login-password-row">
+                <button id="forgotPasswordButton" class="login-forgot-password" type="button">Esqueci minha senha</button>
+              </div>
+
+              <button class="btn primary login-submit" type="submit">Entrar</button>
+            </form>
+
+            <p class="login-terms-note">Ao continuar, você concorda com os <a href="/termos/">Termos de Uso</a> e a <a href="/privacidade/">Política de Privacidade</a>.</p>
+          </div>
+
+          <div id="loginMessage" class="login-message hidden" role="alert"></div>
+          <button id="loginRenewSupportButton" class="btn login-renew-support hidden" type="button">Falar com o suporte para renovar</button>
+
+          <section id="passwordResetCard" class="password-reset-card hidden" aria-live="polite">
+            <h2>Recuperar senha</h2>
+            <p id="passwordResetText">Informe o e-mail cadastrado para receber um código de recuperação.</p>
+            <form id="passwordResetRequestForm" class="password-reset-form" novalidate>
+              <label class="login-field" for="passwordResetEmail">
+                <span>E-mail cadastrado</span>
+                <input id="passwordResetEmail" type="email" autocomplete="email" placeholder="voce@empresa.com" required>
+              </label>
+              <div class="password-reset-actions">
+                <button id="passwordResetRequestSubmit" class="btn primary" type="submit">Enviar código</button>
+                <button id="passwordResetCancel" class="btn secondary" type="button">Voltar</button>
+              </div>
+            </form>
+            <form id="passwordResetCodeForm" class="password-reset-form hidden" novalidate>
+              <label class="login-field" for="passwordResetCode">
+                <span>Código recebido por e-mail</span>
+                <input id="passwordResetCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" required>
+              </label>
+              <div class="password-reset-actions">
+                <button id="passwordResetCodeSubmit" class="btn primary" type="submit">Prosseguir</button>
+                <button id="passwordResetResend" class="btn secondary" type="button">Reenviar código</button>
+                <button id="passwordResetRestart" class="btn secondary" type="button">Trocar e-mail</button>
+              </div>
+            </form>
+            <form id="passwordResetNewPasswordForm" class="password-reset-form hidden" novalidate>
+              <label class="login-field" for="passwordResetNewPassword">
+                <span>Nova senha</span>
+                <input id="passwordResetNewPassword" type="password" autocomplete="new-password" minlength="12" placeholder="Mínimo de 12 caracteres" required>
+              </label>
+              <label class="login-field" for="passwordResetConfirmPassword">
+                <span>Confirmar nova senha</span>
+                <input id="passwordResetConfirmPassword" type="password" autocomplete="new-password" minlength="12" placeholder="Repita a nova senha" required>
+              </label>
+              <div class="password-reset-actions">
+                <button id="passwordResetSaveSubmit" class="btn primary" type="submit">Salvar nova senha</button>
+                <button id="passwordResetBackToCode" class="btn secondary" type="button">Voltar ao código</button>
+              </div>
+            </form>
+            <div id="passwordResetResult" class="password-reset-result" aria-live="polite"></div>
+          </section>
+
+          <section id="loginVerificationCard" class="login-verification-card hidden" aria-live="polite">
+            <h2>Confirme sua conta</h2>
+            <p id="loginVerificationText">Enviamos um código de 6 dígitos para o e-mail cadastrado.</p>
+            <form id="loginVerificationForm" class="login-verification-form" novalidate>
+              <label class="login-field" for="loginVerificationCode">
+                <span>Código recebido por e-mail</span>
+                <input id="loginVerificationCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">
+              </label>
+              <div class="login-verification-actions">
+                <button class="btn primary" id="loginVerifySubmit" type="submit">Confirmar e entrar</button>
+                <button class="btn secondary" id="loginVerificationBack" type="button">Voltar</button>
+              </div>
+              <span class="login-verification-note">A confirmação é feita somente uma vez por usuário.</span>
+            </form>
+          </section>
+
+          <p id="apiState" class="security-note hidden" aria-hidden="true"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="login-site-footer">
+      <div class="login-footer-inner">
+        <div class="login-footer-brand">
+          <img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="" aria-hidden="true">
+          <span>
+            <strong>SURVEYOR</strong>
+            <small>Plataforma de Gestão Territorial</small>
+          </span>
+        </div>
+
+        <div class="login-footer-support">
+          <span>SUPORTE</span>
+          <a href="mailto:suporte@surveyor.com.br">suporte@surveyor.com.br</a>
+          <small>Atendimento e ajuda técnica</small>
+        </div>
+
+        <div class="login-footer-legal">
+          <nav aria-label="Links legais do rodapé">
+            <a href="/privacidade/">Privacidade</a>
+            <a href="/termos/">Termos de Uso</a>
+            <a href="/seguranca/">Segurança</a>
+          </nav>
+          <small>© 2026 SURVEYOR • Todos os direitos reservados</small>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/login.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>

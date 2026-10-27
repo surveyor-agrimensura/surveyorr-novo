@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="86" viewBox="0 0 340 86" role="img">
+  <rect width="340" height="86" rx="16" fill="white"/>
+  <circle cx="28" cy="41" r="18" fill="#2ea26c" opacity=".7"/>
+  <circle cx="50" cy="41" r="18" fill="#3db998" opacity=".7"/>
+  <circle cx="39" cy="26" r="18" fill="#0f766e" opacity=".7"/>
+  <text x="84" y="44" font-size="42" font-family="Arial, sans-serif" font-weight="800" fill="#1f7b43">CAR</text>
+  <text x="164" y="44" font-size="14" font-family="Arial, sans-serif" font-weight="700" fill="#4f6f5c">Cadastro Ambiental Rural</text>
+</svg>

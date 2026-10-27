@@ -1,0 +1,66 @@
+/* Surveyor REV14 — Assistente IA administrativo */
+#tab-admin-ai{overflow:visible}
+#tab-admin-ai .admin-ai-heading{align-items:flex-start}
+.admin-ai-workspace{display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px;align-items:stretch}
+.admin-ai-prompts,.admin-ai-chat{border:1px solid #d7e2f2;border-radius:18px;background:#fff;box-shadow:0 12px 34px rgba(15,47,91,.06)}
+.admin-ai-prompts{display:flex;flex-direction:column;gap:9px;padding:16px;align-self:start;position:sticky;top:92px}
+.admin-ai-prompt-title{display:grid;gap:3px;margin-bottom:3px}.admin-ai-prompt-title small,.admin-ai-privacy small{color:#60718d;line-height:1.45}
+.admin-ai-prompts>button{border:1px solid #cbd9ed;background:#f8fbff;border-radius:11px;padding:11px 12px;text-align:left;font-weight:750;cursor:pointer;color:#10233f;transition:.18s ease}
+.admin-ai-prompts>button:hover,.admin-ai-prompts>button:focus-visible{background:#eaf2ff;border-color:#6d9fff;transform:translateY(-1px)}
+.admin-ai-privacy{margin-top:6px;padding:11px;border-radius:12px;background:#f4f8ff;display:grid;gap:3px}
+.admin-ai-chat{min-width:0;padding:0;overflow:hidden;display:flex;flex-direction:column;min-height:580px}
+.admin-ai-chat-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 16px;border-bottom:1px solid #e2eaf5;background:#fbfdff}.admin-ai-chat-header div{display:grid;gap:2px}.admin-ai-chat-header small{color:#677792}
+.admin-ai-messages{height:430px;min-height:300px;overflow:auto;display:flex;flex-direction:column;gap:14px;padding:18px;background:linear-gradient(180deg,#f8fbff 0%,#fff 35%);scrollbar-gutter:stable}
+.admin-ai-messages article{display:flex;gap:10px;max-width:94%}.admin-ai-messages article.user{align-self:flex-end;flex-direction:row-reverse;max-width:82%}.admin-ai-messages article.assistant{align-self:flex-start}
+.admin-ai-avatar{width:34px;height:34px;min-width:34px;border-radius:11px;display:grid;place-items:center;background:#0b5bd3;color:#fff;font-size:11px;font-weight:900;box-shadow:0 5px 14px rgba(11,91,211,.18)}
+.admin-ai-messages article.user .admin-ai-avatar{background:#16233a}
+.admin-ai-bubble{min-width:0;border:1px solid #d7e2f2;border-radius:15px;padding:13px 15px;background:#fff;box-shadow:0 5px 16px rgba(15,47,91,.05)}
+.admin-ai-messages article.user .admin-ai-bubble{background:#0b5bd3;border-color:#0b5bd3;color:#fff}
+.admin-ai-bubble>header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:7px}.admin-ai-bubble>header small{opacity:.72}
+.admin-ai-copy{border:0;background:transparent;color:inherit;cursor:pointer;font-size:12px;padding:3px 5px;border-radius:6px}.admin-ai-copy:hover{background:rgba(120,145,180,.14)}
+.admin-ai-rich{line-height:1.55;overflow-wrap:anywhere}.admin-ai-rich>*:first-child{margin-top:0}.admin-ai-rich>*:last-child{margin-bottom:0}.admin-ai-rich p{margin:8px 0}.admin-ai-rich h2{font-size:18px;margin:14px 0 7px;color:#102c52}.admin-ai-rich h3{font-size:15px;margin:12px 0 6px;color:#173a68}.admin-ai-rich ul,.admin-ai-rich ol{margin:7px 0 9px;padding-left:22px}.admin-ai-rich li{margin:4px 0}.admin-ai-rich strong{font-weight:850}.admin-ai-rich code{font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf3fb;border-radius:5px;padding:2px 5px}.admin-ai-rich pre{background:#0f1d31;color:#e8f0fb;border-radius:10px;padding:11px;overflow:auto}.admin-ai-rich blockquote{border-left:3px solid #3a78dc;margin:10px 0;padding:7px 10px;background:#f1f6fd;color:#31445f}.admin-ai-rich table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}.admin-ai-rich th,.admin-ai-rich td{border:1px solid #dbe5f2;padding:7px;text-align:left}.admin-ai-rich th{background:#eef4fc}.admin-ai-messages article.user .admin-ai-rich h2,.admin-ai-messages article.user .admin-ai-rich h3{color:#fff}.admin-ai-messages article.user .admin-ai-rich code{background:rgba(255,255,255,.16)}
+.admin-ai-user-image{display:block;max-width:min(320px,100%);max-height:230px;object-fit:contain;border-radius:10px;margin-top:9px;background:#fff}
+.admin-ai-attachment{display:grid;grid-template-columns:54px minmax(0,1fr) 34px;gap:10px;align-items:center;margin:10px 16px 0;padding:9px 10px;border:1px solid #bad1f1;background:#f4f8ff;border-radius:12px}.admin-ai-attachment.hidden{display:none}.admin-ai-attachment img{width:54px;height:44px;object-fit:cover;border-radius:8px;border:1px solid #d6e2f1}.admin-ai-attachment div{display:grid;gap:2px;min-width:0}.admin-ai-attachment b,.admin-ai-attachment small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.admin-ai-attachment small{color:#687a96}.admin-ai-attachment button{width:30px;height:30px;border:1px solid #cad8ea;background:#fff;border-radius:8px;cursor:pointer;font-size:20px}
+.admin-ai-form{padding:12px 16px 0}.admin-ai-composer{border:1.5px solid #9ebae3;border-radius:15px;background:#fff;overflow:hidden;box-shadow:0 7px 20px rgba(12,63,133,.07);transition:.18s ease}.admin-ai-composer:focus-within{border-color:#1464dd;box-shadow:0 0 0 3px rgba(20,100,221,.12)}
+.admin-ai-composer-tools{display:flex;gap:8px;align-items:center;padding:9px 10px 2px}.admin-ai-tool{border:1px solid #cbd9ed;background:#f7faff;border-radius:9px;padding:7px 10px;font-weight:750;color:#17385f;cursor:pointer}.admin-ai-tool:hover{background:#eaf2ff}.admin-ai-tool.recording{background:#fff0f0;border-color:#ef7777;color:#b42323;animation:adminAiPulse 1.2s infinite}.admin-ai-voice-status{font-size:12px;color:#657692;margin-left:auto}
+.admin-ai-composer textarea{display:block;width:100%;min-height:88px;max-height:220px;resize:vertical;border:0;outline:0;box-shadow:none;padding:10px 12px;font:inherit;line-height:1.45;background:transparent}.admin-ai-composer-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 10px 10px;border-top:1px solid #edf1f6}.admin-ai-composer-footer small{color:#6a7890}.admin-ai-composer-footer .btn{min-width:132px}
+.admin-ai-config{font-size:12px;color:#60718b;padding:8px 17px 13px}.admin-ai-config.ok{color:#08784f}.admin-ai-config.error{color:#ad2929}.admin-ai-loading .admin-ai-bubble{position:relative;padding-right:46px}.admin-ai-loading .admin-ai-bubble:after{content:'•••';position:absolute;right:14px;top:12px;letter-spacing:3px;animation:adminAiBlink 1.1s infinite}
+@keyframes adminAiPulse{50%{box-shadow:0 0 0 5px rgba(218,45,45,.12)}}@keyframes adminAiBlink{50%{opacity:.35}}
+@media(max-width:960px){.admin-ai-workspace{grid-template-columns:1fr}.admin-ai-prompts{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.admin-ai-prompt-title,.admin-ai-privacy{grid-column:1/-1}.admin-ai-chat{min-height:520px}}
+@media(max-width:620px){.admin-ai-prompts{grid-template-columns:1fr}.admin-ai-messages{height:360px;padding:12px}.admin-ai-messages article,.admin-ai-messages article.user{max-width:100%}.admin-ai-chat-header{align-items:flex-start}.admin-ai-composer-footer{align-items:flex-end}.admin-ai-composer-footer small{display:none}.admin-ai-composer-footer .btn{width:100%}.admin-ai-composer-tools{flex-wrap:wrap}.admin-ai-voice-status{width:100%;margin:0}}
+
+
+/* REV16 — respostas estruturadas, tabelas reais e leitura administrativa */
+#tab-admin-ai .admin-ai-rich{display:grid;gap:10px;line-height:1.55}
+#tab-admin-ai .admin-ai-rich>.admin-ai-section{display:grid;gap:8px;margin:0;border:1px solid #dbe6f4;border-radius:13px;padding:13px 14px;background:#fbfdff;overflow:hidden}
+#tab-admin-ai .admin-ai-rich>.admin-ai-section.summary{border-left:4px solid #1768dc;background:#f4f8ff}
+#tab-admin-ai .admin-ai-rich>.admin-ai-section.findings{border-left:4px solid #0e8a65;background:#f5fcf9}
+#tab-admin-ai .admin-ai-rich>.admin-ai-section.actions{border-left:4px solid #7357d8;background:#f8f6ff}
+#tab-admin-ai .admin-ai-rich>.admin-ai-section.alert{border-left:4px solid #e39416;background:#fffaf1}
+#tab-admin-ai .admin-ai-rich>.admin-ai-section>h2{font-size:17px;line-height:1.25;margin:0;color:#102c52}
+#tab-admin-ai .admin-ai-rich h3{font-size:14px;line-height:1.3;margin:4px 0 0;color:#173a68}
+#tab-admin-ai .admin-ai-rich h4{font-size:13px;line-height:1.3;margin:3px 0 0;color:#294b75}
+#tab-admin-ai .admin-ai-rich p{margin:0;white-space:normal}
+#tab-admin-ai .admin-ai-rich ul,#tab-admin-ai .admin-ai-rich ol{margin:0;padding-left:22px}
+#tab-admin-ai .admin-ai-rich li{margin:3px 0}
+#tab-admin-ai .admin-ai-rich hr{width:100%;border:0;border-top:1px solid #dce6f3;margin:3px 0}
+#tab-admin-ai .admin-ai-table-wrap{width:100%;max-width:100%;overflow:auto;border:1px solid #cfdced;border-radius:11px;background:#fff;box-shadow:0 3px 10px rgba(18,52,98,.04);scrollbar-gutter:stable}
+#tab-admin-ai .admin-ai-table-wrap table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;margin:0;font-size:12.5px;line-height:1.4}
+#tab-admin-ai .admin-ai-table-wrap th,#tab-admin-ai .admin-ai-table-wrap td{border:0;border-right:1px solid #e1e9f4;border-bottom:1px solid #e1e9f4;padding:9px 10px;text-align:left;vertical-align:top;white-space:normal;overflow-wrap:anywhere}
+#tab-admin-ai .admin-ai-table-wrap th:last-child,#tab-admin-ai .admin-ai-table-wrap td:last-child{border-right:0}
+#tab-admin-ai .admin-ai-table-wrap tbody tr:last-child td{border-bottom:0}
+#tab-admin-ai .admin-ai-table-wrap th{position:sticky;top:0;z-index:1;background:#eaf2ff;color:#102c52;font-weight:850;white-space:nowrap}
+#tab-admin-ai .admin-ai-table-wrap tbody tr:nth-child(even){background:#f8fbff}
+#tab-admin-ai .admin-ai-table-wrap tbody tr:hover{background:#eef5ff}
+#tab-admin-ai .admin-ai-table-badge{display:inline-flex;align-items:center;min-height:22px;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:800;white-space:nowrap}
+#tab-admin-ai .admin-ai-table-badge.positive{background:#e6f8f1;color:#087a55}
+#tab-admin-ai .admin-ai-table-badge.neutral{background:#edf1f6;color:#596b84}
+#tab-admin-ai .admin-ai-table-badge.danger{background:#fff0f0;color:#b4232c}
+#tab-admin-ai .admin-ai-bubble{max-width:100%}
+#tab-admin-ai .admin-ai-messages article.assistant{width:min(100%,1100px)}
+#tab-admin-ai .admin-ai-messages article.assistant .admin-ai-bubble{width:100%}
+@media(max-width:700px){
+  #tab-admin-ai .admin-ai-rich>.admin-ai-section{padding:11px}
+  #tab-admin-ai .admin-ai-table-wrap table{min-width:620px;font-size:12px}
+  #tab-admin-ai .admin-ai-table-wrap th,#tab-admin-ai .admin-ai-table-wrap td{padding:8px}
+}

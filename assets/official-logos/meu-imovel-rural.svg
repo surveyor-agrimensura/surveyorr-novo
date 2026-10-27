@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="86" viewBox="0 0 340 86" role="img">
+  <rect width="340" height="86" rx="16" fill="white"/>
+  <path d="M44 24c10 0 20 6 24 15 8 0 16 7 16 17 0 12-9 22-21 22H25C12 78 2 68 2 55c0-11 7-20 17-22 3-7 12-9 25-9Z" fill="#eef7eb"/>
+  <path d="M26 56c7-8 13-13 20-18 6 6 12 11 19 16" fill="none" stroke="#74b446" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M26 63h39" fill="none" stroke="#7b5b3b" stroke-width="4" stroke-linecap="round"/>
+  <path d="M30 41h10v9H30z" fill="#7faade"/><path d="M30 41l5-5 5 5" fill="#4d6fa6"/>
+  <text x="102" y="37" font-size="28" font-family="Arial, sans-serif" font-weight="800" fill="#3c7d2e">Meu Imóvel</text>
+  <text x="102" y="63" font-size="28" font-family="Arial, sans-serif" font-weight="800" fill="#74b446">Rural</text>
+</svg>

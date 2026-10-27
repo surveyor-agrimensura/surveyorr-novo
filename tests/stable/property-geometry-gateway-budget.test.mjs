@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const source = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const begin = source.indexOf('async function hydrateLocalPropertyGeometry(');
+const end = source.indexOf('function propertyFeaturePoint(', begin);
+assert.ok(begin >= 0 && end > begin, 'Caminho de recuperação WFS deve existir.');
+const hydration = source.slice(begin, end);
+assert.match(hydration,/candidates\.slice\(0, 2\)/,'Recuperação deve fazer no máximo duas consultas WFS.');
+assert.match(hydration,/if \(!payload\) \{ gatewayFailed = true; continue; \}/,'Falha do primeiro caminho deve permitir apenas mais uma chave oficial.');
+assert.match(hydration,/sameRuralPropertyIdentity\(feature,item\)/,'Resultado WFS precisa confirmar identidade.');
+assert.doesNotMatch(hydration,/\.find\(\(item\) => item\?\.geometry\)/,'Proibido escolher a primeira geometria indiscriminadamente.');
+assert.match(hydration,/rememberPropertyGeometry\(cacheKey, exact\)/,'Geometria válida deve ser reutilizada em memória.');
+assert.match(hydration,/upstream\.toString\(\)\]/,'Deve haver alternativa direta quando os proxies falham.');
+console.log('PASS property-geometry-gateway-budget: WFS com identidade, orçamento de tentativas e tratamento de falha.');

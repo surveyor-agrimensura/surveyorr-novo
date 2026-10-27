@@ -1,0 +1,42 @@
+
+/* Surveyor v21.9.410 — identidade universal e assinatura visual */
+.universal-identity-banner{display:flex;align-items:flex-start;gap:12px;margin:18px 0 12px;padding:14px 16px;border:1px solid #1d63e9;background:#edf4ff;color:#0f2f63}
+.universal-identity-banner strong{display:block;font-size:15px;margin-bottom:3px}.universal-identity-banner span{font-size:12px;line-height:1.4;color:#334155}
+.universal-identity-badge{flex:0 0 auto;background:#145edb;color:#fff;font-size:11px;font-weight:800;padding:5px 8px;border-radius:2px;text-transform:uppercase;letter-spacing:.03em}
+.signature-upload-card{display:grid;gap:9px;align-content:start}.signature-upload-card .signature-help{font-size:12px;color:#475569;line-height:1.35}
+.signature-preview-wrap{min-height:116px;border:1px dashed #94a3b8;background-color:#fff;background-image:linear-gradient(45deg,#eef2f7 25%,transparent 25%),linear-gradient(-45deg,#eef2f7 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#eef2f7 75%),linear-gradient(-45deg,transparent 75%,#eef2f7 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0;display:flex;align-items:center;justify-content:center;padding:10px;overflow:hidden}
+.signature-preview-wrap[hidden]{display:none}.signature-preview-wrap img{display:block;max-width:100%;max-height:105px;object-fit:contain;filter:contrast(1.04)}
+.signature-processing-status{font-size:12px;font-weight:700;color:#145edb;min-height:16px}.signature-upload-actions{display:flex;gap:8px;flex-wrap:wrap}.signature-upload-actions .btn{margin:0}
+.memorial-pdf-preview-actions{display:flex;align-items:center;gap:8px;margin-left:auto}.memorial-sign-preview-button{padding:5px 10px;min-height:30px;font-size:12px;background:#15803d;color:#fff;border-color:#15803d}.memorial-sign-preview-button:hover{background:#166534}
+.memorial-sign-modal[hidden]{display:none}.memorial-sign-modal:not(.is-inline-personalization):not([hidden]){position:fixed;inset:0;z-index:100000;background:rgba(2,6,23,.72);display:flex;align-items:center;justify-content:center;padding:18px}
+.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog{width:min(1180px,96vw);height:min(900px,94vh);background:#fff;border:1px solid #0f172a;display:grid;grid-template-rows:auto minmax(0,1fr) auto;box-shadow:0 20px 70px rgba(2,6,23,.45)}
+.memorial-sign-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 16px;border-bottom:1px solid #cbd5e1;background:#f8fafc;text-align:left}.memorial-sign-dialog-head>div{min-width:0;margin:0;text-align:left}.memorial-sign-dialog-head h2{margin:0;font-size:18px;text-align:left}.memorial-sign-dialog-head p{margin:3px 0 0;font-size:12px;color:#475569;text-align:left}.memorial-sign-close{border:1px solid #64748b;background:#fff;width:34px;height:34px;font-size:20px;cursor:pointer}
+.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog-body{min-height:0;display:grid;grid-template-columns:250px minmax(0,1fr)}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-tools{padding:15px;border-right:1px solid #cbd5e1;background:#f8fafc;overflow:auto}.memorial-sign-tools h3{font-size:13px;margin:0 0 8px}.memorial-sign-tools p{font-size:12px;line-height:1.45;color:#475569}.memorial-sign-control{display:grid;gap:6px;margin:13px 0}.memorial-sign-control label{font-size:12px;font-weight:800}.memorial-sign-control select,.memorial-sign-control input[type=range]{width:100%}.memorial-sign-page-nav{display:grid;grid-template-columns:1fr 1fr;gap:7px}.memorial-sign-page-nav button{padding:7px;border:1px solid #94a3b8;background:#fff;cursor:pointer}.memorial-sign-tip{margin-top:14px;padding:10px;border:1px solid #86b7fe;background:#edf6ff;font-size:11px;line-height:1.4;color:#0f3f70}
+.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-workspace{min-width:0;min-height:0;overflow:auto;background:#dfe5ee;padding:22px;display:block}.memorial-sign-pages{width:100%;display:flex;flex-direction:column;align-items:center;gap:18px}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-page{position:relative;width:min(720px,100%);aspect-ratio:210/297;background:#fff;box-shadow:0 8px 30px rgba(15,23,42,.22);overflow:hidden;touch-action:none;flex:0 0 auto}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-page.is-active{box-shadow:0 0 0 2px rgba(20,94,219,.32),0 8px 30px rgba(15,23,42,.22)}.memorial-sign-page-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;user-select:none;pointer-events:none}.memorial-sign-overlay{position:absolute;left:50%;top:58%;width:28%;transform:translate(-50%,-50%);cursor:move;touch-action:none;border:1px dashed transparent;user-select:none}.memorial-sign-overlay:hover,.memorial-sign-overlay.is-dragging,.memorial-sign-overlay.is-resizing{border-color:#145edb;background:rgba(20,94,219,.04)}.memorial-sign-overlay img{display:block;width:100%;height:auto;pointer-events:none;filter:contrast(1.04)}.memorial-sign-resize-handle{position:absolute;right:-7px;bottom:-7px;width:16px;height:16px;border:2px solid #fff;background:#145edb;box-shadow:0 0 0 1px #145edb;cursor:nwse-resize;border-radius:50%}
+.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog-foot{display:flex;justify-content:flex-end;gap:9px;padding:12px 16px;border-top:1px solid #cbd5e1;background:#f8fafc}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog-foot button{min-width:150px}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog-foot .primary{background:#15803d;color:#fff;border-color:#15803d}
+@media(max-width:800px){.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog{height:96vh}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog-body{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-tools{border-right:0;border-bottom:1px solid #cbd5e1;max-height:230px}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-workspace{padding:10px}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog-foot{flex-wrap:wrap}.memorial-sign-modal:not(.is-inline-personalization) .memorial-sign-dialog-foot button{flex:1 1 180px}.memorial-pdf-preview-head{flex-wrap:wrap}.memorial-pdf-preview-actions{width:100%;margin-left:0;justify-content:flex-end}}
+/* Editor visual do memorial — fonte e assinatura posicionável. */
+.memorial-editor-font-control{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;align-items:center}
+.memorial-editor-font-control button{height:38px;border:1px solid #cbd8e8;border-radius:9px;background:#fff;font-size:20px;cursor:pointer}
+.memorial-editor-font-control strong{text-align:center;font-size:14px}
+.memorial-signature-toggle{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;margin:8px 0 4px}
+.memorial-signature-toggle input{width:17px;height:17px}
+.memorial-sign-status{min-height:18px;margin:4px 0 10px;font-size:11px;color:#475569}
+.memorial-sign-overlay[hidden]{display:none}
+
+/* Ação de salvamento nativa disponível após o PDF terminar de ser gerado. */
+body[data-page="memorial.html"] .export-menu-list .memorial-ready-pdf-download{display:block;padding:10px 14px;background:#eff6ff;color:#145edb;text-decoration:none;font-weight:700;border-top:1px solid #cbd5e1;white-space:normal}
+body[data-page="memorial.html"] .export-menu-list .memorial-ready-pdf-download:hover,body[data-page="memorial.html"] .export-menu-list .memorial-ready-pdf-download:focus-visible{background:#dbeafe;outline:2px solid #145edb;outline-offset:-2px}
+body[data-page="memorial.html"] .export-menu-list .memorial-ready-pdf-download[hidden]{display:none}
+
+/* Escala A4 canônica: apenas o invólucro é responsivo; a folha interna mantém
+   as medidas impressas. Assim linhas e assinatura continuam alinhadas no PDF. */
+.memorial-sign-page .memorial-sign-page-bg{
+  width:210mm;height:297mm;max-width:none;max-height:none;inset:auto;left:0;top:0;
+  transform-origin:0 0;transform:scale(var(--memorial-page-scale,1));
+}
+body.sv-document-inline-personalization .memorial-sign-modal.is-inline-personalization .memorial-sign-page .memorial-sign-page-bg{
+  width:210mm;height:297mm;max-width:none;max-height:none;inset:auto;left:0;top:0;
+  transform-origin:0 0;transform:scale(var(--memorial-page-scale,1));
+}
+.memorial-sign-overlay{box-sizing:border-box}

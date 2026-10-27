@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const css = fs.readFileSync('assets/css/features/mapa/app.css','utf8');
+assert.match(app, /SLD_BODY: sicarPropertySld\(\{ fill: true, stroke: false \}\)/);
+assert.match(app, /SLD_BODY: sicarPropertySld\(\{ fill: false, stroke: true \}\)/);
+assert.match(app, /#FFD400/);
+assert.match(app, /__georuralOutlineLayer/);
+assert.match(app, /Atributos consultados diretamente nas camadas/);
+assert.match(app, /maskRegistryDocument/);
+assert.match(app, /geoserviceEncodedProxyUrls\(url, 'wfs'\)/);
+assert.match(css, /surveyor-sicar-property-outline-tile/);
+console.log('OK: camada CAR usa dados oficiais, amarelo vivo e contorno independente.');

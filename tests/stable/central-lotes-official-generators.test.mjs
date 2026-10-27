@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+
+const text = file => fs.readFileSync(file,'utf8');
+const project = { id:'P-123', propertyName:'Imóvel de Teste — Gleba 01', geojson:{type:'FeatureCollection',features:[{type:'Feature',properties:{category:'perimetro',name:'Gleba 01'},geometry:{type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,0]]]}}]} };
+const api={ get: async () => ({id:'antigo'}), list:async()=>[{id:'outro'}], saveLegacy:async()=>true, updateMetadata:async()=>true, invalidate:()=>true };
+const parent = {location:{origin:'http://localhost:5500'},SurveyorBatchDocumentProvider:{get:token=>token==='abcdef0123456789'?{project}:null}};
+const window={parent,GeoRuralProjects:api};
+const context=vm.createContext({window,location:{search:'?svBatch=abcdef0123456789&project=P-123',origin:'http://localhost:5500'},URLSearchParams,console,JSON});
+vm.runInContext(text('assets/js/core/batch-document-context.js'),context);
+assert.ok(window.SurveyorBatchDocumentContext?.active,'A página oficial deve usar geometria temporária');
+assert.equal((await api.get('P-123')).geojson.features[0].properties.name,'Gleba 01');
+assert.equal((await api.list())[0].id,'P-123');
+await assert.rejects(()=>api.saveLegacy({}),/não permite alterar projetos/);
+await assert.rejects(()=>api.updateMetadata('P-123',{}),/não permite alterar projetos/);
+const unmodified = {get:async()=>({id:'real'}),list:async()=>[{id:'real'}]};
+const isolatedWindow={parent,GeoRuralProjects:unmodified};
+vm.runInContext(text('assets/js/core/batch-document-context.js'),vm.createContext({window:isolatedWindow,location:{search:'?svBatch=abcdef0123456789&project=OUTRO',origin:'http://localhost:5500'},URLSearchParams,console,JSON}));
+assert.equal((await unmodified.get()).id,'real','Não ativar contexto para ID divergente');
+for(const name of ['memorial','pranchas','mapas','ods']){
+  const html=text(`${name}/index.html`);
+  assert.match(html,/batch-document-context\.js/);
+  assert.ok(html.indexOf('/assets/js/core/projects.js') < html.indexOf('/assets/js/core/batch-document-context.js'));
+}
+const central=text('assets/js/features/central-lotes/app.js');
+assert.match(central,/SurveyorOfficialBatchMemorial/);
+assert.match(central,/SurveyorOfficialBatchCartography/);
+assert.match(central,/SurveyorOfficialBatchOds/);
+assert.match(central,/await documentsForLot\(lot, selectedDocs\)/);
+assert.match(central,/const batchRequests = new Map\(\)/);
+assert.doesNotMatch(central,/sessionStorage\.setItem/,'Lotes não devem depender de armazenamento permanente/transitório');
+const dossier=text('assets/js/features/mapa/dossier.js');
+assert.match(dossier,/lotDocuments/,'Dados auxiliares continuam existentes');
+const memorial=text('assets/js/features/memorial/app.js');
+assert.match(memorial,/return buildMemorialPdfBlob\(\)/);
+const maps=text('assets/js/features/mapas/app.js');
+assert.match(maps,/return blob;\s*}\s*}\);/);
+const ods=text('assets/js/features/ods/app.js');
+assert.match(ods,/function makeOfficialOdsWorkbook\(\)/);
+assert.match(ods,/XLSX\.write\(workbook, \{ bookType: 'ods', type: 'array' \}\)/);
+console.log('PASS central-lotes-official-generators: contexto temporário protegido e quatro módulos reutilizados.');

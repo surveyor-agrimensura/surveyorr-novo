@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+const cacheSource=fs.readFileSync('assets/js/features/mapa/property-local-cache.js','utf8');
+const appSource=fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+assert.match(cacheSource,/!recordBelongsToMunicipality\(record, city\)/,'Índice local precisa validar o CAR de cada registro antes de listar.');
+assert.match(appSource,/features\.filter\(\(feature\) => propertyFeatureMatchesMunicipality\(feature, municipality\)\)/,'Consulta online também precisa ser filtrada antes da lista.');
+assert.doesNotMatch(appSource,/featureCode\.startsWith\(targetCode\)/,'Códigos IBGE não podem ser validados por prefixo.');
+const definition=cacheSource.match(/  function recordBelongsToMunicipality\(record, city\) \{[\s\S]*?\n  \}/)?.[0];
+assert.ok(definition);
+const match=vm.runInNewContext(`${definition}; recordBelongsToMunicipality`);
+const amargosa={id:'2901007',name:'Amargosa'};
+assert.equal(match({c:'BA2901007ABC123'},amargosa),true,'CAR de Amargosa deve ser aceito.');
+assert.equal(match({c:'BA2919954ABC123'},amargosa),false,'CAR de outra cidade deve ser rejeitado.');
+assert.equal(match({c:'',mi:'2901007',mn:'Amargosa'},amargosa),false,'Município copiado do download não é prova suficiente.');
+console.log('PASS property-city-scope-regression: índice local e fonte online não misturam municípios.');

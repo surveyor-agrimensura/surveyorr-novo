@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const login = [fs.readFileSync('login/index.html', 'utf8'), fs.readFileSync('assets/js/core/login.js', 'utf8'), fs.readFileSync('assets/js/core/login-support.js', 'utf8')].join('\n');
+const auth = fs.readFileSync('assets/js/core/auth.js', 'utf8');
+const api = fs.readFileSync('functions/surveyor-api/src/main.js', 'utf8');
+const support = fs.readFileSync('functions/surveyor-support/src/main.js', 'utf8');
+
+assert.match(login, /id="forgotPasswordButton"/);
+assert.match(login, /Esqueci minha senha/);
+assert.match(login, /id="passwordResetRequestForm"/);
+assert.match(login, /id="passwordResetCodeForm"/);
+assert.match(login, /id="passwordResetNewPasswordForm"/);
+assert.match(login, /id="passwordResetResend"/);
+assert.match(auth, /async function requestPasswordReset/);
+assert.match(auth, /async function verifyPasswordResetCode/);
+assert.match(auth, /async function confirmPasswordReset/);
+assert.match(api, /\/api\/auth\/password-reset\/request/);
+assert.match(api, /\/api\/auth\/password-reset\/verify/);
+assert.match(api, /\/api\/auth\/password-reset\/confirm/);
+assert.match(api, /type: 'password-reset'/);
+assert.match(api, /type: 'password-reset-authorized'/);
+assert.match(api, /Código incorreto\./);
+assert.doesNotMatch(api, /Este e-mail não possui conta criada no sistema\./);
+assert.match(api, /Se existir uma conta para/);
+assert.match(api, /updateAppwriteUserPassword\(payload\.sub, password\)/);
+assert.match(api, /persistentRateLimitCheck\('password-reset-request'/);
+assert.match(api, /persistentRateLimitCheck\('password-reset-verify'/);
+assert.match(api, /persistentRateLimitCheck\('password-reset-confirm'/);
+assert.match(support, /password_reset/);
+assert.match(support, /Código para redefinir sua senha do Surveyor/);
+console.log('OK: recuperação de senha em três etapas v21.9.422 validada.');

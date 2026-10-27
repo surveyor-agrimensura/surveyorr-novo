@@ -1,0 +1,345 @@
+/* SURVEYOR — Navegação Territorial
+   Camada visual isolada do motor operacional do mapa. */
+html.surveyor-territorial-pending body[data-page="mapa.html"] .geo-workspace{
+  background:#eef3f7;
+}
+html.surveyor-territorial-pending body[data-page="mapa.html"] #map,
+html.surveyor-territorial-pending body[data-page="mapa.html"] .geo-sidepanel,
+html.surveyor-territorial-pending body[data-page="mapa.html"] .sidepanel-floating-toggle,
+html.surveyor-territorial-pending body[data-page="mapa.html"] .metrics{
+  visibility:hidden;
+}
+html.surveyor-territorial-pending body[data-page="mapa.html"] .sv-map-toolbar-modern{
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+}
+
+body[data-page="mapa.html"] .sv-territorial-navigator[hidden]{display:none}
+body[data-page="mapa.html"] .sv-territorial-navigator{
+  position:fixed;
+  inset:0;
+  z-index:9000;
+  overflow:hidden;
+  background:#eef3f7;
+  color:#10243a;
+  isolation:isolate;
+  opacity:1;
+  transition:opacity .46s ease, transform .46s cubic-bezier(.2,.72,.2,1);
+}
+body[data-page="mapa.html"] .sv-territorial-navigator.is-leaving{
+  opacity:0;
+  transform:none;
+  pointer-events:none;
+}
+body[data-page="mapa.html"] .sv-territorial-map{
+  position:absolute;
+  inset:0;
+  background:#eef3f7;
+}
+body[data-page="mapa.html"] .sv-territorial-map.leaflet-container{
+  font:inherit;
+  background:transparent;
+  cursor:default;
+}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-control{z-index:800}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-tooltip-pane{z-index:960}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-popup-pane{z-index:970}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-interactive{
+  outline:none;
+}
+body[data-page="mapa.html"] .sv-territorial-map.leaflet-zoom-anim .leaflet-zoom-animated{
+  transition:transform var(--sv-territorial-zoom-duration,.66s) cubic-bezier(.22,.61,.36,1);
+}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-pane.leaflet-sv-territorial-municipalities-pane{
+  opacity:1;
+  transition:opacity .34s cubic-bezier(.22,.61,.36,1);
+  will-change:opacity;
+}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-pane.leaflet-sv-territorial-municipalities-pane.is-preparing{
+  opacity:0;
+}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-pane.leaflet-sv-territorial-municipalities-pane.is-visible{
+  opacity:1;
+}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-control-zoom{
+  border:1px solid rgba(23,55,83,.16);
+  border-radius:13px;
+  overflow:hidden;
+  box-shadow:0 8px 22px rgba(15,38,60,.12);
+}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-control-zoom a{
+  width:36px;
+  height:36px;
+  line-height:34px;
+  border:0;
+  border-bottom:1px solid rgba(23,55,83,.10);
+  background:rgba(255,255,255,.92);
+  color:#163a5c;
+  font-weight:800;
+}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-control-zoom a:last-child{border-bottom:0}
+body[data-page="mapa.html"] .sv-territorial-tooltip{
+  border:0;
+  border-radius:10px;
+  background:rgba(10,31,49,.94);
+  color:#fff;
+  box-shadow:0 9px 24px rgba(5,25,42,.20);
+  padding:7px 10px;
+  font:700 12px/1.25 system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+body[data-page="mapa.html"] .sv-territorial-tooltip::before{display:none}
+body[data-page="mapa.html"] .sv-territorial-tooltip strong{display:block;font-size:12px}
+body[data-page="mapa.html"] .sv-territorial-tooltip span{display:block;margin-top:2px;color:#cfe4f1;font-size:10px;font-weight:650}
+
+/* O status continua acessível a leitores de tela, sem criar uma segunda caixa visual. */
+body[data-page="mapa.html"] .sv-territorial-status{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+body[data-page="mapa.html"] .sv-territorial-source{
+  position:absolute;
+  z-index:650;
+  right:18px;
+  bottom:16px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.76);
+  color:#6f8496;
+  font-size:9px;
+  font-weight:750;
+  pointer-events:none;
+}
+
+/* Durante Brasil/UF, ficam visíveis apenas o menu lateral e a busca padrão do topo. */
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-toolbar-modern{
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-toolstrip{
+  pointer-events:none;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sidepanel-floating-toggle{display:none}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host{
+  visibility:visible;
+  opacity:1;
+  pointer-events:auto;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host #svSmartSearchMode{
+  pointer-events:none;
+  max-width:132px;
+  cursor:default;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host #svCoordinateSubtypeMode,
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-search-mode-menu,
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-coordinate-subtype-menu{
+  display:none;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host #coordSearch{
+  
+  border-color:#cbd9e8;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host #coordSearch:focus{
+  border-color:#7aaed0;
+  box-shadow:0 0 0 3px rgba(23,107,135,.10);
+}
+body[data-page="mapa.html"] .sv-map-search-host .city-suggest .sv-territorial-search-result{
+  grid-template-columns:minmax(0,1fr) auto;
+}
+
+
+@media (prefers-reduced-motion:reduce){
+  body[data-page="mapa.html"] .sv-territorial-navigator,
+  body[data-page="mapa.html"] .sv-territorial-map .leaflet-interactive{transition:none}
+}
+
+
+/* RC87/V138 — refinamento visual da navegação territorial */
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-app,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-workspace,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-map-stage{
+  background:transparent;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar{
+  position:fixed;
+  inset:0 0 auto 0;
+  z-index:9305;
+  background:transparent;
+  border-bottom:0;
+  box-shadow:none;
+  min-height:0;
+  height:0;
+  padding:0;
+  overflow:visible;
+  pointer-events:none;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .geo-brand{
+  display:none;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .geo-brand-left{
+  position:fixed;
+  left:14px;
+  top:14px;
+  z-index:9310;
+  max-width:none;
+  min-width:auto;
+  width:auto;
+  gap:0;
+  pointer-events:none;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar #mapGlobalNavToggle{
+  display:inline-flex;
+  pointer-events:auto;
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:1px solid rgba(26,67,96,.14);
+  background:rgba(255,255,255,.88);
+  box-shadow:0 12px 28px rgba(10,33,52,.16);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .geo-toolstrip{
+  position:fixed;
+  right:14px;
+  top:14px;
+  z-index:9310;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  width:auto;
+  min-width:auto;
+  height:auto;
+  padding:0;
+  gap:0;
+  background:transparent;
+  box-shadow:none;
+  border:0;
+  pointer-events:none;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .geo-toolbar-right-map,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .geo-toolbar-center,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .geo-layers-trigger,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .map-quick-tools-anchor,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .top-basemap-menu,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .surveyor-native-basemap-select,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .map-download-menu,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar .map-project-menu,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar #newBtn,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar #saveBtn,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar #toggleMapSearch,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar #topEditElementsBtn,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar #openImportLayersBtn,
+body[data-page="mapa.html"].surveyor-territorial-mode .geo-brandbar.map-onebar #returnToCarBtn{
+  display:none;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host{
+  position:fixed;
+  top:14px;
+  right:14px;
+  left:auto;
+  width:min(420px,calc(100vw - 86px));
+  z-index:9310;
+  pointer-events:auto;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host .geo-search-input-wrap,
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host{
+  background:transparent;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host .city-suggest{
+  margin-top:8px;
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host #coordSearch{
+  background:rgba(255,255,255,.88);
+  border:1px solid rgba(26,67,96,.14);
+  box-shadow:0 12px 28px rgba(10,33,52,.16);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+body[data-page="mapa.html"].surveyor-territorial-mode .sv-map-search-host #svSmartSearchMode{
+  background:#eef4fb;
+  border:1px solid #d6e1f0;
+}
+body[data-page="mapa.html"] .sv-map-basemap-menu button.sv-territorial-entry .sv-territorial-thumb{
+  overflow:hidden;
+  background:#e7edf4;
+}
+body[data-page="mapa.html"] .sv-map-basemap-menu button.sv-territorial-entry .sv-territorial-thumb img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* RC89/V140 — movimento suave sem o recuo do flyToBounds */
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-svTerritorialMunicipalities-pane{
+  opacity:1;
+  transition:opacity .34s cubic-bezier(.22,.61,.36,1);
+  will-change:opacity;
+}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-svTerritorialMunicipalities-pane.is-preparing{opacity:0;}
+body[data-page="mapa.html"] .sv-territorial-map .leaflet-svTerritorialMunicipalities-pane.is-visible{opacity:1;}
+body[data-page="mapa.html"] .sv-territorial-navigator.is-leaving{
+  transition:opacity .43s cubic-bezier(.22,.61,.36,1);
+}
+@media (prefers-reduced-motion:reduce){
+  body[data-page="mapa.html"] .sv-territorial-map.leaflet-zoom-anim .leaflet-zoom-animated,
+  body[data-page="mapa.html"] .sv-territorial-map .leaflet-svTerritorialMunicipalities-pane{transition:none;}
+}
+
+/* RC90/V141 — Visão territorial padronizada ao menu de mapas-base. */
+body[data-page="mapa.html"] .sv-map-basemap-menu button.sv-territorial-entry{
+  grid-template-columns:48px minmax(0,1fr) 18px;
+  min-height:48px;
+  gap:10px;
+  padding:6px 8px;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:650;
+}
+body[data-page="mapa.html"] .sv-map-basemap-menu button.sv-territorial-entry .sv-territorial-thumb{
+  width:46px;
+  height:32px;
+  border-radius:8px;
+}
+
+
+/* RC93/V144 — entrada operacional com acabamento de editor.
+   A navegação territorial some enquanto as duas barras operacionais entram
+   em sentidos opostos, sem alterar a posição final nem o grid do mapa. */
+@keyframes svOperationalTopBarIn{
+  0%{opacity:0;transform:translate3d(0,-112%,0)}
+  58%{opacity:1;transform:translate3d(0,5px,0)}
+  100%{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes svOperationalBottomBarIn{
+  0%{opacity:0;transform:translate3d(0,112%,0)}
+  62%{opacity:1;transform:translate3d(0,-3px,0)}
+  100%{opacity:1;transform:translate3d(0,0,0)}
+}
+body[data-page="mapa.html"].surveyor-operational-chrome-enter .geo-brandbar.map-onebar{
+  animation:svOperationalTopBarIn .56s cubic-bezier(.16,.84,.24,1) both;
+  transform-origin:top center;
+  will-change:transform,opacity;
+}
+body[data-page="mapa.html"].surveyor-operational-chrome-enter .sv-map-technical-bar{
+  animation:svOperationalBottomBarIn .54s .06s cubic-bezier(.16,.84,.24,1) both;
+  transform-origin:bottom center;
+  will-change:transform,opacity;
+}
+@media (prefers-reduced-motion:reduce){
+  body[data-page="mapa.html"].surveyor-operational-chrome-enter .geo-brandbar.map-onebar,
+  body[data-page="mapa.html"].surveyor-operational-chrome-enter .sv-map-technical-bar{
+    animation:none;
+    transform:none;
+    opacity:1;
+  }
+}

@@ -1,0 +1,11 @@
+const fs = require('fs');
+const assert = require('assert');
+const src = fs.readFileSync('assets/js/features/mapas/app.js','utf8');
+assert.match(src,/function resolveDimensionGlebaFeatures\(/,'pipeline estável R7 ausente');
+assert.match(src,/seenSegments/,'deduplicação por segmento físico ausente');
+assert.match(src,/containerCoords:\s*closed/,'cota da gleba deve usar o próprio polígono como container');
+assert.match(src,/placement:\s*'inside'/,'cota de gleba deve permanecer interna');
+assert.match(src,/placement:\s*'outside',[\s\S]{0,100}containerCoords:\s*coords/,'cota do perímetro deve permanecer externa');
+assert.doesNotMatch(src,/function buildGlebaDimensionModel/,'regra experimental R8 ainda presente');
+assert.doesNotMatch(src,/segmentCoverageInterval/,'cálculo experimental de cobertura R8 ainda presente');
+console.log('PASS: rollback R9 restaura a cotagem estável anterior e remove a regra experimental R8.');

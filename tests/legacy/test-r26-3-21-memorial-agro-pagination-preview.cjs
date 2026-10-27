@@ -1,0 +1,16 @@
+const fs=require('fs');
+const assert=require('assert');
+const js=fs.readFileSync('assets/js/features/memorial/app.js','utf8');
+const css=fs.readFileSync('assets/css/core/documents.css','utf8');
+const html=fs.readFileSync('memorial/index.html','utf8');
+assert(js.includes('async function buildAgroNarrativePages'), 'Agro+ deve paginar a narrativa dinamicamente.');
+assert(js.includes('async function agroBodyOverflows'), 'Agro+ deve medir overflow antes de fechar cada página.');
+assert(js.includes('class="agro-running-text"'), 'Descrição Agro+ deve ser renderizada como texto corrido.');
+assert(js.includes("}).join(' ');"), 'Narrativa textual deve usar espaço entre segmentos, sem quebra forçada de linha.');
+assert(js.includes("bottom:41mm"), 'Área útil Agro+ deve reservar margem segura acima do rodapé.');
+assert(css.includes('R26.3.21 — preview ocupa a altura útil inteira'), 'Workspace deve conter hotfix global do preview.');
+assert(css.includes('scroll-padding-bottom:28px'), 'Preview deve permitir rolagem interna até o fim.');
+assert(css.includes('height:calc(100dvh - 64px)'), 'Área documental deve usar a altura útil da viewport.');
+assert(/agro-(pagination-r21|confrontant-conditional-r25)/.test(html), 'Memorial deve invalidar o cache do gerador paginado/corrigido.');
+assert(/doc-workspace-0918-ui-r(?:21|22|23|24)/.test(html), 'Memorial deve invalidar o cache do workspace corrigido.');
+console.log('OK R26.3.21 — Agro+ paginado, texto corrido e preview com rolagem completa.');

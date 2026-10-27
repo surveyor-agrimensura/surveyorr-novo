@@ -1,0 +1,16 @@
+const fs = require('fs');
+const assert = require('assert');
+const app = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const html = fs.readFileSync('mapa/index.html','utf8');
+const workspace = fs.readFileSync('assets/js/features/mapa/workspace.js','utf8');
+assert.match(app, /fetchSicarPropertiesByName/, 'deve consultar SICAR por nome');
+assert.match(app, /geoserver\.car\.gov\.br\/geoserver\/sicar\/ows/, 'busca deve usar WFS oficial nacional do CAR');
+assert.match(app, /CQL_FILTER/, 'busca por nome deve usar filtro WFS seguro');
+assert.match(app, /sicar:sicar_imoveis_/, 'busca deve escolher camada SICAR da UF');
+assert.match(app, /nom_imovel.*nome_imovel.*nome_area/s, 'deve suportar aliases de nome do imóvel');
+assert.match(app, /locateRuralPropertyByName/, 'deve localizar imóvel pelo nome');
+assert.match(app, /identifyRuralRegistriesAt\(latlng/, 'resultado deve abrir o fluxo cadastral existente');
+assert.match(app, /map\.fitBounds\(bounds\.pad\(\.22\)/, 'resultado deve enquadrar o imóvel no mapa');
+assert.match(html, /Cidade, imóvel, CAR, UTM ou coordenadas/, 'placeholder deve informar busca por imóvel');
+assert.match(workspace, /clearPropertyNameResult/, 'busca CAR deve limpar destaque anterior por nome');
+console.log('PASS: busca por nome do imóvel integrada ao CAR/SICAR nacional, com destaque e painel cadastral.');

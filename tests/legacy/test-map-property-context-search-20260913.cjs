@@ -1,0 +1,21 @@
+const fs = require('fs');
+const assert = require('assert');
+const app = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const css = fs.readFileSync('assets/css/features/mapa/app.css','utf8');
+
+assert.match(app, /RURAL_PROPERTY_PREFIX_RE/, 'deve reconhecer prefixos rurais');
+assert.match(app, /renderPropertyContextAssistant/, 'deve abrir assistente contextual');
+assert.match(app, /getPropertyMunicipalitySuggestions/, 'deve filtrar municípios pela UF selecionada');
+assert.match(app, /propertySearchStateCode/, 'busca deve respeitar a UF persistida no catálogo');
+assert.match(app, /CEFIR \/ INEMA · Limites de Propriedade/, 'assistente deve indicar CEFIR/INEMA para Bahia');
+assert.match(app, /CAR \/ SICAR · Limites de Propriedade/, 'assistente deve indicar SICAR para demais UFs');
+assert.match(app, /fetchRuralPropertiesByName\(query, municipality, stateCode\)/, 'busca contextual deve usar resolvedor oficial por UF');
+assert.match(app, /propertyMunicipalitySearchClausesForSchema/, 'SICAR deve usar apenas aliases municipais existentes no schema');
+assert.match(app, /fetchCefirPropertiesByName/, 'Bahia deve consultar CEFIR/INEMA por nome');
+assert.match(app, /Buscar imóvel|Procurar/, 'assistente deve ter botão explícito para iniciar a busca');
+assert.match(app, /renderPropertyContextResults/, 'deve listar múltiplos imóveis encontrados');
+assert.match(app, /focusRuralPropertySearchFeature/, 'resultado deve reutilizar fluxo cadastral existente');
+assert.match(app, /propertyContextSearchState\.municipality/, 'deve manter município selecionado');
+assert.match(css, /property-context-assistant/, 'assistente deve possuir estilo próprio');
+assert.match(css, /property-context-result-list/, 'lista de resultados deve ser compacta');
+console.log('PASS: busca contextual usa CEFIR/INEMA na Bahia, SICAR nas demais UFs e município selecionado.');

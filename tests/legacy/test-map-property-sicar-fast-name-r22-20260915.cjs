@@ -1,0 +1,12 @@
+const fs = require('fs');
+const assert = require('assert');
+const src = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+assert.match(src, /CAR e nome do imóvel não podem esperar o SIGEF/, 'pipeline deve documentar independência do SIGEF');
+assert.match(src, /const sigefPromise =/, 'SIGEF deve iniciar em paralelo');
+assert.match(src, /const sicarPromise = withTimeout\(fetchSicarCarWfsResult\(latlng\), 20_000/, 'SICAR deve ter caminho rápido próprio');
+assert.match(src, /Primeiro repaint: usa tudo que o próprio SICAR já devolveu/, 'painel CAR deve atualizar antes do SIGEF');
+assert.match(src, /Segundo repaint: CEFIR é apenas enriquecimento complementar/, 'CEFIR deve ser apenas enriquecimento e não bloqueio primário');
+const firstSicar = src.indexOf('const sicarOfficial = await sicarPromise');
+const waitSigef = src.indexOf('const [sigefOfficial, snciOfficial] = await Promise.all');
+assert.ok(firstSicar >= 0 && waitSigef > firstSicar, 'SICAR precisa atualizar antes de aguardar SIGEF');
+console.log('PASS R22: nome/dados CAR atualizam pelo SICAR antes de SIGEF/CEFIR e busca nominal usa confirmação explícita.');

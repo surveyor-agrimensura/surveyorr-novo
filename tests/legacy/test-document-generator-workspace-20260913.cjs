@@ -1,0 +1,31 @@
+const fs = require('fs');
+const assert = require('assert');
+const pages = ['pranchas','mapas','memorial','planialtimetria','perimetros','confrontacao','ods','ambiental','loteamentos-reurb'];
+const sharedJs = fs.readFileSync('assets/js/core/documents.js','utf8');
+const sharedCss = fs.readFileSync('assets/css/core/documents.css','utf8');
+const maps = fs.readFileSync('assets/js/features/mapas/app.js','utf8');
+const runtime = fs.readFileSync('assets/js/core/ui.js','utf8');
+for (const page of pages) {
+  const html = fs.readFileSync(`${page}/index.html`,'utf8');
+  assert.match(html,/document-workspace-v21\.11\.5\.css/,`${page}: CSS do workspace ausente`);
+  assert.match(html,/document-workspace-v21\.11\.5\.js/,`${page}: JS do workspace ausente`);
+}
+assert.match(sharedCss,/grid-template-columns:minmax\(360px,410px\) minmax\(0,1fr\)/,'layout config + preview não encontrado');
+assert.match(sharedCss,/#svGenerationOverlay,\.memorial-generation-progress\{display:none!important;\}/,'barra antiga deve ficar removida');
+assert.match(sharedJs,/90% configuração · 10% geração/,'regra de progresso 90+10 ausente');
+assert.match(sharedJs,/mapShowCotas/); assert.match(sharedJs,/mapShowGlebaCotas/); assert.match(sharedJs,/mapShowVertices/); assert.match(sharedJs,/mapShowConfrontantes/);
+assert.match(sharedJs,/rightCard\.appendChild\(progress\)/,'barra de progresso deve ficar dentro do card de pré-visualização');
+assert.match(sharedJs,/mapas\.html/); assert.match(sharedJs,/loteamentos-reurb\.html/); assert.match(sharedJs,/ods\.html/);
+assert.match(maps,/function cadDimensionLabels/,'cotas CAD ausentes');
+assert.match(maps,/paint-order="stroke fill"/,'cota deve usar halo');
+assert.match(maps,/optionEnabled\('mapShowCotas'\)/); assert.match(maps,/optionEnabled\('mapShowGlebaCotas', false\)/); assert.match(maps,/optionEnabled\('mapShowVertices'\)/);
+assert.match(maps,/function glebaDimensionLabels/,'cotas de gleba ausentes');
+assert.match(maps,/function resolveDimensionGlebaFeatures/,'ordenação estável de glebas para cotagem ausente');
+assert.match(maps,/seenSegments/,'deduplicação estável de segmentos físicos ausente');
+assert.match(maps,/occupiedLabels/,'controle de colisão das cotas ausente');
+assert.match(maps,/segmentFilter/,'filtro estável de segmentos ausente');
+assert.doesNotMatch(maps,/function buildGlebaDimensionModel/,'modelo experimental R8 não deve estar ativo após rollback');
+assert.doesNotMatch(maps,/segmentCoverageInterval/,'cobertura experimental R8 não deve estar ativa após rollback');
+assert.match(maps,/Preview PDF falhou; exibindo SVG diretamente/,'fallback de Mapas e Croquis ausente');
+assert.match(runtime,/workspace unificado de documentos usa progresso de completude/,'overlay antigo ainda não foi neutralizado');
+console.log('PASS: workspace unificado de documentos, progresso 90/10, cotas de gleba opcionais e fallback de croqui validados.');

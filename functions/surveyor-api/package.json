@@ -1,0 +1,13 @@
+{
+  "name": "surveyor-api",
+  "version": "1.0.0-rc.185.74",
+  "type": "module",
+  "main": "src/main.js",
+  "description": "Surveyor API Appwrite — Security Safe R3+R4: sessões/tokens transitórios em cookies HttpOnly, avisos de tentativas restantes, auditoria com integridade HMAC e proteção de mutações, sem novas ENV/collections/scopes obrigatórias.",
+  "scripts": {
+    "check": "node --check src/main.js && node --check src/security/crypto.js",
+    "cleanup:commercial-data": "node scripts/cleanup-obsolete-commercial-data.mjs"
+  },
+  "dependencies": {},
+  "surveyorRelease": "1.0.0-rc.185.74"
+}

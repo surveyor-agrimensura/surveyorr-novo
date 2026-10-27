@@ -1,0 +1,24 @@
+import fs from 'node:fs';
+const read=(p)=>fs.readFileSync(new URL(`../${p}`,import.meta.url),'utf8');
+const memorial=read('assets/js/features/memorial/app.js');
+const templates=read('assets/js/features/memorial/templates.js');
+const preference=read('assets/js/features/memorial/preference.js');
+const customization=read('assets/js/features/customizacao/app.js');
+const api=read('functions/surveyor-api/src/main.js');
+const html=read('memorial/index.html');
+function ok(cond,msg){if(!cond)throw new Error(msg);}
+ok(/function selectedTemplateIdFromUi\(\)/.test(memorial)&&/const requestedTemplateId=selectedTemplateIdFromUi\(\)/.test(memorial),'A geração deve usar diretamente o valor visível do seletor.');
+ok(!/localPreference=readLocalTemplatePreference\(\)[\s\S]{0,500}currentMemorialTemplateId=localPreference/.test(memorial),'A geração não pode trocar o seletor por preferência antiga.');
+ok(/lastGeneratedTemplateId=currentTemplate\.id/.test(memorial),'A geração deve congelar o modelo realmente aplicado.');
+ok(/createDocx\(lastGeneratedTemplateId,lastTemplateData/.test(memorial),'O Word deve usar o modelo congelado na geração.');
+ok(/absoluteAsset\(`\/assets\/memorial-template-backgrounds/.test(memorial),'O PDF deve usar URLs absolutas para as artes do modelo.');
+ok(/waitForImages\(host\)/.test(memorial)&&/document\.fonts\?\.ready/.test(memorial),'A geração do PDF deve aguardar imagens e fontes.');
+ok(/<base href=/.test(memorial),'O documento PDF deve declarar base de recursos.');
+ok(/paragraphRangeContaining/.test(templates),'A troca do logo deve localizar somente o parágrafo do marcador.');
+ok(!/<w:r\[\^>\]\*>\[\\s\\S\]\*\?<w:t/.test(templates),'A troca do logo não pode usar regex gulosa entre vários runs.');
+ok(/surveyor-user-logo/.test(templates),'O Word deve incluir o arquivo real do logotipo.');
+ok(/A escolha explícita feita neste navegador é a fonte principal/.test(preference),'A preferência local explícita deve ser prioritária.');
+ok(/Não reaplica a resposta do servidor no seletor/.test(customization),'Salvar não pode redefinir o modelo escolhido.');
+ok(/memorialTemplateId: savedMemorialTemplateId/.test(api)&&/documentOptions: mergedDocumentOptions/.test(api),'A API deve persistir o modelo direta e internamente.');
+ok(html.includes('assets/js/features/memorial/templates.js')&&html.includes('assets/js/features/memorial/preference.js'),'A página precisa carregar os controladores v398.');
+console.log('OK: geração PDF/Word do Memorial v398 sem redefinição de modelo.');

@@ -1,0 +1,25 @@
+:root{font-family:Inter,Arial,sans-serif;color:#172033;background:#e8edf4}*{box-sizing:border-box}body{margin:0}.hidden{display:none}.public-header{height:72px;display:flex;align-items:center;justify-content:space-between;padding:10px 22px;}.public-brand{display:flex;align-items:center;gap:14px}.public-brand img{width:150px;height:50px;object-fit:contain;background:#fff;padding:4px}.public-brand strong,.public-brand span{display:block}.public-brand span{font-size:12px;color:#dbe7f8;margin-top:3px}.public-header a{color:#fff}.public-layout{height:calc(100vh - 72px);display:grid;grid-template-columns:340px minmax(0,1fr)}.public-sidebar{overflow:auto;padding:20px;}.public-sidebar h1{font-size:24px;margin:0 0 6px}.public-sidebar>p{color:#64748b}.public-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}.public-stats div{padding:12px;border:1px solid #d7dee8;background:#f8fafc}.public-stats span,.public-stats b{display:block}.public-stats span{font-size:10px;color:#64748b}.public-stats b{margin-top:5px}.public-layer-list{display:grid;gap:7px}.public-layer-item{display:flex;align-items:center;gap:9px;padding:9px;border:1px solid #d7dee8;background:#fff}.public-layer-item i{width:16px;height:16px;border-radius:3px}.public-layer-item span{flex:1;font-size:12px}.public-details{margin-top:22px;padding-top:14px;border-top:1px solid #d7dee8}.public-details div{font-size:12px;line-height:1.55}.public-sidebar footer{margin-top:24px;padding-top:12px;border-top:1px solid #d7dee8;color:#64748b;font-size:11px}.public-map-wrap{position:relative}.public-map-tools{position:absolute;z-index:500;top:12px;right:12px;display:flex;gap:7px;padding:7px;background:#fff;box-shadow:0 4px 16px #0002}.public-map-tools select,.public-map-tools button{height:36px;border:1px solid #b8c4d4;background:#fff;padding:0 10px}#publicMap{height:100%;width:100%}.public-error{position:absolute;z-index:1000;inset:24px;padding:18px;background:#fff2f0;border:1px solid #ef9d95;color:#9f1c14}@media(max-width:760px){.public-header{height:auto}.public-brand span{display:none}.public-layout{height:auto;grid-template-columns:1fr}.public-sidebar{max-height:none}.public-map-wrap{height:65vh}}
+
+
+/* GeoRural Pro v21.9.12 — página pública alinhada ao novo visual */
+.public-header{background:#fff;color:#0f243f;border-bottom:1px solid #d7e2f1;box-shadow:0 8px 22px rgba(15,36,63,.06)}.public-brand img{background:#fff;border-radius:9px}.public-sidebar{background:#eaf2ff;border-right:1px solid #d7e2f1;color:#0f243f}.public-details,.public-stats>div,.public-layer-list>*,.public-map-tools{background:#fff;border:1px solid #d7e2f1;border-radius:12px;color:#0f243f}.public-map-tools button,.public-map-tools select{border-radius:8px;border:1px solid #cbd8e8}.public-map-tools button{background:#1f5aa6;color:#fff}
+
+.public-password-overlay{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:20px;background:rgba(15,23,42,.68);backdrop-filter:blur(4px)}
+.public-password-dialog{width:min(420px,100%);background:#fff;border-radius:18px;box-shadow:0 24px 80px rgba(15,23,42,.35);padding:24px;display:grid;gap:16px}
+.public-password-dialog h2,.public-password-dialog p{margin:0}.public-password-dialog p{color:#475569;line-height:1.5}.public-password-dialog label{display:grid;gap:7px;font-weight:700;color:#1e293b}.public-password-dialog input{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:10px;padding:11px 12px;font:inherit}.public-password-dialog input:focus{outline:3px solid rgba(37,99,235,.2);border-color:#2563eb}.public-password-dialog>div{display:flex;justify-content:flex-end;gap:10px}.public-password-dialog button{border:0;border-radius:10px;padding:10px 15px;font:inherit;font-weight:700;cursor:pointer}.public-password-dialog button[type=submit]{background:#153b76;color:#fff}.public-password-dialog button[data-cancel]{background:#e2e8f0;color:#334155}
+
+/* RC66 — página pública enxuta: remover cartões brancos redundantes da lateral. */
+.public-sidebar .public-stats>div,
+.public-sidebar .public-layer-item,
+.public-sidebar .public-details{
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+.public-sidebar .public-stats{gap:18px;margin:14px 0 20px;}
+.public-sidebar .public-stats>div{padding:2px 0;}
+.public-sidebar .public-layer-list{gap:4px;}
+.public-sidebar .public-layer-item{padding:6px 2px;}
+.public-sidebar .public-details{margin-top:18px;padding-top:0;}
+.public-sidebar .public-details h2{margin:0 0 8px;}

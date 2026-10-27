@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const preview=fs.readFileSync('assets/css/features/memorial/memorial-preview.css','utf8');
+const generator=fs.readFileSync('assets/js/features/memorial/app.js','utf8');
+const selector='.custom-memorial-page-map .custom-template-page-body';
+assert.match(preview, /\.custom-memorial-page-map \.custom-template-page-body\s*\{\s*padding-top:45mm;/);
+assert.ok(generator.includes(`${selector}{padding-top:45mm}`), 'A exportação mantém o espaço reservado ao cabeçalho.');
+assert.match(generator, /const bodyStyle=kind==='map'[\s\S]*?padding:45mm 18mm 35mm;overflow:hidden;/, 'A página de mapa deve vencer a regra inline que zera o padding nos modelos Agro+.');
+assert.match(generator, /const mapBody=customTemplateMapBody\(mapVisual\)/, 'Agro+ usa a mesma composição de mapa.');
+assert.match(generator, /customTemplatePage\(item,theme,customTemplateMapBody\(mapVisual\),'map'\)/, 'Os demais modelos usam a mesma composição de mapa.');
+assert.match(generator, /function customTemplateMapBody\(mapVisual\)/, 'Mapa deve ter uma única fonte de estrutura.');
+assert.match(generator, /class="custom-template-map-title" style="display:block;text-align:center;/, 'Título centralizado no documento e exportação.');
+assert.ok(!generator.includes('standard-memorial-page-map .custom-template-page-body'), 'O modelo padrão não deve ser alterado.');
+console.log('PASS memorial-alternative-map-header: estrutura comum, margem reservada e título centralizado nos modelos alternativos.');

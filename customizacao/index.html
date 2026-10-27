@@ -1,0 +1,147 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head><link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin><link rel="dns-prefetch" href="//api.surveyorr.com.br"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="dns-prefetch" href="//cdn.jsdelivr.net"><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob: https:; manifest-src 'self'; upgrade-insecure-requests"><script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script><meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="utf-8">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071225">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/surveyor-192.png?v=1.0.0-rc.185.74">
+  <meta name="application-name" content="Surveyor">
+<title>Personalização — Surveyor</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74"><style>
+.model-choice-panel{margin:14px 0;padding:16px;border:1px solid #1d63e9;background:#f8fbff}.model-choice-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.model-choice-tabs{display:flex;gap:8px;flex-wrap:wrap}.model-choice-tab{border:1px solid #1d63e9;background:#fff;color:#0f172a;padding:10px 14px;font-weight:800;cursor:pointer}.model-choice-tab:hover,.model-choice-tab:focus,.model-choice-tab.active{background:#145edb;color:#fff}.model-mode-pane{display:none;margin-top:14px;padding:13px;border:1px solid #1d63e9;background:#fff}.model-mode-pane.active{display:grid;gap:6px}.custom-model-list{display:grid;gap:8px;margin-top:8px}.custom-model-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px;border:1px solid #1d63e9;background:#fff}.custom-model-item small{color:#64748b}.customization-preview-panel .document-preview{background:#e8edf5!important}.customization-preview-panel .word-template-page{aspect-ratio:210/297!important;min-height:0!important;height:auto!important;overflow:hidden!important}@media(max-width:760px){.model-choice-head{flex-direction:column}}
+.memorial-template-gallery{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px;margin-top:12px}.memorial-template-card{border:1px solid #1d63e9;background:#fff;padding:7px;text-align:left;cursor:pointer;display:grid;gap:5px;align-content:start}.memorial-template-card:hover,.memorial-template-card:focus,.memorial-template-card.active{outline:3px solid rgba(29,99,233,.18);background:#edf4ff}.memorial-template-card.active{border-width:2px}.memorial-template-card img{width:100%;height:210px;object-fit:cover;object-position:top;background:#fff;border:1px solid #b9cdf8}.memorial-template-card strong{font-size:13px;line-height:1.2}.memorial-template-card small{font-size:11px;line-height:1.25}.memorial-standard-preview{height:210px;display:grid;place-content:center;text-align:center;background:#fff;border:1px solid #b9cdf8;padding:10px}.memorial-standard-preview small{display:block;margin-top:6px;color:#64748b}.model-choice-panel[data-hidden="true"]{display:none}@media(max-width:1250px){.memorial-template-gallery{grid-template-columns:repeat(4,minmax(120px,1fr))}}@media(max-width:950px){.memorial-template-gallery{grid-template-columns:repeat(3,minmax(120px,1fr))}}@media(max-width:680px){.memorial-template-gallery{grid-template-columns:repeat(2,minmax(120px,1fr))}.memorial-template-card img,.memorial-standard-preview{height:190px}}
+.document-picker-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid #1d63e9;background:#f8fbff;margin-bottom:14px}.document-picker-summary strong{font-size:16px}.document-picker-summary button{white-space:nowrap}.custom-target-grid.is-collapsed{display:none}.custom-target-grid.is-open{display:grid}.exact-template-preview{display:grid;gap:18px;justify-items:center;padding:20px;background:#e8edf5}.exact-template-page{display:block;width:min(100%,720px);height:auto;background:#fff;box-shadow:0 12px 28px rgba(15,23,42,.16);border:1px solid #1d63e9}.exact-template-caption{font-weight:800;color:#0f172a}.customization-preview-panel .document-preview{padding:0!important;overflow:auto}@media(max-width:760px){.document-picker-summary{align-items:stretch;flex-direction:column}.document-picker-summary button{width:100%}}
+
+.exact-template-sheet{position:relative;width:min(100%,720px);line-height:0}
+.exact-template-sheet .exact-template-page{width:100%;height:auto}
+.live-template-overlay{position:absolute;inset:0;pointer-events:none;font-family:Arial,Helvetica,sans-serif;color:#111;line-height:1.2}
+.live-template-header-logo{position:absolute;left:50%;top:1.1%;transform:translateX(-50%);width:34%;height:5.2%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.94);padding:2px 6px;text-align:center;font-size:12px;font-weight:800;overflow:hidden}
+.live-template-logo{max-width:100%;max-height:100%;object-fit:contain}
+.live-template-logo-placeholder{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live-template-footer-contact{position:absolute;left:13%;right:13%;bottom:3.9%;min-height:2.1%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.93);font-size:10px;font-weight:700;text-align:center;padding:1px 4px}
+.live-template-footer-site{position:absolute;left:31%;right:31%;bottom:2.3%;min-height:1.5%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.93);font-size:9px;font-weight:700;text-align:center;padding:1px 3px}
+.live-template-footer-address{position:absolute;left:25%;right:25%;bottom:1.1%;min-height:1.4%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.93);font-size:8px;text-align:center;padding:1px 3px}
+.live-template-tech-name{position:absolute;left:28%;right:28%;top:47.7%;min-height:2.2%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.95);font-size:11px;font-weight:800;text-align:center;padding:1px 4px}
+.live-template-tech-registry{position:absolute;left:24%;right:24%;top:50.3%;min-height:2%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.95);font-size:10px;text-align:center;padding:1px 4px}
+.live-edit-preview .exact-template-caption{position:sticky;top:0;z-index:3;background:#e8edf5;width:100%;padding:8px 0;text-align:center}
+@media(max-width:760px){.live-template-header-logo{font-size:8px}.live-template-footer-contact{font-size:7px}.live-template-footer-site{font-size:6px}.live-template-footer-address{font-size:6px}.live-template-tech-name{font-size:7px}.live-template-tech-registry{font-size:6px}}
+
+body[data-page="customizacao.html"] .customization-layout{grid-template-columns:minmax(0,1fr)!important;max-width:1180px;margin:0 auto}body[data-page="customizacao.html"] .customization-form{width:100%}</style>
+<link rel="stylesheet" href="/assets/css/features/memorial/signature.css?v=1.0.0-rc.185.74"><link rel="stylesheet" href="/assets/css/features/customizacao/app.css?v=1.0.0-rc.185.74"><link rel="stylesheet" href="/assets/css/core/ui.css?v=1.0.0-rc.185.74"></head>
+<body data-page="customizacao.html">
+<div class="suite"><aside class="side" id="side"><div class="brand"><div class="brand-mark"><img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="" data-hide-on-error="1"></div><div><strong>Surveyor</strong><small>Documentos profissionais</small></div></div><nav class="nav"></nav><div class="side-note"></div></aside>
+<main class="main"><header class="top"><div><button class="btn mobile-toggle" id="mobileToggle">☰</button><h1>Personalização</h1><p>Cadastre a identidade profissional uma única vez e ajuste apenas as opções específicas de cada documento.</p></div><div class="top-actions"><button class="link-btn primary" id="saveCustomizationTop" type="button" hidden>Salvar personalização</button></div></header>
+<section class="panel customization-layout">
+  <form id="customizationForm" class="customization-form">
+    <section class="customization-chooser" id="customizationChooser" aria-label="Personalização">
+      <div class="customization-progress-summary" aria-live="polite">
+        <div><strong>Identidade profissional compartilhada</strong><span id="customizationProgressText">Verificando os dados salvos na sua conta…</span></div>
+        <output id="customizationProgressOutput">0%</output>
+      </div>
+      <div class="custom-target-grid is-open" id="customTargetGrid">
+        <button class="custom-target-card is-featured" type="button" data-target="empresa">
+          <span class="custom-target-icon" aria-hidden="true">EMP</span><span class="custom-target-step">Primeiro passo</span><span class="custom-target-content"><b>Dados da empresa</b><span>Nome, endereço, contatos, site, rodapé e logotipo usados em todos os documentos.</span></span><span class="custom-target-status" data-status-target="empresa">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="empresa">0/4</small></span>
+        </button>
+        <button class="custom-target-card is-featured" type="button" data-target="tecnico">
+          <span class="custom-target-icon" aria-hidden="true">RT</span><span class="custom-target-step">Primeiro passo</span><span class="custom-target-content"><b>Responsável técnico e assinatura</b><span>Nome, título, registro profissional e assinatura universal do responsável.</span></span><span class="custom-target-status" data-status-target="tecnico">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="tecnico">0/4</small></span>
+        </button>
+        <button class="custom-target-card" type="button" data-target="memorial"><span class="custom-target-icon" aria-hidden="true">MEM</span><span class="custom-target-content"><b>Memorial descritivo</b><span>Escolha de layout e modelo visual do memorial.</span></span><span class="custom-target-status" data-status-target="memorial">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="memorial">0/3</small></span></button>
+        <button class="custom-target-card" type="button" data-target="mapas"><span class="custom-target-icon" aria-hidden="true">MAP</span><span class="custom-target-content"><b>Mapas e perfis</b><span>Escolha o modelo do croqui e aplique automaticamente a identidade da empresa e do técnico.</span></span><span class="custom-target-status" data-status-target="mapas">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="mapas">0/2</small></span></button>
+        <button class="custom-target-card" type="button" data-target="pranchas"><span class="custom-target-icon" aria-hidden="true">PRN</span><span class="custom-target-content"><b>Prancha técnica</b><span>Selo, rodapé, logotipo e identificação aplicados automaticamente.</span></span><span class="custom-target-status" data-status-target="pranchas">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="pranchas">0/2</small></span></button>
+        <button class="custom-target-card" type="button" data-target="planialtimetria"><span class="custom-target-icon" aria-hidden="true">PLN</span><span class="custom-target-content"><b>Planialtimetria</b><span>Identidade aplicada automaticamente ao perfil, MDT e relatórios.</span></span><span class="custom-target-status" data-status-target="planialtimetria">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="planialtimetria">0/2</small></span></button>
+        <button class="custom-target-card" type="button" data-target="perimetro"><span class="custom-target-icon" aria-hidden="true">PER</span><span class="custom-target-content"><b>Perímetro</b><span>Relatórios de coordenadas, azimutes e distâncias com identidade automática.</span></span><span class="custom-target-status" data-status-target="perimetro">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="perimetro">0/2</small></span></button>
+        <button class="custom-target-card" type="button" data-target="ambiental"><span class="custom-target-icon" aria-hidden="true">AMB</span><span class="custom-target-content"><b>Relatório ambiental</b><span>APP, Reserva Legal e análises usando os dados universais já cadastrados.</span></span><span class="custom-target-status" data-status-target="ambiental">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="ambiental">0/2</small></span></button>
+        <button class="custom-target-card" type="button" data-target="car"><span class="custom-target-icon" aria-hidden="true">CAR</span><span class="custom-target-content"><b>Módulo CAR</b><span>Identidade automática e opções específicas do relatório CAR.</span></span><span class="custom-target-status" data-status-target="car">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="car">0/3</small></span></button>
+        <button class="custom-target-card" type="button" data-target="loteamento"><span class="custom-target-icon" aria-hidden="true">REU</span><span class="custom-target-content"><b>Loteamentos / REURB</b><span>Identidade automática e opções do relatório técnico do lote.</span></span><span class="custom-target-status" data-status-target="loteamento">✕ Incompleto</span><span class="custom-target-progress"><span class="custom-target-progress-bar"><span></span></span><small data-count-target="loteamento">0/3</small></span></button>
+      </div>
+    </section>
+
+    <section class="customization-editor" id="customizationEditor" hidden aria-live="polite">
+      <div class="document-picker-summary" id="documentPickerSummary">
+        <div><span class="field-help">Editando</span><strong id="selectedDocumentLabel">Área de personalização</strong></div>
+        <button class="btn" id="chooseAnotherDocument" type="button">← Voltar e escolher outro</button>
+      </div>
+      <input id="customizationTarget" type="hidden" value="">
+
+      <section class="model-choice-panel" aria-label="Tipo de modelo do documento" data-hidden="true">
+        <div class="model-choice-head">
+          <div><h2>Layout do Memorial Descritivo</h2><p class="panel-desc">Escolha o modelo padrão ou um dos modelos oficiais personalizados. Esta é a única área que altera o layout completo do documento.</p></div>
+          <div class="model-choice-tabs" role="tablist">
+            <button type="button" class="model-choice-tab active" data-model-mode="standard">Modelo padrão</button>
+            <button type="button" class="model-choice-tab" data-model-mode="custom">Modelos personalizados</button>
+          </div>
+        </div>
+        <div class="model-mode-pane active" data-model-pane="standard"><strong>Modelo padrão do sistema</strong><span>Modelo limpo e profissional já utilizado pelo Surveyor.</span></div>
+        <div class="model-mode-pane" data-model-pane="custom"><strong>Biblioteca de templates personalizados</strong><span id="customModelHint">Escolha um dos modelos oficiais abaixo.</span><div class="memorial-template-gallery" id="customModelList"></div></div>
+      </section>
+
+      <div class="custom-section" data-panel="empresa">
+        <div class="custom-section-heading"><div><h2>Dados da empresa</h2><p>Estas informações são salvas uma única vez e aparecem automaticamente em Memorial, Mapas, Pranchas, CAR, relatórios e demais documentos.</p></div><span class="section-completion-badge" data-section-status="empresa">✕ Incompleto</span></div>
+        <fieldset class="identity-fieldset"><legend>Identificação e contato</legend><div class="form-grid two">
+          <label>Nome da empresa/escritório<input id="companyName" maxlength="220" placeholder="Ex.: GeoTop Engenharia Rural"></label>
+          <label>Endereço da empresa<input id="addressText" maxlength="700" placeholder="Rua, avenida, bairro, cidade e UF"></label>
+          <label>Número do endereço<input id="addressNumber" maxlength="40" placeholder="Ex.: 125"></label>
+          <label>Site ou página da empresa<input id="websiteUrl" type="url" maxlength="2000" placeholder="https://suaempresa.com.br"></label>
+          <label>Telefone da empresa<input id="phoneNumber" maxlength="80" placeholder="(00) 0000-0000"></label>
+          <label>WhatsApp da empresa<input id="whatsappNumber" maxlength="80" placeholder="(00) 00000-0000"></label>
+          <label>E-mail da empresa<input id="emailAddress" type="email" maxlength="220" placeholder="contato@empresa.com.br"></label>
+          <label>Texto do rodapé<input id="footerText" maxlength="1000" placeholder="Slogan, observação ou identificação curta"></label>
+        </div></fieldset>
+        <div class="company-logo-card"><strong>Logotipo da empresa</strong><span class="upload-state-text" id="logoUploadState">Nenhum logotipo anexado.</span><div class="logo-preview-wrap" id="logoPreviewWrap" hidden><img id="logoPreview" alt="Logotipo anexado da empresa"></div><input id="logoFile" type="file" accept="image/png,image/jpeg,image/webp"><div class="button-row"><button id="clearLogo" type="button" class="btn danger">Remover logotipo</button></div></div>
+      </div>
+
+      <div class="custom-section" data-panel="tecnico">
+        <div class="custom-section-heading"><div><h2>Responsável técnico e assinatura</h2><p>Cadastre a identificação profissional e a assinatura que serão aplicadas automaticamente nos documentos compatíveis.</p></div><span class="section-completion-badge" data-section-status="tecnico">✕ Incompleto</span></div>
+        <fieldset class="identity-fieldset"><legend>Identificação profissional</legend><div class="form-grid two">
+          <label>Nome do responsável técnico<input id="responsibleTechnician" maxlength="220" placeholder="Nome completo"></label>
+          <label>Registro profissional<input id="professionalRegistry" maxlength="120" placeholder="CREA/CAU/CFT e número"></label>
+          <label>Título profissional<input id="professionalTitle" maxlength="120" placeholder="Ex.: Engenheiro Agrimensor"></label>
+        </div></fieldset>
+        <div class="technical-signature-card signature-upload-card"><strong>Assinatura do responsável técnico</strong><span class="signature-help">Envie PNG, JPEG ou WEBP. O Surveyor preserva transparência existente, remove fundos claros ou escuros e impede o quadrado preto nos documentos.</span><input id="signatureFile" type="file" accept="image/png,image/jpeg,image/webp"><div id="signatureProcessingStatus" class="signature-processing-status" aria-live="polite"></div><div id="signaturePreviewWrap" class="signature-preview-wrap" hidden><img id="signaturePreview" alt="Assinatura tratada"></div><div class="signature-upload-actions"><button id="reprocessSignature" type="button" class="btn" disabled>Tratar novamente</button><button id="clearSignature" type="button" class="btn danger">Remover assinatura</button></div></div>
+      </div>
+
+      <div class="custom-section" data-panel="memorial">
+        <div class="custom-section-heading"><div><h2>Opções do Memorial Descritivo</h2><p>Além do layout escolhido acima, selecione os elementos que devem aparecer no documento.</p></div><span class="section-completion-badge" data-section-status="memorial">✕ Incompleto</span></div>
+        <div class="notice-options vertical"><label><input id="memorialShowLogo" type="checkbox" checked> Mostrar logotipo da empresa</label><label><input id="memorialShowMap" type="checkbox" checked> Incluir mapa/planta por padrão nos memoriais</label><label><input id="memorialShowQr" type="checkbox" checked> Incluir QR Code quando existir link público</label><label><input id="memorialUseSatellite" type="checkbox" checked> Usar imagem de satélite no mapa</label></div>
+        <div class="module-automatic-panel"><h3>Identidade aplicada automaticamente</h3><p>Nome da empresa, contatos, rodapé, logotipo, responsável técnico e assinatura vêm das duas primeiras áreas da Central de personalização.</p><div class="module-dependency-list" data-dependencies="memorial"></div></div>
+      </div>
+
+      <div class="custom-section" data-panel="mapas">
+        <div class="custom-section-heading"><div><h2>Mapas e croquis</h2><p>Escolha o modelo visual do croqui. A identidade profissional continua sendo carregada automaticamente.</p></div><span class="section-completion-badge" data-section-status="mapas">✕ Incompleto</span></div>
+        <div class="croqui-template-selector">
+          <label class="croqui-template-option">
+            <input type="radio" name="mapCroquiTemplate" value="classic" checked>
+            <span class="croqui-template-thumb croqui-template-thumb-classic"><b>Modelo padrão Surveyor</b><small>Layout atual, compacto e técnico.</small></span>
+          </label>
+          <label class="croqui-template-option is-featured">
+            <input type="radio" name="mapCroquiTemplate" value="rural-reference">
+            <span class="croqui-template-thumb"><img src="/assets/croqui-template-previews/02_planta_imovel_rural.webp?v=1.0.0-rc.185.74" alt="Prévia do modelo Planta do Imóvel Rural"><b>Planta do Imóvel Rural</b><small>Novo modelo lateral com mapa principal, legenda, vértices, localização, dados técnicos e QR Code.</small></span>
+          </label>
+        </div>
+        <div class="croqui-template-savebar" id="croquiTemplateSavebar">
+          <div class="croqui-template-savecopy">
+            <strong id="croquiTemplateSaveState">Modelo selecionado: Modelo padrão Surveyor</strong>
+            <small id="croquiTemplateSaveHint">Clique em “Salvar modelo” para usar esta opção nas próximas gerações.</small>
+          </div>
+          <button class="btn primary" id="saveMapCroquiTemplate" type="button">Salvar modelo</button>
+        </div>
+        <div class="module-automatic-panel"><h3>Identidade aplicada automaticamente</h3><p>Logotipo, nome da empresa, contatos, rodapé e responsável técnico serão carregados da sua identidade universal.</p><div class="module-dependency-list" data-dependencies="mapas"></div></div>
+      </div>
+      <div class="custom-section" data-panel="pranchas"><div class="custom-section-heading"><div><h2>Prancha técnica</h2><p>O carimbo técnico e o rodapé usam automaticamente os dados já cadastrados.</p></div><span class="section-completion-badge" data-section-status="pranchas">✕ Incompleto</span></div><div class="module-automatic-panel"><h3>Identidade automática</h3><p>Não é necessário repetir dados da empresa ou do responsável técnico nesta tela.</p><div class="module-dependency-list" data-dependencies="pranchas"></div></div></div>
+      <div class="custom-section" data-panel="planialtimetria"><div class="custom-section-heading"><div><h2>Planialtimetria</h2><p>Perfil, MDT e relatórios recebem automaticamente a identidade cadastrada.</p></div><span class="section-completion-badge" data-section-status="planialtimetria">✕ Incompleto</span></div><div class="module-automatic-panel"><h3>Identidade automática</h3><p>Não há layout separado para personalizar neste módulo.</p><div class="module-dependency-list" data-dependencies="planialtimetria"></div></div></div>
+      <div class="custom-section" data-panel="perimetro"><div class="custom-section-heading"><div><h2>Perímetro</h2><p>Os relatórios de coordenadas, azimutes e distâncias reutilizam a identidade profissional.</p></div><span class="section-completion-badge" data-section-status="perimetro">✕ Incompleto</span></div><div class="module-automatic-panel"><h3>Identidade automática</h3><p>Complete as duas primeiras áreas e este módulo ficará pronto.</p><div class="module-dependency-list" data-dependencies="perimetro"></div></div></div>
+      <div class="custom-section" data-panel="ambiental"><div class="custom-section-heading"><div><h2>Relatório ambiental</h2><p>APP, Reserva Legal, vegetação e alertas usam a identidade da conta.</p></div><span class="section-completion-badge" data-section-status="ambiental">✕ Incompleto</span></div><div class="module-automatic-panel"><h3>Identidade automática</h3><p>Não existem campos universais duplicados nesta área.</p><div class="module-dependency-list" data-dependencies="ambiental"></div></div></div>
+
+      <div class="custom-section" data-panel="car"><div class="custom-section-heading"><div><h2>Relatório do Módulo CAR</h2><p>A identidade vem da conta. Aqui ficam somente as opções específicas do relatório CAR.</p></div><span class="section-completion-badge" data-section-status="car">✕ Incompleto</span></div><div class="form-grid two"><label>Título do relatório<input id="carReportTitle" maxlength="180" value="RELATÓRIO PRELIMINAR - CADASTRO AMBIENTAL RURAL"></label><label>Subtítulo/descrição<input id="carReportSubtitle" maxlength="380" value="" placeholder="Opcional"></label></div><div class="notice-options vertical"><label><input id="carReportSummaryCards" type="checkbox" checked> Mostrar cards resumidos de área</label><label><input id="carReportFeatureTable" type="checkbox" checked> Mostrar tabela detalhada de feições</label><label><input id="carReportPublicQr" type="checkbox" checked> Mostrar QR Code e link público quando existir</label><label><input id="carReportRegistrant" type="checkbox" checked> Mostrar dados do cadastrante</label><label><input id="carReportTechnicalNotice" type="checkbox"> Mostrar aviso técnico preliminar</label><label><input id="carReportOwnerDocs" type="checkbox"> Mostrar CPF/CNPJ dos proprietários no relatório</label></div><div class="module-dependency-list" data-dependencies="car"></div></div>
+      <div class="custom-section" data-panel="loteamento"><div class="custom-section-heading"><div><h2>Relatório de Loteamentos / REURB</h2><p>A identidade vem da conta. Aqui ficam somente o título, a descrição e os componentes do relatório.</p></div><span class="section-completion-badge" data-section-status="loteamento">✕ Incompleto</span></div><div class="form-grid two"><label>Título do relatório<input id="lotReportTitle" maxlength="180" value="RELATÓRIO TÉCNICO DE LOTEAMENTO / REURB"></label><label>Subtítulo/descrição<input id="lotReportSubtitle" maxlength="380" value="Memorial, croqui e identificação técnica do lote selecionado."></label></div><div class="notice-options vertical"><label><input id="lotReportCroqui" type="checkbox" checked> Mostrar croqui técnico</label><label><input id="lotReportSegments" type="checkbox" checked> Mostrar descrição perimétrica e tabela de segmentos</label><label><input id="lotReportConfrontants" type="checkbox" checked> Mostrar confrontantes</label><label><input id="lotReportTech" type="checkbox" checked> Mostrar responsável técnico</label><label><input id="lotReportSignature" type="checkbox" checked> Mostrar área de assinatura</label></div><div class="module-dependency-list" data-dependencies="loteamento"></div></div>
+
+      <div class="editor-actions"><button class="btn primary" type="submit">Salvar alterações</button><button class="btn" id="resetCustomization" type="button">Restaurar opções deste módulo</button><span class="field-help" id="editorActionHelp">Os dados são salvos na sua conta Appwrite e reutilizados automaticamente.</span></div>
+    </section>
+  </form>
+</section></main></div><div class="toast" id="suiteToast"></div>
+<script src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/layout.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/portal.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/document-theme.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/features/memorial/templates.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/features/memorial/preference.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/features/customizacao/app.js?v=1.0.0-rc.185.74"></script>
+
+<script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body></html>

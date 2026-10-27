@@ -1,0 +1,30 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const app = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const ui = fs.readFileSync('assets/js/core/ui.js','utf8');
+const css = fs.readFileSync('assets/css/features/mapa/app.css','utf8').replace(/!important/g,'');
+
+assert.match(app,/prefixes = \['sitio','fazenda','chacara','rancho','haras','estancia','granja','roca','gleba'\]/,'Busca rural deve reconhecer prefixos ainda durante a digitação.');
+assert.match(app,/prefix\.startsWith\(first\) \|\| first\.startsWith\(prefix\)/,'Detecção rural deve aceitar prefixo parcial e palavra completa.');
+assert.match(app,/normalizeCityQuery\(city\.name\) === normalizedTyped/,'Município digitado exatamente deve ser selecionado automaticamente.');
+assert.match(app,/listStateManifests\(stateCode\)/,'Assistente municipal deve consultar os índices já baixados.');
+assert.match(app,/propertyMunicipalityStatusMarkup\('available'\)/,'Município sem índice local deve mostrar estado de download.');
+assert.match(app,/propertyMunicipalityStatusMarkup\('installed'\)/,'Município com índice local deve mostrar check de baixado.');
+assert.match(app,/propertyMunicipalityStatusMarkup\('installing'\)/,'Download em andamento deve possuir estado visual próprio.');
+assert.match(app,/Os dados de \$\{city\.name\} - \$\{uf\} já estão baixados neste navegador/,'Download duplicado deve ser evitado com mensagem clara.');
+assert.match(ui,/\['loteamentos-reurb\.html','nuvem\.html','acervos\.html','customizacao\.html'\]\.includes\(page\)/,'Acervos e Personalização não devem receber acordeão genérico/Etapa 1.');
+assert.match(css,/body\[data-page="mapa\.html"\]\.georural-map-page \.details:not\(\.hidden\),[\s\S]*\.rural-info-panel:not\(\[hidden\]\),[\s\S]*\.gps-point-dialog\[aria-hidden="false"\] \.gps-point-card\{[\s\S]*background-color:var\(--sv-map-frost-panel-bg\);[\s\S]*backdrop-filter:var\(--sv-map-frost-filter\)/,'Vidro fosco deve permanecer nos painéis estáticos aprovados, sem obrigar recomposição do drawer de ferramentas durante pan/zoom.');
+assert.match(css,/--sv-map-frost-panel-bg:rgba\(235,242,249,\.58\)/,'Superfície fosca principal deve permanecer realmente translúcida.');
+assert.match(css,/--sv-map-frost-surface-bg:rgba\(255,255,255,\.44\)/,'Cartões internos não podem voltar a cobrir o blur com branco opaco.');
+assert.match(css,/rural-info-panel:not\(\[hidden\]\) \.rural-info-section-body\{[\s\S]*background-color:rgba\(255,255,255,\.34\)/,'Corpo dos cartões CAR/SIGEF/Coordenadas deve permanecer translúcido.');
+assert.match(css,/\.property-municipality-status\.is-installed/,'Status municipal baixado deve possuir acabamento visual dedicado.');
+console.log('PASS map-search-download-polish: autocomplete rural, estados municipais, vidro fosco e cabeçalhos redundantes validados.');
+assert.match(app,/const propertyLocalInstallJobs = new Map\(\)/,'Fila de downloads municipais deve existir explicitamente; o seletor não pode depender de variável global inexistente.');
+assert.match(app,/const propertyLocalInstallProgress = new Map\(\)/,'Progresso municipal deve possuir estado único compartilhado entre as interfaces.');
+assert.match(app,/property-municipality-progress[^]*\$\{value\}%/,'Ícone de download deve trocar a seta pela porcentagem durante a instalação.');
+assert.match(app,/bindPropertyMunicipalityDownloadAction\(downloadButton, city, stateCode/,'Lista de municípios da busca rural deve possuir download realmente clicável.');
+assert.match(app,/city-suggest-download-action/,'Busca direta de cidade deve exibir ação de download antes/depois da localização.');
+assert.match(app,/sv-locality-city-download/,'Cidade já selecionada no mapa deve continuar oferecendo o download municipal.');
+assert.match(app,/item\?\.\['regiao-imediata'\]\?\.\['regiao-intermediaria'\]\?\.UF/,'Parser do IBGE deve aceitar o schema atual de região imediata para não esvaziar a lista de cidades.');
+assert.match(app,/surveyor:municipios-br:v2/,'Mapa deve reaproveitar o cache nacional de municípios já carregado pelo núcleo da interface.');

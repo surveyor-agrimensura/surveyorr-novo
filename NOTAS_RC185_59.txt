@@ -1,0 +1,20 @@
+SURVEYOR RC185.59 — CORREÇÃO DE CONTRASTE DOS CONFRONTANTES NO PDF
+
+Base: RC185.58
+
+Causa provada no código:
+O gerador SVG -> PDF removia todo stroke dos nomes dos confrontantes.
+Textos brancos configurados no editor ficavam brancos sobre a folha branca.
+A verificação anterior testava presença de nome no SVG, não seu contraste no PDF.
+
+Correção:
+Arquivo: assets/js/core/pdf-preview.js
+Antes do svg2pdf, os rótulos dos confrontantes são compostos em duas camadas
+vetoriais: um contorno contrastante atrás + nome na cor personalizada à frente.
+Para cor branca o contorno é escuro, e para cor escura o contorno é branco.
+Essa técnica não depende de paint-order no conversor.
+O visual do editor e os dados salvos não são alterados.
+
+Testes específicos: todos aprovados.
+Verificação geral: npm run verify — 208 grupos, build e dist aprovados.
+Teste real no Chrome/Brave gerando PDF com dados do cliente ainda pendente.

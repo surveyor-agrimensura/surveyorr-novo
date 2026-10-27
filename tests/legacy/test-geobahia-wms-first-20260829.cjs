@@ -1,0 +1,21 @@
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const map = fs.readFileSync('assets/js/features/mapa/app.js', 'utf8');
+const api = fs.readFileSync('functions/surveyor-api/src/main.js', 'utf8');
+const worker = fs.readFileSync('deploy/cloudflare-geoservices/src/worker.js', 'utf8');
+
+assert.match(map, /GEOBAHIA_WFS_MIN_ZOOM = 15/);
+assert.match(map, /GEOBAHIA_WFS_MAX_FEATURES = 50/);
+assert.match(map, /variant\.maxKey, String\(GEOBAHIA_WFS_MAX_FEATURES\)/);
+assert.doesNotMatch(map, /variant\.maxKey, '1500'/);
+assert.match(map, /enableExplicitGeobahiaWfs !== true/);
+assert.match(map, /Nenhum WFS massivo será iniciado/);
+assert.match(map, /buildSicarPropertyBoundaryWmsLayer/);
+assert.match(map, /sicar-boundary-wms/);
+assert.match(map, /const maxFeatures = 50;/);
+assert.doesNotMatch(map, /zoom >= 15 \? 3500/);
+assert.match(api, /preferWfs: item\.preferWfs === true/);
+assert.match(api, /forceWmsOnly:/);
+assert.match(worker, /fetchWithTimeout\(url, request, timeoutMs = 90000\)/);
+assert.match(worker, /fetchWithTimeout\(candidate, request, 90000\)/);
+console.log('PASS: CAR/SICAR é a fonte visual primária dos limites; GeoBahia permanece WMS-first e Worker tolera 90s.');

@@ -1,0 +1,21 @@
+const fs = require('fs');
+const path = require('path');
+const root = path.resolve(__dirname, '../..');
+const app = fs.readFileSync(path.join(root, 'assets/js/features/mapa/app.js'), 'utf8');
+const workspace = fs.readFileSync(path.join(root, 'assets/js/features/mapa/workspace.js'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'assets/css/features/mapa/app.css'), 'utf8');
+const mapa = fs.readFileSync(path.join(root, 'mapa/index.html'), 'utf8');
+function ok(v,m){ if(!v){ console.error('FAIL:',m); process.exit(1); } console.log('OK:',m); }
+ok(app.includes('const rawTx = mapRect.left + point.x') && app.includes('const tx = Math.max(mapRect.left + edgeGap'), 'seta continua visível com alvo fora da viewport usando clamp na borda');
+ok(app.includes('const sx = panelRect.left + 1') && app.includes('const sy = panelRect.top + (panelRect.height * 0.52)'), 'seta nasce e permanece grudada em ponto fixo da lateral do painel direito');
+ok(app.includes('let ruralInfoProbeSerial = 0') && app.includes('let ruralInfoRequestSerial = 0'), 'consultas fundiárias têm proteção contra resposta assíncrona antiga');
+ok(app.includes("const neutralAccent = '#64748B'"), 'clique vazio abre ligação neutra/cinza sem fingir imóvel cadastrado');
+ok(app.includes("coordinatesOnly: !hasRegisteredProperty"), 'painel de clique vazio mostra somente coordenadas quando CAR/SIGEF não existem');
+ok(workspace.includes("clearButton.id = 'svMapSearchClear'"), 'busca técnica possui botão de limpar resultado');
+ok(workspace.includes("type === 'car' || type === 'coordinate'"), 'botão limpar aparece somente em CAR ou coordenadas');
+ok(app.includes("notifyMapSearchResult('city')"), 'busca por cidade não mantém botão técnico de limpar');
+ok(app.includes("notifyMapSearchResult('coordinate')"), 'busca por coordenada ativa o controle de limpar');
+ok(workspace.includes("detail: { type: 'car' }"), 'busca CAR ativa o controle de limpar');
+ok(css.includes('#svMapSearchClear[hidden]'), 'controle limpar possui estado visual oculto');
+ok(/map-workspace-clean-v21\.11\.5\.js\?v=[^"']+/.test(mapa), 'mapa força carregamento do runtime de busca rural oficial online');
+console.log('PASS: painel fundiário persistente, seta fixada e limpeza de consulta validados.');

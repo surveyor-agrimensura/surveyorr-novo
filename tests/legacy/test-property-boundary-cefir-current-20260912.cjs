@@ -1,0 +1,15 @@
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const map = fs.readFileSync('assets/js/features/mapa/app.js', 'utf8');
+const api = fs.readFileSync('functions/surveyor-api/src/main.js', 'utf8');
+const worker = fs.readFileSync('deploy/cloudflare-geoservices/src/worker.js', 'utf8');
+assert.match(map, /function buildGeobahiaPropertyBoundaryWmsLayer/);
+assert.match(map, /function buildSicarPropertyBoundaryWmsLayer/);
+assert.match(map, /sicarStateCodeForLayer\(layer\) === 'BA'\) return buildGeobahiaPropertyBoundaryWmsLayer/);
+assert.match(map, /cefir_imovel_rural_limite_inema/);
+assert.match(map, /geobahia-cefir-boundary-wms/);
+assert.match(map, /return buildSicarPropertyBoundaryWmsLayer\(layer, pref, runtime\)/);
+assert.match(api, /const SICAR_STATE_CATALOG = Object\.freeze/);
+assert.match(worker, /geoserver\.car\.gov\.br/);
+assert.match(worker, /geoserver\.inema\.ba\.gov\.br|inema\.ba\.gov\.br/);
+console.log('PASS: Bahia usa CEFIR/INEMA em Limites de Propriedade; demais UFs mantêm CAR/SICAR.');

@@ -1,0 +1,12 @@
+const fs=require('fs');
+const assert=require('assert');
+const js=fs.readFileSync('assets/js/features/memorial/app.js','utf8');
+const html=fs.readFileSync('memorial/index.html','utf8');
+assert(js.includes('function selectedTemplateIdFromUi()'), 'Memorial deve congelar o modelo visível no seletor.');
+assert(js.includes('const requestedTemplateId=selectedTemplateIdFromUi();'), 'Geração deve usar o modelo selecionado na tela.');
+assert(js.includes('const authorized=await ensureSelectedTemplateAuthorized(requestedTemplateId);'), 'Modelo restrito deve validar autorização antes de gerar.');
+assert(js.includes('está selecionado, mas esta conta ainda não possui autorização'), 'Falha de autorização não pode cair silenciosamente no padrão.');
+assert(js.includes("const resolved=preferenceApi()?.resolve?.(loadedCustomization)"), 'Carregamento deve respeitar o resolvedor central de preferência.');
+assert(!js.includes("currentMemorialTemplateId=validTemplateId(select?.value)?select.value:'standard';"), 'Não pode existir fallback silencioso para standard durante a geração.');
+assert(/agro-(selected-fix-r2|pagination-r21|confrontant-conditional-r25)/.test(html), 'Página deve invalidar cache do gerador corrigido.');
+console.log('OK R26.3.20 — modelo selecionado do Memorial é preservado na geração.');

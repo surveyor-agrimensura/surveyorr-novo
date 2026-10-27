@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const source = fs.readFileSync('assets/js/core/documents.js','utf8');
+const begin = source.indexOf("saveButton.addEventListener('click',async()=>{");
+const end = source.indexOf("window.addEventListener('surveyor:document-dirty'", begin);
+assert.ok(begin >= 0 && end > begin, 'Fluxo central de salvar documentos precisa existir');
+const save = source.slice(begin,end);
+assert.match(save, /if \(!nativeSave \|\| !\(await waitForTechnicalSave\(modal\)\)\)/, 'Não aceitar timeout do editor como salvamento concluído');
+assert.match(save, /catch \(error\) \{\s*saveVerified = false;/, 'Falha de sincronização não pode ser silenciosa');
+assert.match(save, /if \(saveVerified\) \{\s*setDirty\(false\)/, 'Limpar estado de alterações apenas quando confirmação for válida');
+assert.match(save, /surveyor:document-save-incomplete/, 'Notificar falha sem emitir sucesso');
+assert.match(save, /catch \(error\) \{\s*setDirty\(true\)/, 'Exceções devem preservar estado de alterações pendentes');
+console.log('PASS document-save-confirmation: erros de gravação não devem ser anunciados como sucesso.');

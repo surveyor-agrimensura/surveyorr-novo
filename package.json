@@ -1,0 +1,33 @@
+{
+  "name": "surveyor",
+  "version": "1.0.0-rc.185.74",
+  "private": true,
+  "type": "module",
+  "description": "Surveyor — plataforma web de georreferenciamento e agrimensura.",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "version": "node scripts/version.mjs",
+    "build": "npm run version && node scripts/build.mjs",
+    "test": "node tests/stable/run.mjs",
+    "test:legacy": "node tests/legacy/run.mjs",
+    "test:security": "node scripts/security.mjs",
+    "test:functions": "node --check functions/surveyor-api/src/main.js && node --check functions/surveyor-geoservices/src/main.js && node --check functions/surveyor-save/src/main.js && node --check functions/surveyor-support/src/main.js",
+    "test:integrity": "npm run version && node scripts/integrity.mjs",
+    "verify:dist": "node tests/stable/dist-sync.test.mjs",
+    "verify": "npm run test:security && npm run test:integrity && npm run test:functions && npm run test:css && npm test && npm run build && npm run verify:dist",
+    "backup": "node scripts/backup.mjs",
+    "backup:verify": "node scripts/backup-verify.mjs",
+    "restore": "node scripts/restore.mjs",
+    "audit:production": "node scripts/audit-production.mjs",
+    "validate:env": "node scripts/validate-env.mjs",
+    "smoke:production": "node scripts/smoke-production.mjs",
+    "cleanup:car": "node scripts/cleanup-car.mjs",
+    "audit:technical": "node scripts/technical-audit.mjs",
+    "technical:build": "tsc -p core/technical-engine/tsconfig.json",
+    "test:css": "node scripts/css-integrity.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "surveyorRelease": "1.0.0-rc.185.74"
+}

@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const source = fs.readFileSync('assets/js/features/mapa/app.js', 'utf8');
+assert.match(source, /resolveGeobahiaCatalogLayer/);
+assert.match(source, /\/resolve\?\$\{params\.toString\(\)\}/);
+assert.match(source, /WMS-first para o catálogo GeoBahia\/INEMA/);
+assert.doesNotMatch(source, /return geobahiaLayerShouldPreferWfs\(layer\) \|\| isUsingHuggingFaceGeoServices\(\);/);
+assert.match(source, /enableExplicitGeobahiaWfs/);
+assert.match(source, /params\.append\('alias', clean\)/);
+assert.match(source, /Vetor_Recursos_Ambientais/);
+assert.match(source, /GEOBAHIA_WFS_MAX_FEATURES = 50/);
+assert.match(source, /Nenhum WFS massivo será iniciado/);
+assert.match(source, /previousFailure\?\.phase === 'error'[\s\S]{0,160}retryAt/);
+assert.match(source, /Nova tentativa automática em/);
+assert.ok(source.includes('buildCarBahiaFallbackLayer'), 'O fallback especial de limites de propriedade deve ser preservado');
+assert.match(source, /showColor: false,[\s\S]{0,260}opacity: catalogPreference/);
+assert.match(source, /showColor: !isRemoteService/);
+assert.match(source, /showFillColor: polygonLike/);
+assert.doesNotMatch(source.match(/const catalogControls = createLayerStyleControls\(\{[\s\S]*?\n      \}\);/)?.[0] || '', /onColor:/);
+console.log('Frontend GeoBahia: WMS prioritário, WFS limitado/opcional, aliases e retentativa automática aprovados.');

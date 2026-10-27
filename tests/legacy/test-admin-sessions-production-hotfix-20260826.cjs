@@ -1,0 +1,10 @@
+const fs=require('fs');
+const path=require('path');
+const root=path.resolve(__dirname,'../..');
+const api=fs.readFileSync(path.join(root,'functions/surveyor-api/src/main.js'),'utf8');
+const ui=fs.readFileSync(path.join(root,'assets/js/admin/organization.js'),'utf8');
+if(/userStatusKey\(user\)/.test(api)) throw new Error('API de sessões ainda depende de userStatusKey() inexistente.');
+if(!api.includes("const normalizedStatus = String(user?.status || '').trim().toLowerCase();")) throw new Error('Normalização segura de status ausente.');
+if(!ui.includes('Promise.allSettled([')) throw new Error('Painel de usuário ainda falha inteiro quando um endpoint auxiliar falha.');
+if(!ui.includes('Sessão/último login temporariamente indisponível.')) throw new Error('Fallback visual de sessão ausente.');
+console.log('OK admin sessions production hotfix');

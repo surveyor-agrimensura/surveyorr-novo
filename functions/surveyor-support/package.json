@@ -1,0 +1,12 @@
+{
+  "name": "surveyor-support",
+  "version": "1.0.0-rc.185.74",
+  "type": "module",
+  "main": "src/main.js",
+  "description": "Function de suporte Surveyor — proteção comercial, validação rígida, observabilidade e segurança contra abuso.",
+  "scripts": {
+    "check": "node --check src/main.js"
+  },
+  "dependencies": {},
+  "surveyorRelease": "1.0.0-rc.185.74"
+}

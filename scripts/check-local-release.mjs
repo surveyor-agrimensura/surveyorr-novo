@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+const version = JSON.parse(fs.readFileSync('package.json','utf8')).version;
+const html = fs.readFileSync('mapa/index.html','utf8');
+const app = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const distHtml = fs.readFileSync('dist/surveyor-frontend/mapa/index.html','utf8');
+const distApp = fs.readFileSync('dist/surveyor-frontend/assets/js/features/mapa/app.js','utf8');
+const hash = s => crypto.createHash('sha256').update(s).digest('hex');
+assert(html.includes(`/assets/js/features/mapa/app.js?v=1.0.0-rc.185.74`),'HTML da fonte está apontando para uma revisão diferente.');
+assert(distHtml.includes(`/assets/js/features/mapa/app.js?v=1.0.0-rc.185.74`),'HTML da distribuição está apontando para uma revisão diferente.');
+assert(app.includes('PROPERTY_GEOMETRY_PREFETCH_WINDOW = 3'),'Fila móvel de três imóveis não está presente no código-fonte.');
+assert.equal(hash(app),hash(distApp),'Código-fonte e distribuição possuem app.js diferentes.');
+console.log(`OK: SURVEYOR ${version}`);
+console.log(`OK: mapa/app.js fonte = dist; SHA-256 ${hash(app)}`);
+console.log('OK: pré-carregamento progressivo de três imóveis incluído.');
+console.log(`Abra localhost:5500/mapa/ e confira que app.js?v=${version} é carregado.`);

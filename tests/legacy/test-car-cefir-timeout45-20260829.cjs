@@ -1,0 +1,11 @@
+const fs = require('fs');
+const map = fs.readFileSync('assets/js/features/mapa/app.js', 'utf8');
+const ok = (c,m)=>{ if(!c) throw new Error(m); };
+ok(/fetchSicarCarWfsResult[\s\S]*?fetchJsonCandidateUrls\([\s\S]*?,\s*45_000\)/.test(map), 'SICAR WFS pontual interno deve manter tolerância de rede');
+ok(/fetchConfiguredPropertyLayerEnrichment[\s\S]*?fetchJsonCandidateUrls\([\s\S]*?,\s*45_000\)/.test(map), 'camada configurada deve manter tolerância de rede');
+ok(/fetchCarWfsEnrichment[\s\S]*?fetchJsonCandidateUrls\([\s\S]*?,\s*45_000\)/.test(map), 'enriquecimento CEFIR interno deve manter tolerância de rede');
+ok(/const sicarPromise = withTimeout\(fetchSicarCarWfsResult\(latlng\),\s*20_000,\s*null\)/.test(map), 'painel R22 deve limitar espera visível do SICAR a 20 s');
+ok(/fetchCarWfsEnrichment\(latlng, initialCarHit\.value\),\s*22_000,\s*null/.test(map), 'enriquecimento CEFIR inicial deve ser complementar e limitado');
+ok(/fetchCarWfsEnrichment\(latlng, sicarCarHit\.value\),\s*22_000,\s*null/.test(map), 'enriquecimento CEFIR após SICAR deve ser complementar e limitado');
+ok(!/fetchSicarCarWfsHtml\(latlng\),\s*7_000/.test(map), 'timeout antigo de 7 s não pode permanecer');
+console.log('PASS R22: rede mantém tolerância interna, mas painel não bloqueia nome/dados CAR aguardando SIGEF/CEFIR.');

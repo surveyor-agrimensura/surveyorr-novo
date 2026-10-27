@@ -1,0 +1,47 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head><link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin><link rel="dns-prefetch" href="//api.surveyorr.com.br"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="dns-prefetch" href="//cdn.jsdelivr.net"><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https:; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' https:; manifest-src 'self'; upgrade-insecure-requests">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <title>Crie sua senha — Surveyor</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74">
+  <style>
+    :root{--blue:#0f5bdc;--blue-dark:#0d315f;--line:#dbe4f0;--muted:#64748b;--danger:#b91c1c;--success:#166534}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#eef5ff,#f8fbff 48%,#fff);font-family:Inter,Segoe UI,Arial,sans-serif;color:#172033}
+    .card{width:min(540px,100%);padding:34px;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 70px rgba(15,49,95,.14)}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:24px;color:var(--blue-dark);font-weight:900}.brand img{width:52px;height:52px;object-fit:contain}.brand small{display:block;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+    .eyebrow{display:inline-block;color:var(--blue);font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.card h1{margin:8px 0 10px;font-size:34px;line-height:1.1;color:var(--blue-dark)}.intro{margin:0 0 22px;color:var(--muted);line-height:1.55}.account{margin:0 0 22px;padding:13px 15px;border:1px solid #cfe0ff;border-radius:12px;background:#f7faff;color:#41536a;font-size:13px}.account b{display:block;color:var(--blue-dark)}
+    form{display:grid;gap:15px}label{display:grid;gap:7px;color:var(--blue-dark);font-size:13px;font-weight:850}input{width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:12px;outline:none;font:inherit}input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(15,91,220,.12)}.hint{font-size:12px;color:var(--muted);font-weight:500}
+    button{min-height:48px;border:0;border-radius:12px;background:var(--blue);color:#fff;font:inherit;font-weight:900;cursor:pointer;box-shadow:0 10px 24px rgba(15,91,220,.2)}button:disabled{opacity:.65;cursor:wait}.status{display:none;padding:12px 14px;border-radius:11px;font-size:13px;line-height:1.45}.status.show{display:block}.status.error{background:#fef2f2;border:1px solid #fecaca;color:var(--danger)}.status.success{background:#ecfdf5;border:1px solid #bbf7d0;color:var(--success)}.back{display:block;margin-top:16px;text-align:center;color:var(--blue);font-size:13px;font-weight:800;text-decoration:none}
+    @media(max-width:560px){body{padding:14px}.card{padding:25px}.card h1{font-size:29px}}
+  </style>
+<link rel="stylesheet" href="/assets/css/core/utilities.css?v=1.0.0-rc.185.74"></head>
+<body>
+  <main class="card">
+    <a class="brand" href="../login/"><img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="Surveyor"><span>Surveyor<small>Primeiro acesso</small></span></a>
+    <span class="eyebrow">Conta criada após a contratação</span>
+    <h1>Crie sua senha definitiva</h1>
+    <p class="intro">Por segurança, o Surveyor não envia senhas prontas. Use este acesso temporário para criar sua própria senha e liberar sua conta.</p>
+    <div class="account"><b>Conta em configuração</b><span id="accountEmail">Carregando identificação...</span></div>
+    <form id="firstAccessForm" novalidate>
+      <label>Nova senha
+        <input id="newPassword" type="password" minlength="12" autocomplete="new-password" placeholder="Mínimo de 12 caracteres" required>
+        <span class="hint">Use letras maiúsculas, minúsculas, números e um símbolo.</span>
+      </label>
+      <label>Confirmar nova senha
+        <input id="confirmPassword" type="password" minlength="12" autocomplete="new-password" placeholder="Digite a senha novamente" required>
+      </label>
+      <div class="status" id="status" aria-live="polite"></div>
+      <button id="saveButton" type="submit">Criar nova senha</button>
+    </form>
+    <a class="back" href="../login/">Voltar para o login</a>
+  </main>
+  <script src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/first-access.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>

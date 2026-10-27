@@ -1,0 +1,12 @@
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const root = path.resolve(__dirname, '../..');
+const app = fs.readFileSync(path.join(root, 'assets/js/features/mapa/app.js'), 'utf8');
+assert(app.includes('async function fetchRuralPropertiesByName(query, municipality, stateCode)'));
+assert(app.includes("if (uf === 'BA')"));
+assert(app.includes('const cefirFeatures = await fetchCefirPropertiesByName(query, municipality)'));
+assert(app.includes('if (cefirFeatures.length) return cefirFeatures;'), 'Bahia deve preservar geometria CEFIR/INEMA encontrada');
+assert(app.includes('return fetchSicarPropertiesByName(query, municipality, uf);'), 'SICAR deve continuar como fallback/nas demais UFs');
+assert(!app.includes('fetchSicarFeatureByCarCode(carCode, uf)'), 'busca BA não deve trocar geometria CEFIR encontrada por SICAR');
+console.log('PASS R26.3.59: busca nominal BA usa GeoBahia/CEFIR e preserva sua geometria; SICAR é contingência.');

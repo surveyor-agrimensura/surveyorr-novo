@@ -1,0 +1,96 @@
+/* SURVEYOR — melhorias modulares 2026-09-04 */
+/* Estado de salvamento integrado ao próprio botão Salvar.
+   Evita o badge grande ocupando uma coluna da barra superior. */
+body.georural-map-page .sv-map-toolbar-item.sv-save-state-aware{overflow:visible}
+body.georural-map-page .sv-map-toolbar-item.sv-save-state-aware .sv-save-state-dot{
+  position:absolute;top:6px;right:9px;width:7px;height:7px;border-radius:50%;
+  background:#94a3b8;box-shadow:0 0 0 2px #fff;pointer-events:none;
+}
+body.georural-map-page .sv-map-toolbar-item.sv-save-state-aware[data-save-state="saved"] .sv-save-state-dot{background:#16a05d}
+body.georural-map-page .sv-map-toolbar-item.sv-save-state-aware[data-save-state="dirty"] .sv-save-state-dot{background:#d99000}
+body.georural-map-page .sv-map-toolbar-item.sv-save-state-aware[data-save-state="saving"] .sv-save-state-dot{
+  background:transparent;border:2px solid #8bb7f7;border-top-color:#0f62e8;box-sizing:border-box;animation:sv-save-spin .8s linear infinite
+}
+body.georural-map-page .sv-map-toolbar-item.sv-save-state-aware[data-save-state="local"] .sv-save-state-dot{background:#f59e0b}
+body.georural-map-page .sv-map-toolbar-item.sv-save-state-aware[data-save-state="error"] .sv-save-state-dot{background:#dc2626}
+@keyframes sv-save-spin{to{transform:rotate(360deg)}}
+
+body.georural-map-page .surveyor-live-snap-toggle.active{font-weight:800;color:#0b5ad9;background:#eef5ff}
+.surveyor-live-snap-icon{background:transparent;border:0}
+.surveyor-live-snap-icon span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid #0b63e5;color:#0b63e5;font-size:22px;font-weight:900;box-shadow:0 2px 10px rgba(15,23,42,.2)}
+.leaflet-tooltip.surveyor-live-snap-tooltip{background:#0f2746;color:#fff;border:0;border-radius:7px;padding:5px 8px;font-size:11px;font-weight:700;box-shadow:0 3px 12px rgba(0,0,0,.22)}
+.leaflet-tooltip-top.surveyor-live-snap-tooltip:before{border-top-color:#0f2746}
+
+body.georural-map-page .surveyor-project-audit-dialog{
+  width:min(760px,calc(100vw - 28px));max-height:min(86vh,820px);margin:auto;padding:0;overflow:hidden;
+  border:1px solid #d6e1ed;border-radius:14px;background:#fff;color:#10243c;box-shadow:0 26px 80px rgba(15,23,42,.28);
+}
+body.georural-map-page .surveyor-project-audit-dialog::backdrop{background:rgba(24,42,65,.52);backdrop-filter:blur(1.5px)}
+body.georural-map-page .sv-audit-dialog-head{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr) 34px;align-items:start;gap:12px;padding:16px 18px;border-bottom:1px solid #e1e8f1;background:#fff}
+body.georural-map-page .sv-audit-dialog-icon{width:44px;height:44px;display:grid;place-items:center;border:1px solid #cfe0f8;border-radius:10px;background:#eef5ff;color:#0f63e9;font-size:19px;font-weight:900}
+body.georural-map-page .sv-audit-dialog-head .eyebrow{margin:0 0 2px;color:#65758a;font-size:10px;font-weight:750;letter-spacing:.03em}
+body.georural-map-page .sv-audit-dialog-head h2{margin:0;color:#10243c;font-size:22px;line-height:1.15;font-weight:900;letter-spacing:-.02em}
+body.georural-map-page .sv-audit-dialog-description{margin:4px 0 0;max-width:560px;color:#6b7c91;font-size:10.5px;line-height:1.4}
+body.georural-map-page .sv-audit-dialog-head .close{position:static;width:34px;height:34px;display:grid;place-items:center;border:1px solid #d3deeb;border-radius:9px;background:#fff;color:#18324e;font-size:20px;cursor:pointer}
+body.georural-map-page .surveyor-project-audit-dialog #validationList{max-height:calc(min(86vh,820px) - 92px);display:grid;gap:11px;padding:14px 18px 18px;overflow:auto;background:#fff}
+body.georural-map-page .sv-audit-summary{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 15px;border:1px solid #cfe0f4;border-radius:10px;background:#f8fbff}
+body.georural-map-page .sv-audit-summary>div:first-child{display:grid;gap:3px;min-width:0}
+body.georural-map-page .sv-audit-summary strong{font-size:14px;color:#10243c;font-weight:900}
+body.georural-map-page .sv-audit-summary span{font-size:10px;color:#64748b}
+body.georural-map-page .sv-audit-score{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;align-items:baseline;justify-content:end;column-gap:2px;min-width:100px;color:#0b5ad9}
+body.georural-map-page .sv-audit-score b{font-size:30px;line-height:1;font-weight:900}
+body.georural-map-page .sv-audit-score small{font-size:11px;color:#465b75}
+body.georural-map-page .sv-audit-score em{grid-column:1 / -1;margin-top:3px;font-style:normal;font-size:8.5px;color:#64748b;text-align:right}
+body.georural-map-page .sv-audit-counters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:0 2px 10px;border-bottom:1px solid #e4eaf2}
+body.georural-map-page .sv-audit-counters>div{min-height:48px;display:grid;grid-template-columns:34px auto;grid-template-rows:auto auto;align-items:center;column-gap:8px;padding:3px 12px;border-right:1px solid #e4eaf2}
+body.georural-map-page .sv-audit-counters>div:last-child{border-right:0}
+body.georural-map-page .sv-audit-counters span{grid-row:1 / 3;width:30px;height:30px;display:grid;place-items:center;border-radius:9px;font-size:15px;font-weight:900}
+body.georural-map-page .sv-audit-counters b{align-self:end;color:#17314c;font-size:14px;line-height:1}
+body.georural-map-page .sv-audit-counters small{align-self:start;color:#64748b;font-size:8.5px;line-height:1.15}
+body.georural-map-page .sv-audit-counters .is-error span{background:#ffe8e6;color:#cf3428}
+body.georural-map-page .sv-audit-counters .is-warn span{background:#fff3d4;color:#a46600}
+body.georural-map-page .sv-audit-counters .is-ok span{background:#e5f7ee;color:#087443}
+body.georural-map-page .sv-audit-counters .is-total{grid-template-columns:1fr;grid-template-rows:auto auto}
+body.georural-map-page .sv-audit-list-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+body.georural-map-page .sv-audit-list-head h3{margin:0;color:#17314c;font-size:13px;font-weight:850}
+body.georural-map-page .sv-audit-list-head select{height:32px;min-height:32px;padding:0 28px 0 10px;border:1px solid #cdd9e7;border-radius:8px;background:#fff;color:#17314c;font-size:9.5px;font-weight:750}
+body.georural-map-page .sv-audit-items{display:grid;gap:6px}
+body.georural-map-page .sv-audit-item{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px 9px;border:1px solid #dfe7f0;border-radius:9px;background:#fff}
+body.georural-map-page .sv-audit-item[hidden]{display:none}
+body.georural-map-page .sv-audit-icon{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;font-size:13px;font-weight:900;background:#eef2f7;color:#475569}
+body.georural-map-page .sv-audit-item.is-ok .sv-audit-icon{background:#e8f8ef;color:#087443}
+body.georural-map-page .sv-audit-item.is-warn .sv-audit-icon{background:#fff4d7;color:#9a5b00}
+body.georural-map-page .sv-audit-item.is-error .sv-audit-icon{background:#ffebe9;color:#b42318}
+body.georural-map-page .sv-audit-copy{display:grid;gap:2px;min-width:0}
+body.georural-map-page .sv-audit-copy b{font-size:10.5px;color:#13243c;font-weight:850}
+body.georural-map-page .sv-audit-copy small{font-size:9px;line-height:1.3;color:#64748b}
+body.georural-map-page .sv-audit-fix{min-height:30px;border:1px solid #a9c7f3;background:#fff;color:#0b5ad9;border-radius:7px;padding:0 10px;font-size:9.5px;font-weight:850;cursor:pointer}
+body.georural-map-page .sv-audit-fix:hover{background:#edf5ff}
+
+body.georural-map-page .sv-history-group{position:relative}
+body.georural-map-page .sv-history-open{border:0;background:transparent;cursor:pointer;padding:0 4px;font:inherit;color:inherit}
+body.georural-map-page .sv-history-open:hover{text-decoration:underline}
+body.georural-map-page .sv-history-panel{position:absolute;z-index:5000;top:calc(100% + 8px);right:0;width:min(360px,calc(100vw - 24px));max-height:460px;overflow:hidden;background:#fff;border:1px solid #d8e1ec;border-radius:14px;box-shadow:0 16px 40px rgba(15,23,42,.18);color:#13243c}
+body.georural-map-page .sv-history-panel[hidden]{display:none}
+body.georural-map-page .sv-history-panel header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 13px;border-bottom:1px solid #e6edf5}
+body.georural-map-page .sv-history-panel header>div{display:grid;gap:2px}
+body.georural-map-page .sv-history-panel header b{font-size:12px}
+body.georural-map-page .sv-history-panel header small{font-size:10px;color:#64748b}
+body.georural-map-page .sv-history-close{width:30px;height:30px;border:0;border-radius:8px;background:#f3f6fa;color:#475569;font-size:20px;cursor:pointer}
+body.georural-map-page .sv-history-session-list{max-height:315px;overflow:auto;padding:7px}
+body.georural-map-page .sv-history-entry{width:100%;display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:8px;text-align:left;border:0;background:#fff;border-radius:9px;padding:8px 9px;cursor:pointer;color:#13243c}
+body.georural-map-page .sv-history-entry:hover{background:#eef5ff}
+body.georural-map-page .sv-history-entry time{font-size:10px;font-variant-numeric:tabular-nums;color:#64748b}
+body.georural-map-page .sv-history-entry span{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.georural-map-page .sv-history-empty{margin:0;padding:20px 12px;text-align:center;font-size:11px;color:#64748b}
+body.georural-map-page .sv-history-panel footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-top:1px solid #e6edf5;background:#f8fafc}
+body.georural-map-page .sv-history-panel footer span{font-size:10px;color:#64748b;line-height:1.25}
+body.georural-map-page .sv-history-cloud{border:1px solid #cbd8e8;background:#fff;color:#0b5ad9;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
+
+body.georural-map-page .sv-dossier-export-btn{font-weight:800;border-top:1px solid #e2e8f0;margin-top:4px;padding-top:9px}
+
+@media (max-width:700px){
+  body.georural-map-page .sv-audit-item{grid-template-columns:26px minmax(0,1fr)}
+  body.georural-map-page .sv-audit-fix{grid-column:2;justify-self:start}
+}
+@media (prefers-reduced-motion:reduce){body.georural-map-page .sv-map-toolbar-item.sv-save-state-aware[data-save-state="saving"] .sv-save-state-dot{animation:none}}

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="86" viewBox="0 0 340 86" role="img">
+  <rect width="340" height="86" rx="16" fill="white"/>
+  <g transform="translate(18 18)">
+    <path d="M0 20 30 0l30 18-30 18Z" fill="#79a33d"/>
+    <path d="M38 8 60 20v16L38 24Z" fill="#5f8e26"/>
+  </g>
+  <text x="98" y="38" font-size="42" font-family="Arial, sans-serif" font-weight="800" fill="#6b9931">INCRA</text>
+  <text x="100" y="57" font-size="12" font-family="Arial, sans-serif" font-weight="700" fill="#4f5f6f">INSTITUTO NACIONAL DE COLONIZAÇÃO E REFORMA AGRÁRIA</text>
+</svg>

@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const app = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const html = fs.readFileSync('mapa/index.html','utf8');
+assert.match(app, /function ruralOwnerProperty\(properties = \{\}\)/);
+assert.match(app, /nome_proprietario/);
+assert.match(app, /nome_detentor/);
+assert.match(app, /nome_possuidor/);
+assert.match(app, /registry-owner-row/);
+assert.match(app, /<th>Proprietário<\/th>/);
+assert.match(html, /app-v21\.9\.0\.js\?v=21\.11\.5(?:p-owner-registry|q-owner-enrichment|-car-layerdata-outline-0821)/);
+console.log('OK: v21.11.5p — proprietário retornado por CAR/SIGEF é priorizado e exibido na consulta fundiária oficial.');

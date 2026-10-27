@@ -1,0 +1,65 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR"><head><link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin><link rel="dns-prefetch" href="//api.surveyorr.com.br"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="dns-prefetch" href="//cdn.jsdelivr.net"><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob: https:; manifest-src 'self'; upgrade-insecure-requests"><script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script><meta name="referrer" content="strict-origin-when-cross-origin"><meta charset="utf-8">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071225">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/surveyor-192.png?v=1.0.0-rc.185.74">
+  <meta name="application-name" content="Surveyor">
+<title>Módulo CAR — Surveyor</title><link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="/assets/css/core/ui.css?v=1.0.0-rc.185.74"></head>
+<body data-page="car.html"><div class="suite"><aside class="side" id="side"><div class="brand"><div class="brand-mark"><img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="" data-hide-on-error="1"></div><div><strong>Surveyor</strong><small>Cadastro Ambiental Rural</small></div></div><nav class="nav"></nav><div class="side-note"></div></aside>
+<main class="main"><header class="top"><div><button class="btn mobile-toggle" id="mobileToggle">☰</button><h1>Módulo CAR</h1><p>Cadastre o imóvel, confira as feições e gere os documentos.</p></div><div class="top-actions"><button class="link-btn" id="newCarProject" type="button">Novo</button><button class="link-btn primary" id="saveCarProject" type="button">Salvar</button></div></header>
+<section class="panel car-project-picker car-project-picker-simple"><label>Projeto<select id="carProjectSelect"><option value="">Novo projeto</option></select></label><span id="carSaveState">Nenhum projeto selecionado.</span><button class="link-btn primary car-validate-project-btn" id="validateCarProject" type="button">Validar projeto</button></section>
+<nav class="sheet-tabs car-tabs car-simple-tabs" aria-label="Etapas do Módulo CAR"><button class="active" data-car-tab="cadastro"><small>1</small> Cadastro</button><button data-car-tab="features"><small>2</small> Feições</button><button data-car-tab="outputs"><small>3</small> Documentos</button></nav>
+<section class="panel car-tab-panel active" id="car-cadastro"><div class="form-grid three">
+    <label>Nome do projeto<input id="carProjectName" placeholder="Projeto CAR — Fazenda Boa Esperança"></label>
+    <label>Nome do imóvel<input id="carPropertyName" placeholder="Fazenda Boa Esperança"></label>
+    <label>Matrícula/registro<input id="carRegistration" placeholder="Número ou referência"></label>
+    <label>Município<input id="carMunicipality" placeholder="Amargosa"></label>
+    <label>UF<select id="carState"><option>BA</option><option>MG</option><option>SP</option><option>ES</option><option>GO</option><option>SE</option><option>PE</option></select></label>
+    <label>Zona<select id="carZone"><option value="rural">Rural</option><option value="urbana">Urbana</option></select></label>
+    <label>Cadastrante<input id="registrantName" placeholder="Nome completo"></label>
+    <label>CPF/CNPJ do cadastrante<input id="registrantDocument" placeholder="Documento"></label>
+    <label>E-mail do cadastrante<input id="registrantEmail" type="email" placeholder="email@exemplo.com"></label>
+  </div>
+  <div class="panel-heading"><div><h2>Proprietários/possuidores</h2><p>Cadastre um ou vários titulares.</p></div></div><div id="carOwners" class="car-owner-list"></div><div class="car-owner-save-row"><button class="btn primary" id="addCarOwner" type="button">Salvar proprietário</button></div>
+</section>
+<section class="panel car-tab-panel" id="car-features"><div class="button-row car-feature-actions"><button class="link-btn primary" id="openCarMap" type="button">Abrir mapa</button></div><div id="carFeatureValidation" class="output">Selecione um projeto para visualizar as feições.</div><div class="table-wrap"><table class="data-table"><thead><tr><th>Ordem</th><th>Feição</th><th>Categoria</th><th>Geometria</th><th>Área (ha)</th><th>Visualizar</th></tr></thead><tbody id="carFeatureBody"></tbody></table></div><p class="car-readonly-note">Para criar ou editar geometrias, use <b>Mapa</b> no menu superior. Aqui o mapa é somente para conferência.</p></section>
+<section class="panel car-tab-panel" id="car-outputs"><div class="button-row"><a class="link-btn" id="openCarCroqui" href="/mapas/">Gerar croqui</a><button class="btn primary" id="generateCarReport" type="button">Gerar relatório</button><div class="export-menu"><button class="btn" type="button">Download ▾</button><div class="export-menu-list"><button type="button" data-click-target="downloadCarReport">Relatório HTML</button><button type="button" data-click-target="downloadCarWordV197">Word editável</button><button type="button" data-click-target="downloadCarPdfV197">PDF / imprimir</button><button type="button" data-click-target="exportCarPackage">Pacote técnico CAR</button></div></div><button class="btn export-hidden" id="downloadCarReport" type="button">Baixar relatório HTML</button><button class="btn green export-hidden" id="exportCarPackage" type="button">Exportar pacote técnico CAR</button></div><div class="car-output-grid"><div><h2>Relatório</h2><div id="carReportPreview" data-document-preview-generate="generateCarReport" data-document-preview="1" hidden class="preview"><p>Gere o relatório para visualizar.</p></div></div><aside class="car-share-box"><h2>Mapa público e QR Code</h2><p>O link permite ao cliente visualizar as feições e ativar/desativar camadas sem entrar no sistema.</p><button class="btn primary" id="createCarShare" type="button">Gerar/atualizar link público</button><canvas id="carQrCanvas" width="220" height="220"></canvas><input id="carPublicUrl" readonly placeholder="O link aparecerá aqui"><div class="button-row"><button class="btn" id="copyCarPublicUrl" type="button">Copiar link</button><button class="btn danger" id="disableCarShare" type="button">Desativar link</button></div></aside></div><p class="warning">O pacote técnico e o relatório são auxiliares. Eles não substituem o módulo oficial do SICAR/CEFIR nem garantem importação em formatos proprietários do governo.</p></section>
+</main></div>
+<dialog id="carMapViewerDialog" class="portal-dialog car-map-viewer-dialog" aria-labelledby="carMapViewerTitle">
+  <div class="car-map-viewer-shell">
+    <header class="car-map-viewer-header">
+      <div><span class="eyebrow">MAPA DO PROJETO</span><h2 id="carMapViewerTitle">Feições do imóvel</h2><p>Visualização interna, sem ferramentas de desenho ou edição.</p></div>
+      <button class="dialog-close" id="closeCarMapViewer" type="button" aria-label="Fechar mapa">×</button>
+    </header>
+    <div class="car-map-viewer-toolbar">
+      <div class="car-map-toolbar-left">
+        <span class="car-readonly-badge">Somente visualização</span>
+        <div class="car-map-base-switch" role="group" aria-label="Tipo de mapa">
+          <button type="button" class="active" data-car-basemap="satellite" aria-pressed="true">Satélite</button>
+          <button type="button" data-car-basemap="map" aria-pressed="false">Mapa</button>
+        </div>
+        <span class="car-map-base-status">Fundo: <b id="carMapBaseStatus">Satélite</b></span>
+      </div>
+      <button class="btn" id="fitCarMap" type="button">Centralizar feições</button>
+    </div>
+    <div class="car-map-viewer-layout">
+      <div class="car-map-canvas-wrap">
+        <div id="carReadonlyMap" aria-label="Mapa das feições do projeto"></div>
+        <svg id="carReadonlyDrawingOverlay" class="car-readonly-drawing-overlay" aria-label="Desenhos e feições salvos no projeto"></svg>
+        <div id="carMapEmpty" class="car-map-empty hidden">Este projeto ainda não possui feições cadastradas.</div>
+      </div>
+      <aside class="car-map-layer-panel">
+        <h3>Feições do projeto</h3>
+        <p>Ative, desative ou centralize uma feição.</p>
+        <div id="carMapLayerList" class="car-map-layer-list"></div>
+      </aside>
+    </div>
+  </div>
+</dialog>
+<dialog id="carValidationDialog" class="portal-dialog car-validation-dialog" aria-labelledby="carValidationTitle"><div class="car-validation-shell"><header><div><span class="eyebrow">VALIDAÇÃO PRELIMINAR</span><h2 id="carValidationTitle">Resultado do projeto</h2></div><button class="dialog-close" id="closeCarValidation" type="button" aria-label="Fechar validação">×</button></header><div id="carValidationResult" class="car-validation-result">Clique em “Validar projeto” para conferir os dados e as feições.</div></div></dialog>
+<div class="toast" id="suiteToast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.3.0/turf.min.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script><script src="/assets/vendor/georural-qr.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/layout.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/portal.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/document-theme.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/document-assets.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/document-identity.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/projects.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/geometry.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/features/car/app.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/downloads.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/paper-format.js?v=1.0.0-rc.185.74"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="/assets/js/core/pdf-preview.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/preview-toggle.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body></html>

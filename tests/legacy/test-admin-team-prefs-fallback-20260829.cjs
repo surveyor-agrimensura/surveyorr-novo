@@ -1,0 +1,16 @@
+const fs=require('fs');
+const path=require('path');
+const root=path.resolve(__dirname,'../..');
+const api=fs.readFileSync(path.join(root,'functions/surveyor-api/src/main.js'),'utf8');
+const ok=(v,m)=>{if(!v)throw new Error(m);console.log('OK:',m)};
+ok(api.includes('workspaceMembershipFromAppwriteUser'),'API reconstrói vínculo de equipe a partir das prefs do Appwrite');
+ok(api.includes('listWorkspaceMembersFromPrefs'),'API lista membros por prefs quando workspace_members falha');
+ok(api.includes("_workspaceStorage: 'prefs'"),'API identifica vínculo sintético de fallback');
+ok(api.includes('workspaceMembershipStorageError'),'API distingue falha de armazenamento de equipe');
+ok(api.includes('vínculo salvo via prefs'),'vínculo de usuário existente possui fallback por prefs');
+ok(api.includes('novo membro vinculado via prefs'),'criação de novo membro possui fallback por prefs');
+const versionMatch=api.match(/APP_VERSION\s*=\s*['"]2\.(\d+)\.(\d+)-([^'"]+)['"]/);
+const apiMinor=versionMatch ? Number(versionMatch[1]) : -1;
+const apiPatch=versionMatch ? Number(versionMatch[2]) : -1;
+ok(versionMatch && (apiMinor > 26 || (apiMinor === 26 && apiPatch >= 5)),'API mantém fallback de prefs na 2.26.5 ou superior');
+console.log('PASS: equipes continuam graváveis mesmo com workspace_members incompatível em produção.');

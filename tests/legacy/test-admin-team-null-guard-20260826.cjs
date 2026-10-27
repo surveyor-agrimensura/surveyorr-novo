@@ -1,0 +1,24 @@
+const fs=require('fs');
+const path=require('path');
+const root=path.resolve(__dirname,'../..');
+const api=fs.readFileSync(path.join(root,'functions/surveyor-api/src/main.js'),'utf8');
+const admin=fs.readFileSync(path.join(root,'assets/js/admin/app.js'),'utf8');
+const auth=fs.readFileSync(path.join(root,'assets/js/core/auth.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'admin/index.html'),'utf8');
+function ok(v,m){if(!v)throw new Error(m)}
+const start=api.indexOf('async function workspaceAdminSummary');
+const end=api.indexOf('function profileRoleFromWorkspaceRole',start);
+const summary=api.slice(start,end);
+const versionMatch=api.match(/const APP_VERSION = ['"](2\.(\d+)\.(\d+)-[^'"]+)['"]/);
+const apiMinor=versionMatch ? Number(versionMatch[2]) : -1;
+const apiPatch=versionMatch ? Number(versionMatch[3]) : -1;
+ok(versionMatch && (apiMinor > 26 || (apiMinor === 26 && apiPatch >= 2)), 'API sem versão compatível com null guard 2.26.2+');
+ok(summary.includes('seat?.members'),'resumo não usa memberships da própria equipe');
+ok(!summary.includes('listAdminUsers()'),'modal ainda depende da lista global de usuários');
+ok(summary.includes('Promise.allSettled'),'membro inconsistente ainda pode derrubar o resumo');
+ok(api.includes("membership && typeof membership === 'object'"),'workspace sem filtro defensivo');
+ok(admin.includes("user = user && typeof user === 'object' ? user : {}"),'status do frontend sem null guard');
+ok(admin.includes("team.members.filter((member) => member && typeof member === 'object')"),'membros inválidos não filtrados no frontend');
+ok(auth.includes("data?.team || data?.workspace || null"),'resposta de equipe sem normalização');
+ok(/auth\.js\?v=[^"']+/.test(html)&&/admin-v21\.9\.js\?v=[^"']+/.test(html),'admin sem cache bust versionado do módulo de equipe');
+console.log('OK admin team null guard');

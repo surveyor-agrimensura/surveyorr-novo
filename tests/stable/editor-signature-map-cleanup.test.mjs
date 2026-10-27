@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const layout = fs.readFileSync('assets/js/core/layout.js','utf8');
+const portal = fs.readFileSync('assets/js/core/portal.js','utf8');
+const editor = fs.readFileSync('assets/js/core/technical-document-editor.js','utf8');
+const mapas = fs.readFileSync('assets/js/features/mapas/app.js','utf8');
+const memorial = fs.readFileSync('assets/js/features/memorial/app.js','utf8');
+const memorialHtml = fs.readFileSync('memorial/index.html','utf8');
+const mapHtml = fs.readFileSync('mapa/index.html','utf8');
+const mapApp = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const workspace = fs.readFileSync('assets/css/features/mapa/app.css','utf8').replace(/!important/g,'');
+
+assert(!layout.includes("label: 'Assinatura digital'"), 'menu global ainda expõe Assinatura digital');
+assert(!portal.includes("'/assinatura-digital/', 'assinatura-digital', 'Assinatura digital'"), 'portal ainda expõe Assinatura digital');
+assert(editor.includes("data-editor-tool=\"signature\""), 'editor técnico precisa ter ferramenta de assinatura');
+assert(editor.includes('signatureEnabled'), 'editor técnico precisa persistir ativação da assinatura');
+assert(editor.includes('signatureScale'), 'editor técnico precisa persistir tamanho da assinatura');
+assert(mapas.includes('data-document-signature="1"'), 'prancha precisa renderizar a assinatura cadastrada');
+assert(!memorialHtml.includes('id="editMemorial"'), 'memorial não deve manter botão Editar memorial independente');
+assert(memorial.includes('openMemorialEditDialog({inlineMount:workspace})'), 'memorial precisa oferecer edição integrada pela etapa Personalização');
+assert(memorial.includes("id='memorialIncludeSignature'") || memorial.includes('id=\"memorialIncludeSignature\"'), 'memorial precisa montar a assinatura integrada no editor visual');
+assert(memorial.includes('memorialEditSettings'), 'memorial precisa persistir configurações de edição');
+assert(memorial.includes('memorialFontOverrideCss'), 'memorial precisa aplicar tamanho de fonte');
+assert(mapApp.includes('if (isLayerLocked(selectedLayer)) return;'), 'camada trancada precisa ocultar sobreposições técnicas');
+assert(!mapApp.includes("badge.textContent = 'Trecho'"), 'cartão de trecho não deve manter rótulo redundante');
+assert(!mapApp.includes("edit.textContent = 'Editar'"), 'cartão de trecho não deve manter botão Editar redundante');
+assert(!mapApp.includes('Sem tipo de limite/orientação informados'), 'cartão de trecho não deve manter metadado redundante');
+assert(!mapHtml.includes('Selecione diretamente os vértices no mapa.'), 'ajuda permanente de confrontantes deve ser removida');
+assert(!mapHtml.includes('Use uma linha guia para orientar a divisão da gleba.'), 'explicação permanente de gleba deve ser removida');
+assert(!mapHtml.includes('Projetos sincronizados com a nuvem do usuário'), 'subtítulo redundante do rodapé deve ser removido');
+assert(workspace.includes('backdrop-filter:blur(14px)'), 'painel lateral esquerdo deve ter acabamento fosco');
+console.log('editor-signature-map-cleanup: ok');

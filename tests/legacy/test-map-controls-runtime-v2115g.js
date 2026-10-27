@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html = fs.readFileSync('mapa/index.html','utf8');
+const js = fs.readFileSync('assets/js/features/mapa/controls.js','utf8');
+assert.match(html, /map-controls-runtime-v21\.11\.5g\.js\?v=21\.11\.5[a-z]?(?:-[^\"']+)?/);
+assert.match(js, /#mapQuickToolsToggle/);
+assert.match(js, /setDrawer\(toggle\.getAttribute\('aria-expanded'\) !== 'true'\)/);
+assert.match(js, /#topQuickMarkPointBtn, #markGpsPointBtn/);
+assert.match(js, /showGpsPanel\(\)/);
+assert.match(js, /map\.mouseEventToLatLng/);
+assert.match(js, /putPreview\(point\.lat, point\.lng\)/);
+assert.match(js, /event\.stopImmediatePropagation\(\)/);
+console.log('OK: Surveyor v21.11.5g — controle final da gaveta e Marcar ponto independente dos listeners antigos.');

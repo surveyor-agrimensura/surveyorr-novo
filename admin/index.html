@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head><link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin><link rel="dns-prefetch" href="//api.surveyorr.com.br"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="dns-prefetch" href="//cdn.jsdelivr.net"><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' https:; manifest-src 'self'; upgrade-insecure-requests"><script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script><meta name="referrer" content="strict-origin-when-cross-origin">
+<meta charset="utf-8"/>
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="#071225" name="theme-color"/>
+<meta content="no-cache, no-store, must-revalidate" http-equiv="Cache-Control"/>
+<meta content="no-cache" http-equiv="Pragma"/>
+<meta content="0" http-equiv="Expires"/>
+<title>Administração — Surveyor</title>
+<link href="/assets/logo.png?v=1.0.0-rc.185.74" rel="icon" type="image/png"/>
+<link href="/assets/css/core/suite.css?v=1.0.0-rc.185.74" rel="stylesheet"/><link href="/assets/css/core/layout.css?v=1.0.0-rc.185.74" rel="stylesheet"/>
+<link href="/assets/css/admin/app.css?v=1.0.0-rc.185.74" rel="stylesheet"/><link href="/assets/css/admin/organization.css?v=1.0.0-rc.185.74" rel="stylesheet"/><link href="/assets/css/admin/ai.css?v=1.0.0-rc.185.74" rel="stylesheet"/><link href="/assets/css/admin/documents.css?v=1.0.0-rc.185.74" rel="stylesheet"/><link href="/assets/css/admin/accounts.css?v=1.0.0-rc.185.74" rel="stylesheet"/><style id="surveyor-shell-critical-v7">body[data-page]:not([data-page="mapa.html"]):not([data-page="login.html"])>.suite>.side{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}body[data-page]:not([data-page="mapa.html"]):not([data-page="login.html"])>.suite{display:block!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important}body[data-page]:not([data-page="mapa.html"]):not([data-page="login.html"])>.suite>.main{grid-column:1!important;width:100%!important;max-width:none!important;margin-left:0!important;min-width:0!important;padding-top:78px!important}body[data-page]:not([data-page="mapa.html"]):not([data-page="login.html"]) .mobile-toggle{display:none!important}</style><link rel="stylesheet" href="/assets/css/core/audit.css?v=1.0.0-rc.185.74"><link rel="stylesheet" href="/assets/css/core/ui.css?v=1.0.0-rc.185.74">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/surveyor-192.png?v=1.0.0-rc.185.74">
+  <meta name="application-name" content="Surveyor">
+</head>
+<body data-page="admin.html" data-admin-revision="rev16">
+<div class="suite">
+<aside class="side" id="side">
+<div class="brand"><div class="brand-mark"><img alt="" data-hide-on-error="1" src="/assets/logo.png?v=1.0.0-rc.185.74"/></div><div><strong>Surveyor</strong><small>Painel administrativo</small></div></div>
+<nav aria-label="Navegação administrativa" class="nav">
+<a class="active" href="/admin/"><span class="nav-icon nav-icon-image"><img alt="" class="module-icon-img" loading="lazy" src="/assets/module-icons/admin.png?v=1.0.0-rc.185.74"/></span><span>Administração</span></a>
+<a href="/"><span class="nav-icon nav-icon-image"><img alt="" class="module-icon-img" loading="lazy" src="/assets/module-icons/inicio.png?v=1.0.0-rc.185.74"/></span><span>Voltar ao Surveyor</span></a>
+</nav>
+<div class="side-note"><b>Painel administrativo</b><br/><span class="plan-mini">Carregando conta...</span></div>
+</aside>
+<main class="main">
+<header class="top">
+<div><button class="btn mobile-toggle" id="mobileToggle">☰</button><h1>Administração do Sistema</h1><p>Usuários, equipes, planos, conteúdo e segurança.</p></div>
+<div class="top-actions"><button class="btn" id="adminExport">Exportar configuração</button><button class="btn primary" id="openUserDialog">Criar usuário</button></div>
+</header>
+<section class="admin-stats">
+<article><span>Usuários</span><strong id="adminUsersCount">0</strong></article>
+<article><span>Contas ativas</span><strong id="adminActiveCount">0</strong></article>
+<article><span>Planos cadastrados</span><strong id="adminPlansCount">0</strong></article>
+<article><span>Camadas publicadas</span><strong id="adminLayersCount">0</strong></article>
+</section>
+<section aria-label="Seções administrativas" class="admin-tabs" role="tablist">
+<button aria-selected="true" class="active" data-tab="users">Usuários</button>
+<button aria-selected="false" data-tab="plans">Planos e permissões</button>
+<button aria-selected="false" data-tab="models">Modelos</button>
+<button aria-selected="false" data-tab="layers">Camadas do sistema</button>
+<button aria-selected="false" data-tab="notices">Avisos e manutenção</button>
+<button aria-selected="false" class="hidden strict-admin-tab" data-tab="plan-documents">Documentos dos planos</button>
+
+<button aria-selected="false" data-tab="advanced-admin">Segurança e sessões</button>
+<button aria-selected="false" data-tab="admin-ai">Assistente IA</button>
+</section>
+<section class="panel admin-panel active" id="tab-users">
+<div class="panel-heading"><div><span class="eyebrow">CONTAS</span><h2>Usuários do sistema</h2><p>Contas, equipes e acessos.</p></div><div class="button-row compact"><input class="compact-input" id="adminUserSearch" placeholder="Buscar usuário..."/><button class="btn primary" id="openUserDialogInline" type="button">+ Criar usuário</button></div></div>
+<div class="sv-admin-users-grid" id="adminUsersGrid" aria-live="polite"></div><div class="table-wrap sv-admin-users-legacy" aria-hidden="true"><table><thead><tr><th>Usuário</th><th>Telefone</th><th>Perfil</th><th>Plano</th><th>Verificação</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="adminUsersTable"></tbody></table></div>
+</section>
+<section class="panel admin-panel" id="tab-plans">
+<div class="panel-heading"><div><span class="eyebrow">ASSINATURAS</span><h2>Planos e permissões</h2><p>Controle quais módulos e serviços cada plano pode acessar.</p></div><div class="button-row compact"><button class="btn" id="dedupePlansBtn" type="button">Corrigir duplicados</button><button class="btn" id="seedDefaultPlans" type="button">Atualizar planos oficiais</button><button class="btn primary" id="openPlanDialog">Novo plano</button></div></div>
+<div class="plans-grid" id="plansGrid"></div>
+</section>
+<section class="panel admin-panel" id="tab-models">
+<div class="panel-heading"><div><span class="eyebrow">MODELOS DE DOCUMENTOS</span><h2>Modelos de memorial</h2><p>Controle quais usuários podem acessar modelos restritos do Memorial Descritivo.</p></div></div>
+<div class="admin-memorial-models" id="adminMemorialModels"></div>
+</section>
+<section class="panel admin-panel" id="tab-plan-documents" data-strict-admin-only="true">
+<div class="panel-heading"><div><span class="eyebrow">DOCUMENTOS COMERCIAIS</span><h2>Termos e comprovantes dos planos</h2><p>Gere documentos Word e PDF, visualize o resultado e envie o PDF por e-mail para os seis planos oficiais. Esta área é exclusiva do administrador real do Surveyor.</p></div><span class="strict-admin-label">Somente administrador</span></div>
+<div class="plan-doc-wizard" id="planDocWizard" aria-label="Etapas do documento"><button type="button" class="active" data-plan-doc-target="1"><span>1</span><b>Cliente</b></button><button type="button" data-plan-doc-target="2"><span>2</span><b>Pagamento</b></button><button type="button" data-plan-doc-target="3" data-plan-doc-receipt-nav><span>3</span><b>Acesso</b></button><button type="button" data-plan-doc-target="4"><span>4</span><b>Assinatura</b></button><button type="button" data-plan-doc-target="5"><span>5</span><b>Revisão</b></button></div>
+<div class="plan-documents-layout">
+<div class="plan-documents-form">
+<section class="plan-documents-section" data-plan-doc-step="1">
+<h3>Documento e cliente</h3>
+<div class="form-grid">
+<label>Tipo de documento<select id="planDocType"><option value="term">Termo de adesão e ciência</option><option value="receipt">Comprovante de contratação e ativação</option></select></label>
+<label>Usuário cadastrado<select id="planDocUser"><option value="">Preencher manualmente</option></select></label>
+<label>Plano<select id="planDocPlan"></select></label>
+<div class="plan-doc-plan-summary" id="planDocPlanSummary"><b>Carregando plano...</b></div>
+<label>Nome completo / razão social<input id="planDocClientName" placeholder="Nome do cliente" required=""/></label>
+<label>CPF/CNPJ<input id="planDocClientDocument" placeholder="Opcional"/></label>
+<label>E-mail<input id="planDocClientEmail" type="email" placeholder="cliente@exemplo.com" required=""/></label>
+<label>Telefone<input id="planDocClientPhone" placeholder="Opcional"/></label>
+</div>
+</section>
+<section class="plan-documents-section" data-plan-doc-step="2">
+<h3>Pagamento e vigência</h3>
+<div class="form-grid">
+<label>Valor pago<input id="planDocAmount" inputmode="decimal" placeholder="0,00" required=""/></label>
+<label>Forma de pagamento<select id="planDocPaymentMethod"><option>Pix</option><option>Transferência bancária</option><option>Dinheiro</option><option>Cartão</option><option>Outro</option></select></label>
+<label>Data do pagamento<input id="planDocPaymentDate" type="date"/></label>
+<label>Data de início<input id="planDocStartDate" type="date" required=""/></label>
+<label>Data de vencimento<input id="planDocEndDate" type="date" required=""/></label>
+</div>
+</section>
+<section class="plan-documents-section" data-plan-doc-receipt-only data-plan-doc-step="3">
+<h3>Dados de acesso do comprovante</h3>
+<div class="form-grid">
+<label>E-mail de acesso<input id="planDocAccessEmail" type="email" placeholder="Mesmo e-mail da conta"/></label>
+<label>Primeiro acesso<input id="planDocFirstAccess" type="text" value="Link seguro enviado ao e-mail do cliente" readonly/><small class="field-help">Por segurança, o Surveyor não gera nem registra senha temporária em documentos comerciais.</small></label>
+</div>
+<div class="plan-doc-security-note">O primeiro acesso comercial usa link seguro para criação da senha pelo próprio cliente. Não inclua senhas em documentos ou mensagens.</div>
+</section>
+<section class="plan-documents-section" data-plan-doc-step="4">
+<h3>Responsável e assinatura do Surveyor</h3>
+<div class="form-grid">
+<label>Nome do responsável<input id="planDocResponsibleName" required=""/></label>
+<label>Função/cargo<input id="planDocResponsibleRole"/></label>
+<label>Cidade/UF<input id="planDocCity" placeholder="Ex.: Amargosa/BA"/></label>
+<label>E-mail de suporte<input id="planDocSupportEmail" type="email"/></label>
+<label class="full">Imagem da assinatura<input id="planDocSignature" type="file" accept="image/png,image/jpeg,image/webp"/><small class="field-help">Use a assinatura oficial de Kauã ou envie outra imagem PNG/JPG. A assinatura poderá ser posicionada na prévia antes de gerar o documento.</small></label><div class="plan-doc-signature-account full"><button class="btn primary" id="planDocUseKauaSignature" type="button">Preencher assinatura de Kauã</button><small>Carrega automaticamente a assinatura oficial aprovada e posiciona no local padrão do documento.</small></div>
+<div class="plan-doc-signature-preview hidden full" id="planDocSignaturePreviewWrap"><img id="planDocSignaturePreview" alt="Prévia da assinatura"/><span>Assinatura administrativa carregada.</span><button class="tiny-button danger-link" id="planDocClearSignature" type="button">Remover</button></div>
+<div class="plan-doc-signature-account full"><button class="btn" id="planDocSaveSignatureAccount" type="button">Salvar assinatura na conta administrativa</button><small>A assinatura e a posição serão guardadas de forma privada no Appwrite e carregadas ao entrar em outro navegador.</small></div>
+<div class="plan-doc-signature-editor full">
+  <div class="signature-editor-heading"><div><strong>Posicionamento da assinatura</strong><small>Arraste a assinatura dentro da área abaixo, como em um assinador digital.</small></div><button class="tiny-button" id="planDocResetSignaturePosition" type="button">Centralizar</button></div>
+  <div class="signature-document-zone" id="planDocSignatureZone" aria-label="Área para posicionar assinatura"><div class="signature-document-line"></div><img class="signature-draggable hidden" id="planDocSignatureDraggable" alt="Assinatura posicionável"/><span class="signature-placeholder" id="planDocSignaturePlaceholder">Carregue uma assinatura para posicioná-la</span></div>
+  <label class="signature-scale-label">Tamanho da assinatura<input id="planDocSignatureScale" type="range" min="70" max="150" value="100"/><output id="planDocSignatureScaleOutput">100%</output></label>
+</div>
+</div>
+</section>
+<section class="plan-documents-section plan-doc-review" data-plan-doc-step="5"><h3>Revisão e geração</h3><p>Confira a pré-visualização ao lado. Quando estiver tudo certo, gere o Word ou PDF e, se necessário, envie por e-mail.</p><div class="plan-doc-review-summary" id="planDocWizardSummary"></div></section><div class="plan-doc-wizard-actions"><button class="btn" id="planDocWizardBack" type="button">Voltar</button><button class="btn primary" id="planDocWizardNext" type="button">Próximo</button></div>
+<div class="plan-documents-actions">
+<button class="btn" id="planDocGenerate" type="button">Gerar termo em Word</button>
+<button class="btn primary" id="planDocGeneratePdf" type="button">Gerar termo em PDF</button>
+<button class="btn" id="planDocPreviewPdf" type="button">Visualizar PDF</button>
+<button class="btn success" id="planDocSendEmail" type="button">Enviar PDF por e-mail</button>
+</div>
+</div>
+<aside class="plan-doc-preview" id="planDocPreview"><span class="eyebrow">PRÉ-VISUALIZAÇÃO</span><h3>Documento do plano</h3><p>Preencha os dados para gerar Word ou PDF, visualizar e enviar por e-mail.</p></aside>
+</div>
+</section>
+<section class="panel admin-panel" id="tab-layers">
+<div class="panel-heading">
+<div><span class="eyebrow">DADOS GEOGRÁFICOS</span><h2>Camadas do sistema</h2></div>
+<div class="button-row compact"><button class="btn primary" id="seedGeobahiaLayers" type="button">Sincronizar GeoBahia</button><button class="btn" id="addLayerGroupButton">Novo grupo</button><button class="btn" id="addLayerButton">Nova camada</button></div><div class="layer-admin-status" id="seedGeobahiaStatus" aria-live="polite"></div>
+</div>
+<div class="layer-admin-filterbar">
+<label>Grupo<select id="adminLayerGroupFilter"><option value="all">Todos os grupos</option></select></label>
+<label>Buscar<input id="adminLayerSearch" placeholder="Nome da camada ou grupo"/></label>
+<button class="btn danger hidden" id="toggleSelectedLayerGroup" type="button">Despublicar grupo</button><span id="adminLayerFilterCount">0 camada(s)</span>
+</div>
+
+<div class="admin-layer-list" id="adminLayersList"></div>
+</section>
+<section class="panel admin-panel" id="tab-notices">
+<div class="panel-heading notice-admin-heading">
+<div><span class="eyebrow">COMUNICAÇÃO</span><h2>Avisos e manutenção</h2></div>
+<div class="button-row compact"><button class="btn" id="prefillMaintenanceNotice" type="button">Manutenção 13:30</button><button class="btn danger" id="prefillBlockNotice" type="button">Tela fixa bloqueante</button></div>
+</div>
+<div aria-label="Tipos de comunicação" class="notice-mode-grid" role="tablist">
+<button class="notice-mode-card active" data-notice-mode="notification" type="button"><b>Notificação no sino</b><span>Aviso discreto na central de notificações.</span></button>
+<button class="notice-mode-card" data-notice-mode="popup" type="button"><b>Pop-up na tela</b><span>Janela central com botão Entendi.</span></button>
+<button class="notice-mode-card" data-notice-mode="banner" type="button"><b>Faixa fixa</b><span>Comunicado destacado no início.</span></button>
+<button class="notice-mode-card" data-notice-mode="maintenance" type="button"><b>Manutenção</b><span>Aviso ou bloqueio temporário do sistema.</span></button>
+<button class="notice-mode-card" data-notice-mode="login-expiration" type="button"><b>Aviso de login</b><span>Modelo para vencimento, renovação e acesso do usuário.</span></button>
+<button class="notice-mode-card release-card" data-notice-mode="release" type="button"><b>Novidades da versão</b><span>Tela cheia com slides, imagens, avançar e pular.</span></button>
+</div>
+<form class="notice-admin-form" id="noticeForm">
+<input id="editNoticeId" type="hidden"/>
+<input id="noticeComposerMode" type="hidden" value="notification"/>
+<div class="form-grid three">
+<label>Título<input id="noticeTitle" placeholder="Ex.: Manutenção programada" required=""/></label>
+<label>Tipo<select id="noticeType"><option value="info">Informação</option><option value="warning">Aviso</option><option value="danger">Urgente</option><option value="maintenance">Manutenção</option><option value="success">Sucesso</option></select></label>
+<label>Forma de exibição<select id="noticeDelivery"><option value="notification">Notificação no sino</option><option value="popup">Pop-up na tela</option><option value="banner">Faixa fixa no topo</option><option value="release">Novidades da versão / tela cheia</option></select></label>
+<label>Público<select id="noticeAudience"><option value="all">Todos</option><option value="users">Somente usuários comuns</option><option value="admins">Somente administradores</option><option value="plan">Por plano</option><option value="user">Usuário específico</option></select></label>
+<label class="hidden" id="noticePlanWrap">Plano<select id="noticePlan"></select></label>
+<label class="hidden" id="noticeUserWrap">Usuário<select id="noticeUser"></select></label>
+<label>Início<input id="noticeStarts" type="datetime-local"/></label>
+<label>Fim<input id="noticeEnds" type="datetime-local"/></label>
+<label>Status<select id="noticeActive"><option value="1">Ativo</option><option value="0">Inativo</option></select></label>
+<label class="full">Mensagem<textarea id="noticeMessage" placeholder="Escreva o aviso que aparecerá para os usuários..." required="" rows="4"></textarea></label>
+</div>
+<section aria-label="Construtor de novidades da versão" class="release-notice-builder hidden" id="releaseNoticeBuilder">
+<div class="release-builder-head">
+<div><span class="eyebrow">NOVIDADES DA VERSÃO</span><h3>Tela estilo apresentação para atualização concluída</h3><p>Cadastre os slides que o usuário verá uma única vez ao entrar no sistema. Ele poderá avançar, voltar, pular ou concluir.</p></div>
+<button class="btn" id="addReleaseSlide" type="button">+ Adicionar slide</button>
+</div>
+<div class="form-grid three">
+<label>Versão exibida<input id="releaseVersion" placeholder="Ex.: v21.9.271"/></label>
+<label>Tema visual<select id="releaseTheme"><option value="surveyor">Surveyor premium</option><option value="dark">Escuro estilo Edge</option><option value="light">Claro limpo</option></select></label>
+<label>Texto do botão final<input id="releaseFinalButton" placeholder="Começar a usar"/></label>
+</div>
+<div class="release-slides-list" id="releaseSlidesList"></div>
+<small class="field-help full">As imagens são comprimidas no navegador antes de salvar para reduzir o peso no Appwrite. Use prints leves e objetivos.</small>
+</section>
+<div class="notice-options">
+<label><input id="noticeRequiresAck" type="checkbox"/><span>Exigir confirmação/Entendi</span></label>
+<label><input id="noticeBlocksApp" type="checkbox"/><span>Bloquear sistema para usuários comuns</span></label>
+</div>
+<div class="button-row"><button class="btn primary" id="noticeSubmitBtn" type="submit">Enviar aviso</button><button class="btn" id="clearNoticeForm" type="button">Limpar</button></div>
+</form>
+<div class="table-wrap notice-table-wrap"><table><thead><tr><th>Aviso</th><th>Exibição</th><th>Público</th><th>Período</th><th>Status</th><th>Ações</th></tr></thead><tbody id="adminNoticesTable"><tr><td colspan="6">Carregando avisos...</td></tr></tbody></table></div>
+</section>
+
+
+<section class="panel admin-panel admin-security-organized" id="tab-advanced-admin">
+<div class="panel-heading"><div><span class="eyebrow">OPERAÇÃO E SEGURANÇA</span><h2>Visão operacional</h2><p>Resumo objetivo do uso do sistema, atividade dos usuários, sessões e eventos realmente importantes.</p></div><div class="button-row compact"><button class="btn" id="refreshAdvancedAdmin" type="button">Atualizar agora</button><button class="btn" id="createMetadataBackup" type="button">Gerar inventário</button></div></div>
+<div class="admin-stats admin-advanced-stats security-summary-cards">
+<article><span>Armazenamento total</span><strong id="advStorageUsage">0 MB</strong></article>
+<article><span>Usuários online agora</span><strong id="advOnlineCount">0</strong></article>
+<article><span>Bloqueios de login (5h)</span><strong id="advLockedCount">0</strong></article>
+<article><span>Atividades recentes</span><strong id="advRecentActivityCount">0</strong></article>
+</div>
+<div class="security-integrity-banner hidden" id="auditIntegrityBanner" role="status" aria-live="polite"></div>
+<section class="admin-ops-card"><div class="admin-ops-title"><div><span class="eyebrow">ATIVIDADE</span><h3>Últimas atividades dos usuários</h3><p>Projetos criados/abertos/salvos e documentos gerados ou atualizados.</p></div></div><div class="table-wrap"><table><thead><tr><th>Quando</th><th>Usuário</th><th>Atividade</th><th>Item</th></tr></thead><tbody id="advRecentActivityTable"><tr><td colspan="4">Carregando...</td></tr></tbody></table></div></section>
+<section class="admin-ops-card"><div class="admin-ops-title"><div><span class="eyebrow">ACESSOS</span><h3>Usuários online e sessões</h3><p>Último login real, presença atual e encerramento remoto de sessão.</p></div><input class="compact-input" id="advancedSessionFilter" placeholder="Filtrar usuário ou e-mail..."/></div><div class="table-wrap"><table><thead><tr><th>Usuário</th><th>Agora</th><th>Último login</th><th>Última atividade</th><th>Última saída</th><th>Último projeto</th><th>Bloqueio</th><th>Ações</th></tr></thead><tbody id="advancedSessionsTable"><tr><td colspan="8">Carregando...</td></tr></tbody></table></div></section>
+<section class="admin-ops-card"><div class="admin-ops-title"><div><span class="eyebrow">ALTERAÇÕES IMPORTANTES</span><h3>Auditoria resumida</h3><p>Somente alterações de conta, senha, equipe, permissões e ações administrativas relevantes.</p></div></div><div class="table-wrap"><table><thead><tr><th>Quando</th><th>Ação</th><th>Usuário</th><th>Alvo</th><th>Status</th></tr></thead><tbody id="advancedAuditTable"><tr><td colspan="5">Carregando...</td></tr></tbody></table></div></section>
+<section class="admin-ops-card"><div class="admin-ops-title"><div><span class="eyebrow">LOGIN</span><h3>Últimos acessos e tentativas</h3><p>Histórico real de entrada, saída, falhas e bloqueios temporários.</p></div><button class="tiny-button" id="refreshAdvancedSecurity" type="button">Atualizar</button></div><div class="table-wrap"><table><thead><tr><th>Data/hora</th><th>Usuário</th><th>Evento</th><th>IP</th><th>Dispositivo</th><th>Status</th></tr></thead><tbody id="securityAttemptsTable"><tr><td colspan="6">Carregando...</td></tr></tbody></table></div></section>
+<section class="admin-ops-card storage-compact"><div class="admin-ops-title"><div><span class="eyebrow">ARMAZENAMENTO</span><h3>Consumo do sistema</h3></div></div><div class="table-wrap"><table><thead><tr><th>Origem</th><th>Quantidade</th><th>Uso estimado</th></tr></thead><tbody id="advStorageBreakdown"><tr><td colspan="3">Carregando...</td></tr></tbody></table></div></section>
+<div class="admin-compat-hidden" aria-hidden="true"><strong id="advProjectsCount">0</strong><strong id="advDocumentsCount">0</strong><strong id="advAuditCount">0</strong><strong id="securityAccessCount">0</strong><strong id="securityIpStatus">0</strong><strong id="securityFailedCount">0</strong><strong id="securityLastEvent">—</strong><table><tbody id="advRecentProjectsTable"></tbody></table><table><tbody id="advRecentDocumentsTable"></tbody></table></div>
+</section>
+
+<section class="panel admin-panel" id="tab-admin-ai" data-ai-revision="rev16">
+<div class="panel-heading admin-ai-heading"><div><span class="eyebrow">ADMINISTRADOR</span><h2>Assistente IA do Surveyor</h2><p>Converse com os dados administrativos, envie uma imagem para análise e dite perguntas pelo reconhecimento de voz do navegador. Nenhum arquivo de áudio é enviado à IA.</p></div><span class="strict-admin-label">Somente administrador</span></div>
+<div class="admin-ai-workspace">
+  <aside class="admin-ai-prompts" aria-label="Atalhos do assistente">
+    <div class="admin-ai-prompt-title"><b>Perguntas rápidas</b><small>Use um atalho ou escreva livremente.</small></div>
+    <button type="button" data-ai-question="Quais usuários vencem nos próximos 30 dias? Organize por urgência e recomende ações.">Usuários perto do vencimento</button>
+    <button type="button" data-ai-question="Quais contas estão vencidas, bloqueadas ou com cadastro incompleto?">Contas que precisam de atenção</button>
+    <button type="button" data-ai-question="Resuma o estado operacional do Surveyor, incluindo usuários, projetos, documentos, camadas, armazenamento e avisos.">Resumo operacional</button>
+    <button type="button" data-ai-question="Analise os eventos recentes de segurança e destaque riscos, anomalias e ações recomendadas.">Riscos de segurança</button>
+    <button type="button" data-ai-question="Quais grupos ou camadas estão despublicados e qual o impacto para os usuários?">Camadas e disponibilidade</button>
+    <button type="button" data-ai-question="Monte uma lista de prioridades administrativas para hoje com base nos dados atuais.">Prioridades de hoje</button>
+    <div class="admin-ai-privacy"><b>Privacidade</b><small>A chave permanece na Function. A imagem só é enviada quando você confirma. O ditado não envia arquivo de áudio ao Surveyor nem ao OpenRouter.</small></div>
+  </aside>
+  <div class="admin-ai-chat">
+    <header class="admin-ai-chat-header"><div><b>Conversa administrativa</b><small>Respostas baseadas apenas nos dados atuais da API e no anexo enviado.</small></div><button class="btn" id="adminAiClear" type="button">Limpar conversa</button></header>
+    <div class="admin-ai-messages" id="adminAiMessages" role="log" aria-live="polite" aria-relevant="additions">
+      <article class="assistant admin-ai-welcome"><div class="admin-ai-avatar" aria-hidden="true">IA</div><div class="admin-ai-bubble"><b>Assistente administrativo</b><div class="admin-ai-rich"><p>Faça uma pergunta sobre usuários, vencimentos, planos, camadas, armazenamento, avisos ou segurança.</p><ul><li>Use o microfone para transformar sua fala em texto.</li><li>Anexe uma imagem ou captura de tela para análise.</li><li>As respostas serão organizadas em resumo, achados e ações.</li></ul></div></div></article>
+    </div>
+    <div class="admin-ai-attachment hidden" id="adminAiAttachmentBar">
+      <img id="adminAiAttachmentPreview" alt="Pré-visualização do anexo"/>
+      <div><b id="adminAiAttachmentName">Imagem anexada</b><small id="adminAiAttachmentMeta"></small></div>
+      <button type="button" id="adminAiRemoveAttachment" aria-label="Remover imagem anexada">×</button>
+    </div>
+    <form id="adminAiForm" class="admin-ai-form">
+      <div class="admin-ai-composer">
+        <div class="admin-ai-composer-tools">
+          <button class="admin-ai-tool" id="adminAiAttachBtn" type="button" title="Anexar imagem"><span aria-hidden="true">＋</span> Imagem</button>
+          <input id="adminAiImageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden/>
+          <button class="admin-ai-tool" id="adminAiMicBtn" type="button" aria-pressed="false" title="Ditar pergunta usando o reconhecimento de voz do navegador"><span aria-hidden="true">●</span> Ditar</button>
+          <span class="admin-ai-voice-status" id="adminAiVoiceStatus" aria-live="polite"></span>
+        </div>
+        <textarea id="adminAiQuestion" rows="3" maxlength="1800" placeholder="Pergunte algo sobre o painel administrativo…"></textarea>
+        <div class="admin-ai-composer-footer"><small>Enter envia · Shift+Enter cria nova linha</small><button class="btn primary" id="adminAiSubmit" type="submit">Enviar para a IA</button></div>
+      </div>
+    </form>
+    <div class="admin-ai-config" id="adminAiConfig">Verificando configuração do OpenRouter…</div>
+  </div>
+</div>
+</section>
+<dialog class="portal-dialog user-wizard-dialog" id="userDialog">
+<form id="userForm">
+<div class="dialog-title"><div><span class="eyebrow">CONTA DE ACESSO</span><h2 id="userDialogTitle">Criar usuário</h2><p id="userDialogSubtitle">Cadastro guiado, vigência automática e envio do comprovante.</p></div><button class="dialog-close" data-close="userDialog" type="button">×</button></div>
+<input id="editUserId" type="hidden"/>
+<div class="user-wizard-progress" id="userWizardProgress" aria-label="Etapas da criação do usuário">
+  <button class="active" data-user-step-target="1" type="button"><span>1</span><b>Dados</b></button>
+  <button data-user-step-target="2" type="button"><span>2</span><b>Plano</b></button>
+  <button data-user-step-target="3" type="button"><span>3</span><b>Equipe</b></button>
+  <button data-user-step-target="4" type="button"><span>4</span><b>Documento</b></button>
+  <button data-user-step-target="5" type="button"><span>5</span><b>Revisão</b></button>
+</div>
+<section class="user-wizard-step active" data-user-step="1">
+  <div class="user-step-heading"><span>ETAPA 1 DE 5</span><h3>Dados do usuário</h3><p>Informe os dados que serão usados para criar a conta no Appwrite.</p></div>
+  <div class="form-grid">
+    <label>Nome completo<input id="userName" required="" autocomplete="name"/></label>
+    <label class="user-email-access-field">E-mail de acesso
+      <div class="user-email-access-row">
+        <input id="userEmail" required="" type="email" autocomplete="email"/>
+        <button class="tiny-button primary-soft user-edit-only" id="openUserEmailChangeFromEditor" type="button">Alterar e-mail</button>
+      </div>
+    </label>
+    <label>Telefone de contato<input id="userWhatsapp" autocomplete="tel" inputmode="tel" placeholder="(75) 99999-9999" type="tel"/></label>
+    <label class="user-password-field">Senha de acesso
+      <div class="password-generator-row">
+        <input id="userPassword" minlength="12" placeholder="Digite ou gere uma senha temporária" type="text" autocomplete="new-password" spellcheck="false"/>
+        <button class="tiny-button primary-soft" id="generateUserPassword" type="button">Gerar senha</button>
+        <button class="tiny-button" id="copyUserPassword" type="button">Copiar</button>
+      </div>
+      <small class="field-help" id="userPasswordHelp">Informe uma senha ou use Gerar senha. Na criação ela é obrigatória e poderá ser alterada pelo usuário depois.</small>
+    </label>
+  </div>
+</section>
+<section class="user-wizard-step" data-user-step="2">
+  <div class="user-step-heading"><span>ETAPA 2 DE 5</span><h3>Perfil, plano e vigência</h3></div>
+  <div class="form-grid">
+    <label>Perfil<select id="userRole"><option value="user">Usuário</option><option value="technician">Técnico</option><option value="manager">Gestor</option><option value="admin">Administrador</option></select></label>
+    <label>Plano<select id="userPlan"></select></label>
+    <label>Status<select id="userStatus"><option value="active">Ativo</option><option value="blocked">Bloqueado</option><option value="expired">Expirado</option><option value="pending">Pendente</option></select></label>
+    <label class="user-edit-only">Vencimento<input id="userExpiry" type="date"/></label>
+    <div class="user-plan-auto-summary full" id="userPlanAutoSummary">
+      <article><span>Investimento</span><strong id="userCalculatedAmount">—</strong></article>
+      <article><span>Início</span><strong id="userCalculatedStart">—</strong></article>
+      <article><span>Vencimento automático</span><strong id="userCalculatedExpiry">—</strong></article>
+      <small id="userCalculatedRule">Selecione um plano.</small>
+    </div>
+    <div aria-label="Renovação manual do usuário" class="renewal-quick-actions full user-edit-only"><span>Renovação manual</span><div class="button-row compact"><button class="tiny-button" id="renewUser30Days" type="button">+ 30 dias</button><button class="tiny-button" id="renewUser365Days" type="button">+ 365 dias</button><button class="tiny-button" id="reactivateUser" type="button">Reativar acesso</button></div></div>
+    <div class="user-edit-workspace full user-edit-only" id="userEditWorkspaceActions"><div><b>Equipe vinculada</b><small>Gerencie membros e acessos desta equipe.</small></div><button class="btn" id="userManageWorkspace" type="button">Gerenciar equipe</button></div>
+  </div>
+</section>
+<section class="user-wizard-step user-create-only" data-user-step="3">
+  <div class="user-step-heading"><span>ETAPA 3 DE 5</span><h3>Equipe e subusuários</h3><p>Defina agora os acessos vinculados. Somente o administrador do Surveyor poderá alterá-los depois.</p></div>
+  <div class="user-workspace-onboarding">
+    <div class="user-workspace-rule" id="userWorkspacePlanRule">Equipe usa o plano e o armazenamento do titular.</div>
+    <div class="workspace-section-heading"><div><h3>Equipe</h3><p>Acessos compartilhados.</p></div><button class="btn" id="userAddWorkspaceMember" type="button">+ Membro</button></div>
+    <div class="user-workspace-drafts" id="userWorkspaceMemberDrafts"><div class="user-workspace-empty">Nenhum subusuário será criado agora.</div></div>
+  </div>
+</section>
+<section class="user-wizard-step user-create-only" data-user-step="4">
+  <div class="user-step-heading"><span>ETAPA 4 DE 5</span><h3>Comprovante e assinatura</h3><p>Será gerado um único Comprovante de Contratação, Ativação e Ciência do Termo de Adesão.</p></div>
+  <div class="form-grid">
+    <label>CPF/CNPJ do cliente<input id="userClientDocument" placeholder="Opcional" inputmode="numeric"/></label>
+    <label>Forma de pagamento<select id="userPaymentMethod"><option>Pix</option><option>Transferência bancária</option><option>Dinheiro</option><option>Cartão</option><option>Outro</option></select></label>
+    <label class="user-email-option full"><input id="userSendWelcomeEmail" type="checkbox" checked=""/><span><b>Criar conta e encaminhar e-mail automaticamente</b><small>O cliente receberá um link seguro de primeiro acesso e o Comprovante de Contratação, Ativação e Ciência do Termo de Adesão em PDF.</small></span></label>
+    <label class="full">Imagem da assinatura<input id="userOnboardingSignatureFile" type="file" accept="image/png,image/jpeg,image/webp"/><small class="field-help">A assinatura oficial salva na conta administrativa será carregada automaticamente. Você também pode enviar outra imagem.</small></label>
+    <div class="user-signature-actions full"><button class="btn" id="userUseOfficialSignature" type="button">Usar assinatura oficial</button><button class="tiny-button danger-link" id="userClearOnboardingSignature" type="button">Remover assinatura</button><span id="userSignatureStatus">Carregando assinatura...</span></div>
+    <div class="plan-doc-signature-editor full">
+      <div class="signature-editor-heading"><div><strong>Posicionamento da assinatura</strong><small>Arraste a assinatura dentro da área. Essa posição será usada no comprovante.</small></div><button class="tiny-button" id="userResetSignaturePosition" type="button">Centralizar</button></div>
+      <div class="signature-document-zone" id="userOnboardingSignatureZone" aria-label="Área para posicionar assinatura"><div class="signature-document-line"></div><img class="signature-draggable hidden" id="userOnboardingSignatureImage" alt="Assinatura posicionável"/><span class="signature-placeholder" id="userOnboardingSignaturePlaceholder">Carregue uma assinatura para posicioná-la</span></div>
+      <label class="signature-scale-label">Tamanho da assinatura<input id="userOnboardingSignatureScale" type="range" min="70" max="150" value="100"/><output id="userOnboardingSignatureScaleOutput">100%</output></label>
+    </div>
+  </div>
+</section>
+<section class="user-wizard-step user-create-only" data-user-step="5">
+  <div class="user-step-heading"><span>ETAPA 5 DE 5</span><h3>Revisão e criação</h3><p>Confira tudo antes de criar a conta e disparar o e-mail.</p></div>
+  <div class="user-onboarding-review" id="userOnboardingReview"></div>
+  <div class="user-onboarding-warning"><b>Segurança:</b> em ativações comerciais o cliente cria a própria senha por link seguro e temporário. Senhas não devem ser enviadas por e-mail nem incluídas em documentos.</div>
+</section>
+<div class="button-row user-wizard-actions"><button class="btn" data-close="userDialog" type="button">Cancelar</button><button class="btn" id="userWizardBack" type="button">Voltar</button><button class="btn primary" id="userWizardNext" type="button">Prosseguir</button><button class="btn primary hidden" id="userSaveButton" type="submit">Criar usuário e enviar e-mail</button></div>
+</form>
+</dialog>
+
+<dialog class="portal-dialog small-dialog" id="userEmailDialog">
+<form id="userEmailForm">
+  <div class="dialog-title"><div><span class="eyebrow">E-MAIL DE ACESSO</span><h2>Alterar e-mail do cliente</h2><p>O mesmo usuário continuará vinculado aos projetos, arquivos, plano, equipe e histórico.</p></div><button class="dialog-close" data-close="userEmailDialog" type="button">×</button></div>
+  <input id="emailChangeUserId" type="hidden"/>
+  <div class="account-change-summary"><span>Cliente</span><strong id="emailChangeUserName">—</strong><span>E-mail atual</span><strong id="emailChangeCurrent">—</strong></div>
+  <div class="form-grid one-column">
+    <label>Novo e-mail de acesso<input id="emailChangeNew" required type="email" autocomplete="email" placeholder="novoemail@exemplo.com"/></label>
+    <label class="account-confirm-check"><input id="emailChangeVerified" type="checkbox" checked/><span><b>Manter o acesso liberado</b><small>O novo e-mail será marcado como verificado por decisão administrativa.</small></span></label>
+    <label class="account-confirm-check"><input id="emailChangeNotifyNew" type="checkbox" checked/><span><b>Notificar o novo e-mail</b><small>Envia a confirmação e informa que a senha atual continua válida.</small></span></label>
+    <label class="account-confirm-check"><input id="emailChangeNotifyOld" type="checkbox" checked/><span><b>Notificar o e-mail anterior</b><small>Envia um aviso de segurança sobre a alteração realizada.</small></span></label>
+    <label class="account-confirm-check"><input id="emailChangeConfirm" type="checkbox" required/><span><b>Confirmo a alteração do login</b><small>Esta operação não cria uma nova conta e não move nem exclui dados.</small></span></label>
+  </div>
+  <div class="account-change-warning">Depois da confirmação, o cliente deverá entrar usando o novo e-mail. A senha continuará a mesma.</div>
+  <div class="button-row"><button class="btn" data-close="userEmailDialog" type="button">Cancelar</button><button class="btn primary" id="emailChangeSubmit" type="submit">Alterar e-mail de acesso</button></div>
+</form>
+</dialog>
+
+<dialog class="portal-dialog workspace-team-dialog" id="workspaceTeamDialog">
+  <div class="dialog-title"><div><span class="eyebrow">EQUIPE</span><h2 id="workspaceTeamTitle">Equipe da assinatura</h2><p id="workspaceTeamSubtitle">Plano, projetos e armazenamento compartilhados.</p></div><button class="dialog-close" data-close="workspaceTeamDialog" type="button">×</button></div>
+  <div class="workspace-team-name-editor"><label>Nome da equipe<input id="workspaceTeamName" maxlength="100" placeholder="Ex.: Jailson Agro"/></label><button class="btn" id="workspaceTeamSaveName" type="button">Salvar</button></div>
+  <input id="workspaceOwnerUserId" type="hidden"/>
+  <input id="editSubuserId" type="hidden"/>
+  <div class="workspace-team-summary" id="workspaceTeamSummary">
+    <article><span>Plano</span><strong id="workspaceTeamPlan">—</strong></article>
+    <article><span>Membros</span><strong id="workspaceTeamSeats">—</strong></article>
+    <article><span>Projetos</span><strong id="workspaceTeamProjects">—</strong></article>
+    <article><span>Armazenamento</span><strong id="workspaceTeamStorage">—</strong></article>
+  </div><strong id="workspaceTeamExtraCost" hidden>Sem adicional</strong>
+  <section class="workspace-team-members">
+    <div class="workspace-section-heading"><div><h3>Membros</h3><p>Plano, projetos e armazenamento são compartilhados.</p></div><button class="btn" id="workspaceAddMemberToggle" type="button">+ Adicionar</button></div>
+    <div class="table-wrap"><table><thead><tr><th>Usuário</th><th>Perfil</th><th>Licença</th><th>Armazenamento</th><th>Status</th><th>Ações</th></tr></thead><tbody id="workspaceMembersTable"><tr><td colspan="6">Carregando equipe...</td></tr></tbody></table></div>
+  </section>
+  <form id="workspaceSubuserForm" class="workspace-subuser-form" hidden>
+    <div class="workspace-member-mode" id="workspaceMemberMode">
+      <button class="active" type="button" data-workspace-member-mode="existing">Usuário existente</button>
+      <button type="button" data-workspace-member-mode="new">Criar novo</button>
+    </div>
+    <div class="workspace-existing-member" id="workspaceExistingMemberBox">
+      <label>Usuário existente<select id="workspaceExistingUser"><option value="">Selecione...</option></select></label>
+      <p>Ao entrar na equipe, o plano passa a ser o do titular e os projetos existentes entram no espaço compartilhado.</p>
+    </div>
+    <div class="workspace-section-heading"><div><span class="eyebrow">MEMBRO</span><h3 id="workspaceSubuserFormTitle">Adicionar membro</h3></div><button class="tiny-button hidden" id="workspaceSubuserCancelEdit" type="button">Cancelar</button></div>
+    <div class="form-grid">
+      <label class="workspace-new-member-field">Nome completo<input id="subuserName" required autocomplete="name"/></label>
+      <label class="workspace-new-member-field">E-mail de acesso<input id="subuserEmail" required type="email" autocomplete="email"/></label>
+      <label class="workspace-new-member-field">WhatsApp<input id="subuserWhatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(75) 99999-9999"/></label>
+      <label class="workspace-edit-password-field" hidden>Redefinir senha<input id="subuserPassword" type="password" minlength="12" autocomplete="new-password" placeholder="Mínimo de 12 caracteres"/><small class="field-help" id="subuserPasswordHelp">Somente para redefinição administrativa de um membro existente.</small></label>
+      <label>Perfil na equipe<select id="subuserRole"><option value="collaborator">Colaborador</option><option value="technician">Técnico</option><option value="manager">Gestor</option></select></label>
+      <label>Status<select id="subuserStatus"><option value="active">Ativo</option><option value="pending">Pendente</option><option value="blocked">Bloqueado</option></select></label>
+      <div class="workspace-shared-license-note full"><b>Compartilhado</b><small id="subuserSeatRule">Plano, projetos e armazenamento pertencem à equipe.</small></div><input id="subuserPaidExtra" type="checkbox" hidden aria-hidden="true"/><span id="subuserPaidExtraLabel" hidden></span>
+      <label class="workspace-check full workspace-new-member-field"><input id="subuserSendWelcomeEmail" type="checkbox" checked/><span><b>Enviar primeiro acesso</b><small>O membro receberá um link temporário para criar a própria senha.</small></span></label>
+    </div>
+    <div class="button-row"><button class="btn" id="workspaceMemberEditorCancel" type="button">Cancelar</button><button class="btn primary" id="workspaceSubuserSubmit" type="submit">Adicionar à equipe</button></div>
+  </form>
+</dialog>
+<dialog class="portal-dialog" id="planDialog"><form id="planForm"><div class="dialog-title"><div><span class="eyebrow">PLANO</span><h2 id="planDialogTitle">Novo plano</h2></div><button class="dialog-close" data-close="planDialog" type="button">×</button></div><input id="editPlanId" type="hidden"/><div class="form-grid"><label>Nome<input id="planName" required=""/></label><label>Identificador<input id="planSlug" placeholder="ex.: profissional-plus"/></label><label>Preço<input id="planPrice" min="0" step="0.01" type="number" value="0"/></label><label>Cobrança<select id="planBilling"><option value="anual">Anual</option><option value="interno">Interno</option></select></label><label>Limite de projetos<input id="planProjectLimit" min="0" placeholder="Vazio = sem limite" type="number"/></label><label>Limite de usuários<input id="planUserLimit" min="0" placeholder="Vazio = sem limite" type="number"/></label><label>Armazenamento (MB)<input id="planStorageMb" min="0" placeholder="Vazio = sem limite" step="1" type="number"/></label><label>Status<select id="planActive"><option value="1">Ativo</option><option value="0">Inativo</option></select></label><label class="full">Descrição<input id="planDescription"/></label><fieldset class="permission-field full"><legend>Permissões</legend><div class="permission-presets"><button class="tiny-button" id="planPresetBasicAnnual" type="button">Básico Anual</button><button class="tiny-button" id="planPresetPlusAnnual" type="button">Plus Anual</button><button class="tiny-button" id="planPresetProAnnual" type="button">Pro Anual</button></div><div class="permission-grid permission-grid-large" id="planPermissions"></div></fieldset></div><div class="button-row"><button class="btn" data-close="planDialog" type="button">Cancelar</button><button class="btn primary" id="planSubmitBtn" type="submit">Criar plano</button></div></form></dialog>
+<dialog class="portal-dialog small-dialog" id="layerGroupDialog">
+<form id="layerGroupForm">
+<div class="dialog-title"><div><span class="eyebrow">CATEGORIA</span><h2>Novo grupo de camadas</h2></div><button class="dialog-close" data-close="layerGroupDialog" type="button">×</button></div>
+<div class="form-grid one-column">
+<label>Nome do grupo<input id="layerGroupName" placeholder="Ex.: Áreas protegidas" required=""/></label>
+<label>Identificador<input id="layerGroupSlug" placeholder="areas-protegidas" required=""/></label>
+<label>Descrição<input id="layerGroupDescription"/></label>
+</div>
+<div class="button-row"><button class="btn" data-close="layerGroupDialog" type="button">Cancelar</button><button class="btn primary" type="submit">Criar grupo</button></div>
+</form>
+</dialog>
+<dialog class="portal-dialog large-dialog" id="layerDialog">
+<form id="layerForm">
+<div class="dialog-title"><div><span class="eyebrow">CAMADA COMPARTILHADA</span><h2 id="layerDialogTitle">Cadastrar camada</h2></div><button class="dialog-close" data-close="layerDialog" type="button">×</button></div>
+<input id="editLayerId" type="hidden"/>
+<div class="form-grid layer-form-grid">
+<label>Grupo<select id="layerGroup" required=""></select></label>
+<label>Nome<input id="layerName" placeholder="Ex.: Limites municipais" required=""/></label>
+<label>Identificador<input id="layerSlug" placeholder="limites-municipais" required=""/></label>
+<label>Tipo geométrico<select id="layerGeometry"><option value="polygon">Polígono</option><option value="line">Linha</option><option value="point">Ponto</option><option value="raster">Raster</option><option value="mixed">Misto</option></select></label>
+<label>Como adicionar<select id="layerSourceMode"><option value="file">Enviar arquivo/ZIP</option><option value="url">Usar URL/Geosserviço</option></select></label>
+<label>Fonte oficial<input id="layerSourceName" placeholder="Ex.: INEMA / IBGE"/></label>
+<label class="full">Descrição<textarea id="layerDescription" rows="3"></textarea></label>
+<label class="remote-type-field hidden">Tipo da URL<select id="layerRemoteType"><option value="auto">Detectar automaticamente</option><option value="wms">WMS — Web Map Service</option><option value="wfs">WFS</option><option value="arcgis">ArcGIS FeatureServer</option><option value="mvt">PostGIS / Vector Tiles (MVT)</option><option value="xyz">Tiles XYZ</option><option value="geojson">GeoJSON por URL</option><option value="api">API GeoJSON</option></select></label>
+<label class="service-url-field hidden">URL do Serviço WMS / Geosserviço<input id="layerServiceUrl" placeholder="Ex.: https://geoserver.inema.ba.gov.br/geoserver/wms" type="url"/><small class="field-help">Informe somente a URL-base do serviço. Para WMS, não envie ZIP ou GeoJSON.</small></label>
+<label class="full remote-layer-name-field hidden">Nome Técnico da Camada<input id="layerWmsName" placeholder="Ex.: Vetor_Recortes_Tematicos:cefir_imovel_rural_limite_inema"/><small class="field-help">Obrigatório para WMS. Use exatamente o nome publicado pelo GeoServer, incluindo o workspace.</small></label>
+<fieldset class="permission-field full hidden" id="layerWmsStyleField"><legend>Simbologia WMS</legend><div class="wms-style-grid"><label class="wms-style-check"><input checked="" id="layerForceWmsColor" type="checkbox"/><span><b>Aplicar a cor do Surveyor no mapa</b><small>Gera uma simbologia SLD para o WMS. Desative para manter as cores oficiais do servidor.</small></span></label><label>Geometria da simbologia<select id="layerWmsSymbolizer"><option value="polygon">Área / polígono</option><option value="line">Linha</option><option value="point">Ponto</option><option value="mixed">Mista / automática</option></select></label><label>Estilo oficial do servidor (opcional)<input id="layerWmsStyleName" placeholder="Ex.: nome_do_estilo"/><small class="field-help">Usado somente quando a cor personalizada estiver desativada.</small></label></div></fieldset>
+<div class="full layer-url-test-box hidden" id="layerMixedContentWarning" role="alert"><span>⚠ Esta URL usa <b>HTTP</b>. Em produção HTTPS, o navegador poderá bloqueá-la por Mixed Content. Nesse caso, configure uma rota proxy HTTPS na API e salve-a em <code>metadata.proxyUrl</code>.</span></div>
+<fieldset class="permission-field full remote-import-field hidden"><legend>Importação progressiva da URL</legend><div class="remote-import-options"><label class="remote-import-check"><input checked="" id="layerImportRemoteToDatabase" type="checkbox"/><span><b>Copiar toda a camada para o Appwrite aos poucos</b><small>Para ArcGIS FeatureServer. A API ignora limites como <code>resultRecordCount=10</code>, busca todos os registros em lotes e grava a camada compactada.</small></span></label><label class="remote-import-check"><input checked="" id="layerAutoPublishRemote" type="checkbox"/><span><b>Publicar automaticamente quando terminar</b><small>Os usuários só receberão a camada depois que a cópia chegar a 100%.</small></span></label><label class="remote-import-batch">Registros por lote<select id="layerRemoteBatchSize"><option value="250">250 — mais seguro</option><option selected="" value="500">500 — recomendado</option><option value="1000">1.000 — mais rápido</option></select></label></div></fieldset>
+<label class="full geojson-file-field">Arquivo da camada<input accept=".geojson,.json,.kml,.kmz,.csv,.zip,application/zip,application/x-zip-compressed,application/geo+json,application/json" id="layerGeoJsonFile" type="file"/><small class="field-help">Envie somente um arquivo por vez. Para Shapefile, compacte SHP, DBF, SHX, PRJ e CPG em um único ZIP. Limite máximo: 1 GB por ZIP.</small></label>
+<div aria-live="polite" class="layer-import-progress full hidden" id="layerImportProgress">
+<div class="layer-import-progress-head"><b id="layerImportProgressText">Aguardando arquivo...</b><span id="layerImportProgressPercent">0%</span></div>
+<progress id="layerImportProgressBar" max="100" value="0"></progress>
+<button class="tiny-button danger-link" id="cancelLayerImport" type="button">Cancelar processamento</button>
+</div>
+<label id="layerColorField">Cor principal<div class="layer-color-editor"><input aria-label="Selecionar cor principal" id="layerColor" type="color" value="#3974d8"/><input aria-label="Código hexadecimal da cor" id="layerColorHex" inputmode="text" maxlength="7" pattern="#[0-9A-Fa-f]{6}" placeholder="#7C3AED" spellcheck="false" type="text" value="#3974D8"/></div><small class="field-help hidden" id="layerAutoColorHint">A cor pode ser ajustada pelo seletor ou pelo código HEX. Em WMS, marque “Aplicar a cor do Surveyor no mapa”.</small></label>
+<label>Opacidade<input id="layerOpacity" max="1" min="0.1" step="0.05" type="number" value="0.55"/></label>
+<label>Zoom mínimo<input id="layerMinZoom" max="22" min="0" type="number" value="0"/></label>
+<label>Zoom máximo<input id="layerMaxZoom" max="22" min="0" type="number" value="22"/></label>
+<fieldset class="permission-field full"><legend>Planos autorizados</legend><div class="permission-grid" id="layerAllowedPlans"></div></fieldset>
+</div>
+<div class="button-row"><button class="btn" data-close="layerDialog" type="button">Cancelar</button><button class="btn primary" type="submit">Salvar camada</button></div>
+</form>
+</dialog>
+</main>
+</div>
+<div class="toast" id="suiteToast"></div>
+<script data-cfasync="false" defer="" src="/assets/js/admin/shell.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer="" src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer="" src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer="" src="/assets/js/core/layout.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer="" src="/assets/js/core/portal.js?v=1.0.0-rc.185.74"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/proj4@2.12.0/dist/proj4.js"></script><script data-cfasync="false" defer="" src="/assets/js/features/mapa/crs.js?v=1.0.0-rc.185.74"></script><script data-cfasync="false" defer="" src="/assets/js/features/mapa/import.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer src="/assets/js/admin/users.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer="" src="/assets/js/admin/app.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer src="/assets/js/admin/team.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer="" src="/assets/js/admin/ai.js?v=1.0.0-rc.185.74"></script>
+<div class="plan-pdf-modal hidden" id="planDocPdfModal" role="dialog" aria-modal="true" aria-labelledby="planDocPdfModalTitle">
+  <div class="plan-pdf-modal-card">
+    <header><div><span class="eyebrow">DOCUMENTO PDF</span><h2 id="planDocPdfModalTitle">Visualização do documento</h2></div><button class="btn" id="planDocPdfClose" type="button">Fechar</button></header>
+    <iframe id="planDocPdfFrame" title="Visualização do PDF"></iframe>
+    <footer><button class="btn" id="planDocPdfDownload" type="button">Baixar PDF</button><button class="btn primary" id="planDocPdfSend" type="button">Enviar por e-mail</button></footer>
+  </div>
+</div>
+
+<script data-cfasync="false" defer="" src="/assets/js/admin/documents.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" defer src="/assets/js/admin/organization.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>

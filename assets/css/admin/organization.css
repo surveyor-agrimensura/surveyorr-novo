@@ -1,0 +1,123 @@
+/* Surveyor 21.11.5 — Administração organizada, equipes compartilhadas e segurança operacional */
+.admin-tabs{gap:8px;align-items:center;flex-wrap:wrap}.admin-route-tab{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 14px;border:1px solid #dbe4ee;border-radius:10px;background:#fff;color:#334155;text-decoration:none;font-weight:700;font-size:13px}.admin-route-tab:hover{border-color:#94a3b8;background:#f8fafc}
+
+/* Usuários em cards */
+.sv-admin-users-legacy{position:absolute;left:-100000px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}.sv-admin-users-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:6px}.sv-user-card{border:1px solid #e2e8f0;border-radius:16px;background:#fff;padding:15px;display:grid;gap:12px;min-width:0;box-shadow:0 1px 2px rgba(15,23,42,.04);transition:.16s ease}.sv-user-card:hover{border-color:#bfdbfe;box-shadow:0 8px 22px rgba(15,23,42,.07);transform:translateY(-1px)}.sv-user-card-head{display:flex;align-items:center;gap:11px;min-width:0}
+.sv-team-badge{margin-left:auto;max-width:42%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:5px 8px;border:1px solid #cfe0ff;border-radius:999px;background:#f1f6ff;color:#0f5bdc;font-size:10px;font-weight:850;line-height:1.1}
+.sv-user-avatar{width:42px;height:42px;border-radius:13px;background:#eff6ff;color:#1d4ed8;display:grid;place-items:center;font-weight:900;flex:0 0 auto}.sv-user-card-copy{min-width:0;flex:1}.sv-user-card-copy b,.sv-user-card-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sv-user-card-copy b{color:#0f172a;font-size:14px}.sv-user-card-copy small{color:#64748b;font-size:12px;margin-top:2px}.sv-user-card-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sv-user-card-meta span{border-radius:10px;background:#f8fafc;padding:8px 9px;min-width:0}.sv-user-card-meta small,.sv-user-card-meta b{display:block}.sv-user-card-meta small{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8}.sv-user-card-meta b{margin-top:2px;font-size:12px;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sv-user-card-footer{display:flex;gap:7px;align-items:center;justify-content:space-between}.sv-user-card-footer .status-pill{font-size:11px}.sv-user-card-open{border:0;background:transparent;color:#2563eb;font-weight:800;cursor:pointer;padding:6px 0}.sv-user-card.is-subuser{border-left:3px solid #60a5fa}.sv-user-card.is-warning{border-color:#fdba74}
+
+.sv-user-detail-dialog{width:min(820px,calc(100vw - 32px));border:0;border-radius:20px;padding:0;box-shadow:0 24px 80px rgba(15,23,42,.28)}.sv-user-detail-dialog::backdrop{background:rgba(15,23,42,.48)}.sv-user-detail-shell{padding:22px;display:grid;gap:18px}.sv-user-detail-head{display:flex;gap:14px;align-items:flex-start}.sv-user-detail-head .sv-user-avatar{width:52px;height:52px}.sv-user-detail-head-copy{flex:1;min-width:0}.sv-user-detail-head-copy h2{margin:0;font-size:22px}.sv-user-detail-head-copy p{margin:3px 0 0;color:#64748b}.sv-user-detail-close{border:0;background:#f1f5f9;border-radius:10px;width:36px;height:36px;font-size:22px;cursor:pointer}.sv-user-detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.sv-user-detail-stats article{border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#f8fafc}.sv-user-detail-stats span,.sv-user-detail-stats strong{display:block}.sv-user-detail-stats span{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.05em}.sv-user-detail-stats strong{margin-top:4px;font-size:12px;color:#0f172a}.sv-user-detail-actions{display:flex;flex-wrap:wrap;gap:8px}.sv-user-detail-history{border-top:1px solid #e2e8f0;padding-top:14px}.sv-user-detail-history h3{margin:0 0 10px;font-size:14px}.sv-user-detail-history-list{display:grid;gap:7px;max-height:270px;overflow:auto}.sv-user-detail-history-list article{display:grid;grid-template-columns:145px 1fr;gap:10px;padding:9px;border-radius:10px;background:#f8fafc}.sv-user-detail-history-list time{font-size:11px;color:#64748b}.sv-user-detail-history-list b{font-size:12px;color:#334155}.sv-online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a34a;margin-right:5px}.sv-offline-dot{background:#94a3b8}.sv-lock-pill{color:#b91c1c;background:#fef2f2;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800}
+
+/* Equipes */
+.workspace-team-name-editor{margin:0 0 16px;padding:13px;border:1px solid #dbeafe;border-radius:14px;background:#f8fbff;display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;align-items:end}.workspace-team-name-editor label{display:grid;gap:5px;font-weight:800;color:#334155}.workspace-team-name-editor input{height:42px}.workspace-team-name-editor small{grid-column:1/-1;color:#64748b}.workspace-personal-storage.shared{display:grid;gap:2px}.workspace-personal-storage.shared span{font-weight:800;color:#334155}.workspace-personal-storage.shared small{color:#64748b}
+
+/* Wizard de termos */
+.plan-doc-wizard{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}.plan-doc-wizard button{border:1px solid #e2e8f0;background:#fff;border-radius:12px;min-height:58px;display:flex;align-items:center;gap:8px;justify-content:center;color:#64748b;font-weight:800;cursor:pointer}.plan-doc-wizard button span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#f1f5f9}.plan-doc-wizard button.active{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8}.plan-doc-wizard button.active span{background:#2563eb;color:#fff}.plan-doc-wizard button.completed{border-color:#bbf7d0;color:#166534}.plan-doc-wizard button[hidden]{display:none}.plan-documents-section[data-plan-doc-step]{display:none}.plan-documents-section[data-plan-doc-step].wizard-active{display:block;animation:svWizardIn .18s ease}.plan-doc-review{min-height:180px}.plan-doc-review-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}.plan-doc-review-summary div{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px}.plan-doc-review-summary small,.plan-doc-review-summary b{display:block}.plan-doc-review-summary small{color:#64748b;font-size:10px;text-transform:uppercase}.plan-doc-review-summary b{margin-top:3px;font-size:12px}.plan-doc-wizard-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.plan-documents-actions.wizard-actions-hidden{display:none}@keyframes svWizardIn{from{opacity:.35;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+/* Operação e segurança */
+.admin-security-organized{display:none}.admin-security-organized.active{display:block}.security-summary-cards article{min-width:0}.admin-ops-card{margin-top:14px;border:1px solid #e2e8f0;border-radius:16px;background:#fff;overflow:hidden}.admin-ops-title{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #eef2f7;background:#fbfdff}.admin-ops-title h3{margin:2px 0 0;font-size:15px}.admin-ops-title p{margin:3px 0 0;color:#64748b;font-size:12px}.admin-compat-hidden{display:none}.admin-security-organized .table-wrap{border:0;border-radius:0}.admin-security-organized table{margin:0}.admin-security-organized tbody small{display:block;color:#64748b;margin-top:2px}.sv-session-user{display:grid;gap:2px}.sv-session-now{white-space:nowrap;font-weight:800}.sv-session-now.online{color:#15803d}.sv-session-now.offline{color:#64748b}.sv-session-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Cards da Home com mesmo ritmo visual do Admin */
+
+
+/* Projetos compartilhados / atividade */
+.workspace-activity-panel{margin:0 0 14px;border:1px solid #dbeafe;background:#f8fbff;border-radius:16px;padding:13px 15px}.workspace-activity-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.workspace-activity-head span,.workspace-activity-head strong{display:block}.workspace-activity-head span{font-size:10px;letter-spacing:.08em;color:#2563eb;font-weight:900}.workspace-activity-head strong{margin-top:2px}.workspace-activity-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:7px;margin-top:10px}.workspace-activity-list article{display:flex;gap:8px;align-items:flex-start;padding:8px 9px;border-radius:10px;background:#fff;border:1px solid #e2e8f0}.workspace-activity-list b,.workspace-activity-list small{display:block}.workspace-activity-list b{font-size:11px;color:#334155}.workspace-activity-list small{font-size:10px;color:#94a3b8;margin-top:2px}.workspace-activity-dot{width:7px;height:7px;border-radius:50%;background:#3b82f6;margin-top:4px;flex:0 0 auto}.project-created-by{display:block;color:#64748b;font-size:10px;margin-top:2px}
+
+@media(max-width:900px){.sv-user-detail-stats{grid-template-columns:1fr 1fr}.plan-doc-wizard{grid-template-columns:1fr 1fr}.plan-doc-wizard button:last-child{grid-column:1/-1}.workspace-team-name-editor{grid-template-columns:1fr}.workspace-team-name-editor small{grid-column:auto}}
+@media(max-width:600px){.sv-admin-users-grid{grid-template-columns:1fr}.sv-user-detail-stats,.plan-doc-review-summary{grid-template-columns:1fr}.sv-user-detail-history-list article{grid-template-columns:1fr}.plan-doc-wizard{grid-template-columns:1fr}.plan-doc-wizard button:last-child{grid-column:auto}}
+
+.workspace-shared-license-note{border:1px solid #bfdbfe;background:#eff6ff;border-radius:12px;padding:11px 12px;display:grid;gap:3px}.workspace-shared-license-note b{color:#1e3a8a;font-size:12px}.workspace-shared-license-note small{color:#475569;line-height:1.4}
+
+/* 2026-08-26 — equipe/admin mais compactos e sem excesso de texto */
+.workspace-member-mode{display:flex;gap:6px;padding:4px;border:1px solid #dfe7f1;border-radius:10px;background:#f7f9fc;margin-bottom:10px}
+.workspace-member-mode button{flex:1;min-height:34px;border:0;border-radius:7px;background:transparent;color:#607087;font:800 10px/1 Inter,system-ui,sans-serif;cursor:pointer}
+.workspace-member-mode button.active{background:#fff;color:#0f62e8;box-shadow:0 2px 8px rgba(15,23,42,.08)}
+.workspace-existing-member{display:grid;gap:6px;padding:10px 12px;border:1px solid #dfe7f1;border-radius:10px;background:#fbfdff;margin-bottom:10px}
+.workspace-existing-member[hidden],.workspace-new-member-field[hidden]{display:none}
+.workspace-existing-member label{display:grid;gap:5px;font:800 9px/1.2 Inter,system-ui,sans-serif;color:#34445a}
+.workspace-existing-member select{min-height:36px;border:1px solid #cfd9e6;border-radius:8px;background:#fff;padding:0 10px;font:700 10px Inter,system-ui,sans-serif;color:#172b4d}
+.workspace-existing-member p{margin:0;color:#708097;font:650 9px/1.45 Inter,system-ui,sans-serif}
+.workspace-team-dialog .dialog-title p,.workspace-team-dialog .workspace-section-heading p{max-width:620px}
+.workspace-team-dialog .workspace-team-summary{gap:8px}
+.workspace-team-dialog .workspace-team-summary article{}
+.workspace-team-dialog .workspace-subuser-form{}
+.workspace-team-dialog .workspace-shared-license-note{padding:9px 10px}
+
+
+@media(max-width:900px){.workspace-team-dialog .workspace-team-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* 2026-08-26 — acabamento final: Admin isolado + equipe compacta */
+.sv-admin-only-topbar{grid-template-columns:minmax(220px,1fr) auto minmax(220px,1fr)}
+.sv-admin-only-topbar .sv-admin-only-nav{justify-self:center}
+.sv-admin-only-topbar .sv-pro-topbar-actions{justify-self:end}
+.workspace-team-dialog{}
+.workspace-team-dialog .workspace-team-name-editor{margin-bottom:10px;padding:10px 11px;border-radius:11px}
+.workspace-team-dialog .workspace-team-summary{grid-template-columns:repeat(4,minmax(130px,1fr));gap:8px;margin-bottom:10px}
+.workspace-team-dialog .workspace-team-summary article{min-height:70px;padding:9px 10px;border-radius:11px}
+.workspace-team-dialog .workspace-team-members{margin-top:4px}
+.workspace-team-dialog .workspace-section-heading{align-items:center}
+.workspace-team-dialog #workspaceAddMemberToggle{min-height:34px;padding:0 12px}
+.workspace-team-dialog .workspace-subuser-form{border-top:1px solid #e5edf6;padding-top:12px;margin-top:12px}
+.workspace-team-dialog .workspace-subuser-form[hidden]{display:none}
+.workspace-team-dialog .workspace-existing-member{padding:9px 10px}
+.workspace-team-dialog .workspace-existing-member p{max-width:720px}
+.workspace-team-dialog .form-grid{gap:9px}
+.workspace-team-dialog .workspace-shared-license-note{min-height:0}
+@media(max-width:760px){.sv-admin-only-topbar{grid-template-columns:1fr auto}.sv-admin-only-topbar .sv-admin-only-nav{display:none}.workspace-team-dialog .workspace-team-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* 2026-08-26 — Admin isolado: topbar ocupa a tela inteira.
+   O sidebar legado fica oculto no Admin, portanto a barra não pode herdar
+   left: var(--sv-sidebar) do shell comum. */
+body[data-page="admin.html"] .sv-pro-topbar.sv-admin-only-topbar{
+  left:0;
+  right:0;
+  width:100%;
+  box-sizing:border-box;
+  grid-template-columns:minmax(220px,1fr) auto minmax(300px,1fr);
+  padding-left:28px;
+  padding-right:28px;
+}
+body[data-page="admin.html"] .sv-admin-only-topbar .sv-home-brand{justify-self:start;min-width:0}
+body[data-page="admin.html"] .sv-admin-only-topbar .sv-admin-only-nav{justify-self:center}
+body[data-page="admin.html"] .sv-admin-only-topbar .sv-pro-topbar-actions{justify-self:end;min-width:0}
+@media(max-width:1100px){
+  body[data-page="admin.html"] .sv-pro-topbar.sv-admin-only-topbar{
+    grid-template-columns:minmax(180px,1fr) auto minmax(240px,1fr);
+    padding-left:18px;
+    padding-right:18px;
+  }
+}
+
+
+/* 2026-08-29 — reparo completo do fluxo de Equipe no Admin */
+.workspace-team-dialog{
+  width:min(980px,calc(100vw - 32px));
+  max-height:min(90vh,780px);
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.workspace-team-dialog>.dialog-title{position:sticky;top:0;z-index:4;background:#fff;padding-top:18px;padding-bottom:10px;margin-top:0;border-bottom:1px solid #eef2f7}
+.workspace-team-dialog .workspace-team-name-editor{position:relative;z-index:1}
+.workspace-team-dialog .workspace-team-summary article strong{min-width:0;overflow-wrap:anywhere}
+.workspace-team-dialog .workspace-team-members .table-wrap{max-height:245px;overflow:auto;overscroll-behavior:contain}
+.workspace-team-dialog .workspace-team-members thead th{position:sticky;top:0;z-index:2;background:#f7f9fc}
+.workspace-team-dialog .workspace-team-loading-row td,.workspace-team-dialog .workspace-team-error-row td{padding:14px;color:#64748b}
+.workspace-inline-loader{display:inline-block;width:12px;height:12px;margin-right:6px;border:2px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;vertical-align:-2px;animation:svWorkspaceSpin .7s linear infinite}
+.workspace-team-dialog.is-loading .workspace-team-summary article{background:#fbfdff}
+.workspace-team-dialog .workspace-subuser-form{padding-left:24px;padding-right:24px}
+.workspace-team-dialog .workspace-subuser-form .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.workspace-team-dialog .workspace-subuser-form .full{grid-column:1/-1}
+@keyframes svWorkspaceSpin{to{transform:rotate(360deg)}}
+@media(max-width:700px){
+  .workspace-team-dialog{width:calc(100vw - 16px);max-height:94vh}
+  .workspace-team-dialog .workspace-subuser-form{padding-left:14px;padding-right:14px}
+  .workspace-team-dialog .workspace-subuser-form .form-grid{grid-template-columns:1fr}
+  .workspace-team-dialog .workspace-subuser-form .full{grid-column:auto}
+}
+
+/* Security Safe R3+R4 — integridade da auditoria */
+.security-integrity-banner{margin:12px 0 16px;padding:11px 14px;border-radius:12px;border:1px solid rgba(15,23,42,.12);font-size:.9rem;font-weight:650;background:rgba(15,23,42,.04)}
+.security-integrity-banner.ok{background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.22)}
+.security-integrity-banner.warning{background:rgba(217,119,6,.09);border-color:rgba(217,119,6,.22)}
+.security-integrity-banner.danger{background:rgba(220,38,38,.09);border-color:rgba(220,38,38,.25)}

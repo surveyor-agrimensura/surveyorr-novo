@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html = fs.readFileSync(new URL('../mapa/index.html', import.meta.url), 'utf8');
+const ux = fs.readFileSync(new URL('../assets/js/features/mapa/ux.js', import.meta.url), 'utf8');
+assert.match(ux, /function ensureGpsLauncherBound\(\)/);
+assert.match(ux, /launchers = \[\$\('markGpsPointBtn'\), \$\('topQuickMarkPointBtn'\)\]/);
+assert.match(ux, /button\.dataset\.gpsLauncherBound/);
+assert.match(ux, /setGpsPanelVisible\(true\)/);
+assert.match(ux, /window\.SurveyorGpsPointUI\s*=\s*\{/);
+assert.match(ux, /const boot = \(\) => \{[\s\S]*ensureGpsLauncherBound\(\);[\s\S]*waitForMap\(\)/);
+assert.match(html, /21\.11\.5[a-z]?(?:-[^\"']+)?/);
+assert.ok(/map-controls-runtime-v21\.11\.5g\.js/.test(html) || /fallback defensivo para (?:o|ambos os) lançador(?:es)?/.test(html));
+console.log('OK: Surveyor v21.11.4a — botão Marcar ponto abre de forma independente da inicialização do mapa.');

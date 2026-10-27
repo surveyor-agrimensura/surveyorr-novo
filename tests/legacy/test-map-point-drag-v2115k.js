@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const js=fs.readFileSync('assets/js/features/mapa/controls.js','utf8');
+const html=fs.readFileSync('mapa/index.html','utf8');
+assert.match(js,/runtimeDragExclusive/);
+assert.match(js,/cloneNode\(true\)/);
+assert.match(js,/oldHandle\.replaceWith\(cleanHandle\)/);
+assert.match(js,/window\.addEventListener\('pointermove'/);
+assert.match(js,/stopImmediatePropagation/);
+assert.match(html,/21\.11\.5[a-z]?(?:-[^\"']+)?/);
+console.log('OK: Surveyor v21.11.5k — painel Marcar ponto com arraste exclusivo e sem conflito de listeners.');

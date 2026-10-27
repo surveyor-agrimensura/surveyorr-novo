@@ -1,0 +1,773 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head><link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin><link rel="dns-prefetch" href="//api.surveyorr.com.br"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="dns-prefetch" href="//cdn.jsdelivr.net"><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob: data: https:; manifest-src 'self'; upgrade-insecure-requests"><script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script><meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="utf-8">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/territorial-boot.js?v=1.0.0-rc.185.74"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#3974d8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Surveyor — Mapa e Cadastro</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
+  
+  
+
+  
+<link rel="stylesheet" href="/assets/css/core/onboarding.css?v=1.0.0-rc.185.74">
+<link rel="stylesheet" href="/assets/css/features/mapa/app.css?v=1.0.0-rc.185.74">
+<link rel="stylesheet" href="/assets/css/features/mapa/enhancements.css?v=1.0.0-rc.185.74">
+<link rel="stylesheet" href="/assets/css/features/mapa/layers.css?v=1.0.0-rc.185.74">
+<link rel="stylesheet" href="/assets/css/features/mapa/layer-location.css?v=1.0.0-rc.185.74">
+<link rel="stylesheet" href="/assets/css/features/mapa/territorial-navigator.css?v=1.0.0-rc.185.74"></head>
+<body data-page="mapa.html" class="georural-map-page">
+  <aside class="map-global-nav" id="mapGlobalNav"><div class="brand"><a class="sv-map-brand-wordmark" href="/" aria-label="Surveyor, página inicial"><img src="/assets/nome.png?v=1.0.0-rc.185.74" alt="SURVEYOR"></a><button id="mapGlobalNavClose" class="map-global-nav-close" type="button" aria-label="Fechar menu">×</button></div><nav class="nav"></nav><div class="side-note"></div></aside>
+  <div class="geo-app">
+    <header class="geo-brandbar map-onebar">
+      <div class="geo-brand-left">
+        <a class="geo-brand" href="/" aria-label="Voltar à visão geral">
+          <span class="geo-brand-plate"><img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="Surveyor"></span>
+        </a>
+        <button id="mapGlobalNavToggle" class="map-global-nav-toggle map-icon-button" type="button" aria-label="Mostrar ou ocultar menu" title="Menu"><span class="sv-map-menu-hamburger" aria-hidden="true"><i></i><i></i><i></i></span></button>
+      </div>
+    <div class="geo-toolstrip">
+      <button id="toggleLayersPanel" class="geo-layers-trigger" type="button" title="Camadas" aria-label="Camadas">
+        <span>CAMADAS</span><b>＋</b>
+      </button>
+      <div class="map-quick-tools-anchor" aria-label="Ferramentas rápidas do mapa">
+        <div class="map-quick-tools-bar">
+          <button id="topQuickPolygonBtn" class="map-quick-tool primary" type="button" title="Desenhar polígono" aria-label="Desenhar polígono">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l12 2 2 10-10 2-5-8Z"></path><circle cx="5" cy="5" r="1.4"></circle><circle cx="17" cy="7" r="1.4"></circle><circle cx="19" cy="17" r="1.4"></circle><circle cx="9" cy="19" r="1.4"></circle></svg>
+          </button>
+          <button id="topQuickMarkPointBtn" class="map-quick-tool primary" type="button" title="Marcar ponto" aria-label="Marcar ponto">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg>
+          </button>
+          <button id="mapQuickToolsToggle" class="map-quick-tool toggle" type="button" title="Mostrar mais ferramentas" aria-label="Mostrar mais ferramentas" aria-expanded="false" aria-controls="mapQuickToolsDrawer">
+            <svg class="icon-down" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+            <svg class="icon-up" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg>
+          </button>
+        </div>
+        <div id="mapQuickToolsDrawer" class="map-quick-tools-drawer hidden" aria-hidden="true">
+          <div id="mapQuickToolsGrid" class="map-quick-tools-grid"></div>
+        </div>
+      </div>
+      <div class="geo-toolbar-right geo-toolbar-right-map">
+        <details class="map-basemap-menu top-basemap-menu">
+          <summary title="Mapa base" aria-label="Mapa base">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21M12 3C9.5 5.6 8.2 8.6 8.2 12S9.5 18.4 12 21"/></svg>
+          </summary>
+          <div class="map-basemap-list" role="menu" aria-label="Escolher mapa base">
+            <button type="button" data-basemap="osm">OSM OpenStreetMap</button>
+            <button type="button" data-basemap="road">Google Road</button>
+            <button type="button" data-basemap="sat">Google Satélite</button>
+            <button type="button" data-basemap="hybrid">Google Hybrid</button>
+            <button type="button" data-basemap="terrain">Google Terrain</button>
+            <button type="button" data-basemap="topo">Topográfico / curvas de nível</button>
+            <button type="button" data-basemap="topographicReal">Topográfico real / altitude</button>
+            <button type="button" data-basemap="relief">Altimétrico colorido simples</button>
+          </div>
+        </details>
+        <select id="baseMapSelect" class="surveyor-native-basemap-select" aria-label="Mapa base">
+          <option value="osm">OSM OpenStreetMap</option>
+          <option value="road">Google Road</option>
+          <option value="sat">Google Satélite</option>
+          <option value="hybrid">Google Hybrid</option>
+          <option value="terrain">Google Terrain</option>
+          <option value="topo">Topográfico / curvas de nível</option>
+          <option value="topographicReal">Topográfico real / altitude</option>
+          <option value="relief">Altimétrico colorido simples</option>
+        </select>
+        <input id="importFile" class="hidden-file-input" type="file" multiple accept=".geojson,.json,.kml,.kmz,.csv,.rw5,.raw,.zip,.shp,.shx,.dbf,.prj,.cpg,.sbn,.sbx" aria-hidden="true" tabindex="-1">
+        <input id="importReferenceFile" class="hidden-file-input" type="file" multiple accept=".geojson,.json,.kml,.kmz,.zip,.shp,.shx,.dbf,.prj,.cpg,.sbn,.sbx" aria-hidden="true" tabindex="-1">
+        <details class="map-download-menu top-download-menu">
+          <summary title="Download" aria-label="Download"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m-4-4 4 4 4-4M5 19h14"/></svg></summary>
+          <div class="map-download-list">
+            <button id="kmlBtn" type="button">KML</button>
+            <button id="txtBtn" type="button">TXT</button>
+            <button id="geojsonBtn" type="button">GeoJSON</button>
+            <button id="csvBtn" type="button">CSV</button>
+            <button id="shpBtn" type="button">Shapefile</button>
+          </div>
+        </details>
+        <details class="map-project-menu top-project-menu">
+          <summary title="Projeto" aria-label="Projeto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h6l2 2h8v12H4V5Z"/></svg></summary>
+          <div class="map-project-list">
+            <button id="secureShareBtn" type="button">Compartilhar seguro</button>
+            <button id="revokeShareBtn" type="button">Revogar links</button>
+            <button id="duplicateProjectBtn" type="button">Duplicar projeto</button>
+            <button id="projectVersionsBtn" type="button">Histórico de versões</button>
+            <button id="lockProjectBtn" type="button">Travar/destravar</button>
+            <button id="saveTemplateBtn" type="button">Salvar modelo</button>
+            <button id="applyTemplateBtn" type="button">Aplicar modelo</button>
+            <button id="exportZipBtn" type="button">Exportação ZIP completa</button>
+            <button id="mapNavigationSettingsBtn" type="button">Preferências de navegação</button>
+          </div>
+        </details>
+        <button id="newBtn" class="map-icon-button" title="Novo projeto" aria-label="Novo projeto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+        <button id="saveBtn" class="map-top-action map-top-save map-icon-button" title="Salvar projeto" aria-label="Salvar projeto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h12l2 2v14H5V4Zm3 0v6h8V4M8 20v-7h8v7"/></svg></button>
+        <button id="toggleMapSearch" class="geo-map-search-toggle" type="button" title="Pesquisar localização" aria-label="Abrir pesquisa de localização" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4.5 4.5"></path></svg></button>
+        <button id="topEditElementsBtn" class="map-top-action map-top-edit map-icon-button" type="button" title="Editar elementos do projeto" aria-label="Editar elementos do projeto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4-.8L18.5 8.7l-3.2-3.2L4.8 16 4 20Zm9.8-13 3.2 3.2M14.8 4.7l1.3-1.3a1.7 1.7 0 0 1 2.4 0l2.1 2.1a1.7 1.7 0 0 1 0 2.4l-1.3 1.3"/></svg></button>
+        <button id="openImportLayersBtn" class="map-top-action map-top-import map-icon-button" type="button" title="Importar arquivo ou camada" aria-label="Importar arquivo ou camada"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17V5m-4 4 4-4 4 4M5 19h14"/></svg></button>
+        <button id="returnToCarBtn" class="map-return-car-btn hidden" type="button" aria-label="Salvar alterações e voltar ao módulo CAR">← Voltar ao CAR</button>
+        
+      </div>
+    </div>
+    </header>
+
+
+
+    <div class="geo-workspace panel-collapsed">
+      <section id="territorialNavigator" class="sv-territorial-navigator" aria-label="Navegação territorial do SURVEYOR" hidden>
+        <div id="territorialMapCanvas" class="sv-territorial-map" aria-label="Mapa territorial do Brasil"></div>
+        <div class="sv-territorial-status" data-territorial-status data-tone="loading" role="status" aria-live="polite">Preparando navegação territorial...</div>
+        <div class="sv-territorial-source">Limites territoriais · IBGE</div>
+      </section>
+      <aside class="geo-sidepanel collapsed" id="geoSidePanel" aria-hidden="true">
+        <button id="sidePanelCollapse" class="sidepanel-collapse-btn" type="button" title="Recolher painel" aria-label="Recolher painel">‹</button>
+        <div class="sidepanel-tabs sidepanel-tabs-four" aria-hidden="true">
+          <button class="active" data-side-tab="project" tabindex="-1">PROJETO</button>
+          <button data-side-tab="layers" tabindex="-1">CAMADAS</button>
+          <button data-side-tab="glebas" tabindex="-1">GLEBAS</button>
+          <button data-side-tab="tools" tabindex="-1">FERRAMENTAS</button>
+        </div>
+        <div class="sv-context-panel-head" id="svContextPanelHead">
+          <div class="sv-context-panel-title"><span id="svContextPanelIcon" aria-hidden="true"></span><strong id="svContextPanelTitle">Painel</strong></div>
+          <button id="svContextPanelClose" type="button" aria-label="Fechar painel lateral" title="Fechar painel">×</button>
+        </div>
+
+        <div class="sidepanel-scroll">
+          <section class="side-tab-panel active" data-side-panel="project">
+            <div class="compact-section">
+              <div class="compact-heading"><b>Dados do imóvel</b><button type="button" class="collapse-btn">−</button></div>
+              <div class="compact-fields">
+                <label>Nome do projeto <span class="sv-required-mark" aria-hidden="true">*</span><input id="propertyName" placeholder="Ex.: Levantamento Fazenda Boa Esperança" required aria-required="true"></label>
+                <label>Proprietário/possuidor<input id="ownerName" placeholder="Nome completo"></label>
+                <div class="row"><label>CPF do proprietário <span class="sv-field-optional">(opcional)</span><input id="ownerCpf" data-sv-mask-type="cpfcnpj" placeholder="000.000.000-00"></label><label>RG do proprietário <span class="sv-field-optional">(opcional)</span><input id="ownerRg" data-sv-mask-type="rg" placeholder="Opcional"></label></div>
+                <details id="additionalOwnerSection" class="sv-additional-owner"><summary>Adicionar segundo proprietário (opcional)</summary><div class="compact-fields"><label>Segundo proprietário <span class="sv-field-optional">(opcional)</span><input id="additionalOwnerName" placeholder="Nome completo do segundo proprietário" autocomplete="off"></label><div class="row"><label>CPF/CNPJ <span class="sv-field-optional">(opcional)</span><input id="additionalOwnerCpf" data-sv-mask-type="cpfcnpj" placeholder="CPF ou CNPJ"></label><label>RG <span class="sv-field-optional">(opcional)</span><input id="additionalOwnerRg" data-sv-mask-type="rg" placeholder="Opcional"></label></div><button type="button" id="removeAdditionalOwner" class="btn">Remover segundo proprietário</button><small>Se o nome ficar em branco, o segundo proprietário não será salvo nem aparecerá nos documentos.</small></div></details>
+                <div class="row"><label>Município<input id="city" placeholder="Amargosa"></label><label class="uf">UF<select id="uf"><option>BA</option><option>MG</option><option>ES</option><option>GO</option><option>SP</option><option>SE</option><option>PE</option></select></label></div>
+                <label>Descrição <span class="sv-field-optional">(opcional)</span><textarea id="projectDescription" rows="3" placeholder="Ex.: Levantamento para regularização ambiental..."></textarea></label>
+              </div>
+            </div>
+
+            <div class="compact-section">
+              <div class="compact-heading"><b>Próximo desenho</b><button type="button" class="collapse-btn">−</button></div>
+              <div class="compact-fields">
+                <label>Categoria<select id="category"></select></label>
+                <label>Nome da área<input id="areaName" placeholder="Ex.: Reserva Legal 01"></label>
+              </div>
+            </div>
+          </section>
+
+          <section class="side-tab-panel" data-side-panel="layers">
+            <div class="compact-section grow">
+              <div class="compact-heading"><b>Camadas do projeto</b><span id="layerCount" class="layer-count">0</span></div>
+              <div id="layerList" class="layer-list"><p class="empty">Nenhuma área desenhada.</p></div>
+              <div id="referenceStatus" class="reference-status hidden"></div>
+            </div>
+          </section>
+
+          <section class="side-tab-panel" data-side-panel="glebas">
+            <div class="compact-section map-glebas-panel gleba-definition-card">
+              <div class="compact-heading"><b>Definição da gleba</b><span id="glebaMapStatus" class="layer-count">pronto</span></div>
+              <div class="compact-fields">
+                
+                <label>Polígono base
+                  <select id="glebaSourceLayer"><option value="">Selecione ou clique em uma área no mapa</option></select>
+                </label>
+                <label>Modo de divisão
+                  <select id="glebaMapMode">
+                    <option value="equal">Áreas iguais</option>
+                    <option value="custom">Áreas personalizadas por herdeiro</option>
+                  </select>
+                </label>
+                <label>Tipo de recorte
+                  <select id="glebaCutType">
+                    <option value="area-strips">Corte reto</option>
+                    <option value="frontage-guide">Desenhar frente/acesso</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="compact-section gleba-draw-card">
+              <div class="compact-heading"><b>Desenhar / editar</b><span class="sv-info-badge" title="Use as ferramentas do mapa para orientar a divisão">i</span></div>
+              <div class="compact-fields">
+                <div class="gleba-cut-draw-box">
+                  <div>
+                    <b>Linha guia / faixa de acesso</b>
+                    
+                  </div>
+                  <div class="gleba-cut-actions">
+                    <button id="glebaDrawCutLine" type="button">Desenhar corte</button>
+                    <button id="glebaDrawManualPolygon" type="button">Desenhar gleba manual</button>
+                    <button id="glebaFinishManualPolygon" class="gleba-finish-manual" type="button" hidden disabled>Finalizar gleba</button>
+                    <button id="glebaClearCutLines" type="button">Limpar desenho</button>
+                  </div>
+                  <span id="glebaCutLineCount" class="gleba-cut-count">0 cortes</span>
+                  <div id="glebaCutLinesList" class="gleba-cut-lines-list"><span class="empty-cut">Nenhuma linha de corte desenhada.</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="compact-section gleba-info-card">
+              <div class="compact-heading"><b>Informações da gleba</b><span class="sv-info-badge" title="Parâmetros da divisão">i</span></div>
+              <div class="compact-fields">
+                <div class="row">
+                  <label>Qtd. de glebas<input id="glebaMapCount" type="number" min="2" max="80" value="2"></label>
+                  <label>Nome base<input id="glebaMapBaseName" value="Gleba"></label>
+                </div>
+                <label>Orientação do corte
+                  <select id="glebaMapOrientation">
+                    <option value="x">Oeste → Leste</option>
+                    <option value="x-reverse">Leste → Oeste</option>
+                    <option value="y">Sul → Norte</option>
+                    <option value="y-reverse">Norte → Sul</option>
+                    <option value="angle">Azimute manual</option>
+                    <option value="angle-reverse">Azimute manual inverso</option>
+                    <option value="perp">Perpendicular ao azimute</option>
+                    <option value="perp-reverse">Perpendicular inverso</option>
+                    <option value="diagonal-ne-sw">Diagonal NE ↔ SW</option>
+                    <option value="diagonal-nw-se">Diagonal NW ↔ SE</option>
+                    <option value="longest">Automático — maior comprimento</option>
+                    <option value="shortest">Automático — menor largura</option>
+                  </select>
+                </label>
+                <label id="glebaMapAzimuthWrap">Azimute / rumo da divisão
+                  <input id="glebaMapAzimuth" type="number" min="0" max="360" step="0.01" value="0">
+                </label>
+                <div class="map-gleba-checks">
+                  <label><input id="glebaMapRealtime" type="checkbox"> Atualizar em tempo real</label>
+                  <label><input id="glebaMapReplace" type="checkbox" checked> Substituir glebas anteriores deste polígono</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="compact-section gleba-heirs-card">
+              <div class="compact-heading map-glebas-heirs-head"><b>Herdeiros / áreas</b><button id="glebaAddHeir" type="button">Adicionar herdeiro</button></div>
+              <div class="compact-fields">
+                <div id="glebaHeirsList" class="map-glebas-heirs"></div>
+                <div class="map-glebas-actions primary-actions">
+                  <button id="glebaMapGenerate" class="toolbar-primary" type="button">Gerar glebas</button>
+                  <button id="glebaMapClear" class="danger-soft" type="button">Limpar glebas</button>
+                </div>
+                <div class="map-glebas-actions export-actions">
+                  <button id="glebaMapExportKml" type="button">Exportar KML</button>
+                  <button id="glebaMapExportGeojson" type="button">GeoJSON</button>
+                  <button id="glebaMapExportCsv" type="button">CSV vértices</button>
+                </div>
+                <div id="glebaMapSummary" class="gleba-map-summary"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="side-tab-panel" data-side-panel="tools">
+            <div class="compact-section grow map-tools-panel sv-advanced-tools-panel">
+              <div class="compact-heading"><b>Ferramentas avançadas</b><span class="layer-count">NOVO</span></div>
+              <div id="svAdvancedToolsMenu" class="sv-advanced-tools-menu" aria-label="Ferramentas avançadas do mapa">
+                <button type="button" class="sv-advanced-tool-card" data-advanced-selector='[data-draw-tool="cad-dimension"]'>
+                  <span class="sv-advanced-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7v10M20 7v10M4 12h16"/><path d="m7 9-3 3 3 3m10-6 3 3-3 3"/></svg></span>
+                  <span><b>Cotar manualmente</b></span><em>NOVO</em>
+                </button>
+                <button type="button" class="sv-advanced-tool-card" data-advanced-selector='[data-draw-tool="cad-dimension-remove"]'>
+                  <span class="sv-advanced-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7v10M17 7v10M4 12h13"/><path d="m14 12 6 6m0-6-6 6"/></svg></span>
+                  <span><b>Remover última cota</b></span>
+                </button>
+                <button type="button" class="sv-advanced-tool-card" data-advanced-selector='[data-draw-tool="sig-certified-neighbors"]'>
+                  <span class="sv-advanced-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 5h8v7H3Z"/><path d="M13 4h8v8h-8Z"/><path d="M7 14h9v7H7Z"/><path d="M11 8h2M10 14l2-2"/></svg></span>
+                  <span><b>Vizinhos certificados</b></span><em>NOVO</em>
+                </button>
+                <button type="button" class="sv-advanced-tool-card" data-advanced-selector='[data-draw-tool="terrain-elevation-click"]'>
+                  <span class="sv-advanced-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 19 9 8l4 6 3-5 5 10Z"/><circle cx="16" cy="9" r="1.5"/></svg></span>
+                  <span><b>Altitude por clique</b></span><em>NOVO</em>
+                </button>
+                <button type="button" class="sv-advanced-tool-card" data-advanced-selector="#mapNavigationSettingsBtn">
+                  <span class="sv-advanced-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M10 17h10M4 17h2"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></span>
+                  <span><b>Preferências de navegação</b></span><em>NOVO</em>
+                </button>
+              </div>
+              <div class="sv-side-tools-command-source" aria-hidden="true">
+      <div class="geo-toolbar-center" aria-label="Ferramentas principais">
+        <div class="geo-tool-group" aria-label="Consulta">
+          <button id="selectToolBtn" class="geo-tool active" title="Selecionar elementos" aria-label="Selecionar elementos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l12 8-5 2 3 6-2 1-3-6-3 4z"/></svg><span>Selecionar</span></button>
+          <button id="identifyToolBtn" class="geo-tool" title="Identificar no mapa" aria-label="Identificar no mapa"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v7M12 7h.01"/></svg><span>Identificar</span></button>
+        </div>
+        <div class="geo-tool-group" aria-label="Desenho">
+          <button id="toolsMenuBtn" class="geo-tool" title="Ferramentas de desenho" aria-label="Ferramentas de desenho"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19l5-1 9-9-4-4-9 9zM13 6l4 4M4 20h16"/></svg><span>Desenhar</span></button>
+          <button id="cadToolsMenuBtn" class="geo-tool geo-tool-cad" title="Ferramentas CAD de edição geométrica" aria-label="Ferramentas CAD"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16M6 16l6-12 6 12M8 12h8"/></svg><span>CAD</span></button>
+          <button id="sigToolsMenuBtn" class="geo-tool geo-tool-sig" title="Operações espaciais SIG" aria-label="Operações SIG"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h8v8H5zM11 11h8v8h-8zM13 7l4-2 2 4"/></svg><span>SIG</span></button>
+          <button id="undoToolBtn" class="geo-tool" title="Desfazer última alteração" aria-label="Desfazer última alteração" disabled><span class="history-glyph" aria-hidden="true">↶</span><span>Desfazer</span></button>
+          <button id="redoToolBtn" class="geo-tool" title="Refazer alteração desfeita" aria-label="Refazer alteração desfeita" disabled><span class="history-glyph" aria-hidden="true">↷</span><span>Refazer</span></button>
+          <button id="cancelToolBtn" class="geo-tool geo-tool-danger" title="Cancelar ferramenta ativa" aria-label="Cancelar ferramenta ativa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg><span>Cancelar</span></button>
+        </div>
+        <div class="geo-tool-group" aria-label="Análise">
+          <button id="refreshMapBtn" class="geo-tool" title="Atualizar mapa e camadas" aria-label="Atualizar mapa e camadas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 10-2 5M20 4v7h-7"/></svg><span>Atualizar</span></button>
+          <button id="measureToolBtn" class="geo-tool" title="Medir distância" aria-label="Medir distância"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17l13-13 3 3-13 13H4zM12 9l3 3M8 13l3 3"/></svg><span>Medir</span></button>
+          <button id="markGpsPointBtn" class="geo-tool geo-tool-gps" title="Marcar ponto por GPS ou coordenadas" aria-label="Marcar ponto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg><span>Marcar ponto</span></button>
+          <button id="coordinatesToolBtn" class="geo-tool" title="Mostrar coordenadas" aria-label="Mostrar coordenadas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16M7 16l3-4 3 2 4-6"/></svg><span>Coordenadas</span></button>
+          <button id="segmentMeasuresToggleBtn" class="geo-tool" title="Mostrar ou ocultar cotas dos segmentos" aria-label="Mostrar ou ocultar cotas dos segmentos" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18h16M7 15V7M17 15V7M7 11h10"/></svg><span>Cotas</span></button>
+          <button id="glebaFrontBackToggleBtn" class="geo-tool" title="Mostrar ou ocultar medidas de frente e fundo do projeto" aria-label="Mostrar ou ocultar medidas de frente e fundo do projeto" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 18h16M7 9v6M17 9v6M9 12h6"/></svg><span>Frente/Fundo</span></button>
+          <button id="terrainToolsMenuBtn" class="geo-tool geo-tool-terrain" title="Terreno, altimetria e topografia" aria-label="Ferramentas de terreno"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17c3-5 5-8 8-8s4 3 7 8M3 17h18M7 17l2-3 2 3M13 17l2-4 3 4"/></svg><span>Terreno</span></button>
+        </div>
+        <div id="drawToolsPopover" class="draw-tools-popover hidden" role="menu" aria-label="Ferramentas de desenho">
+          <div class="tool-popover-title">Desenho</div>
+          <button type="button" data-draw-tool="polygon">Polígono</button>
+          <button type="button" data-draw-tool="polyline">Linha</button>
+          <button type="button" data-draw-tool="servitude">Desenhar servidão</button>
+          <button type="button" data-draw-tool="rectangle">Retângulo</button>
+          <button type="button" data-draw-tool="circle">Círculo</button>
+          <button type="button" data-draw-tool="arc">Arco</button>
+          <button type="button" data-draw-tool="marker">Ponto</button>
+          <button type="button" data-draw-tool="glebas" class="draw-glebas-action">Dividir glebas</button>
+          <button type="button" data-draw-tool="cancel" class="draw-cancel-action">Cancelar ferramenta</button>
+        </div>
+        <div id="cadToolsPopover" class="draw-tools-popover cad-tools-popover hidden" role="menu" aria-label="Ferramentas CAD">
+          <div class="tool-popover-title">CAD — edição geométrica</div>
+          <button type="button" data-draw-tool="edit">Editar vértices</button>
+          <button id="editMidpointsToggleBtn" type="button" class="surveyor-popover-icon-tool surveyor-edit-midpoints-toggle" aria-pressed="false" aria-label="Pontos automáticos: ocultos" title="Mostrar subpontos automáticos entre os vértices para arredondar o desenho"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17L12 7l8 10M4 17h16"/><circle cx="4" cy="17" r="2"/><circle cx="12" cy="7" r="2"/><circle cx="20" cy="17" r="2"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/></svg><span>Pontos automáticos</span></button><button id="vertexHideToolBtn" type="button" class="surveyor-popover-icon-tool surveyor-vertex-hide-tool" aria-pressed="false" aria-label="Remover vértice" title="Vértices: remover virtualmente, excluir definitivamente ou restaurar removidos virtuais"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17 10 7l10 10"/><circle cx="10" cy="7" r="2"/><path d="M14 7h7"/></svg><span>Remover vértice</span></button>
+          <button type="button" data-draw-tool="geom-insert-vertex">Inserir vértice</button>
+          <button type="button" data-draw-tool="cad-dimension">Cotar manualmente</button>
+          <button type="button" data-draw-tool="cad-dimension-remove">Remover última cota</button>
+          
+          <button type="button" data-draw-tool="geom-offset">Offset</button>
+          <button type="button" data-draw-tool="geom-rotate">Rotacionar</button>
+          <button type="button" data-draw-tool="geom-mirror">Espelhar</button>
+          <button type="button" data-draw-tool="geom-scale">Escalar</button>
+          <button type="button" data-draw-tool="geom-stretch-side">Esticar lado</button>
+          <button type="button" data-draw-tool="geom-convert">Linha ⇄ Polígono</button>
+          <button type="button" data-draw-tool="geom-split-line">Quebrar linha</button>
+          <button type="button" data-draw-tool="geom-merge-lines">Mesclar linhas</button>
+          <button type="button" data-draw-tool="geom-snap">Snap avançado</button>
+          <button type="button" data-draw-tool="geom-fix">Corrigir geometria</button>
+          <button type="button" data-draw-tool="delete">Excluir desenho</button>
+          <button type="button" data-draw-tool="cancel" class="draw-cancel-action">Cancelar ferramenta</button>
+        </div>
+        <div id="sigToolsPopover" class="draw-tools-popover sig-tools-popover hidden" role="menu" aria-label="Operações espaciais SIG">
+          <div class="tool-popover-title">SIG — operações espaciais</div>
+          <button type="button" data-draw-tool="spatial-union">União</button>
+          <button type="button" data-draw-tool="spatial-difference">Diferença</button>
+          <button type="button" data-draw-tool="spatial-intersection">Interseção</button>
+          <button type="button" data-draw-tool="spatial-clip">Clip</button>
+          <button type="button" data-draw-tool="spatial-dissolve">Dissolver</button>
+          <button type="button" data-draw-tool="spatial-simplify">Simplificar</button>
+          <button type="button" data-draw-tool="spatial-topology">Verificar topologia</button>
+          <button type="button" data-draw-tool="sig-certified-neighbors">Vizinhos certificados</button>
+          <button type="button" data-draw-tool="spatial-remove-small">Remover pequenos polígonos</button>
+          <button type="button" data-draw-tool="cancel" class="draw-cancel-action">Cancelar ferramenta</button>
+        </div>
+        <div id="terrainToolsPopover" class="draw-tools-popover terrain-tools-popover hidden" role="menu" aria-label="Ferramentas de terreno e altimetria">
+          <div class="tool-popover-title">Terreno — altimetria e topografia</div>
+          <button type="button" data-draw-tool="terrain-profile">Perfil de elevação</button>
+          <button type="button" data-draw-tool="terrain-cut-fill">Corte e aterro</button>
+          <button type="button" data-draw-tool="terrain-contours">Curvas de nível automáticas</button>
+          <button type="button" data-draw-tool="terrain-spot-points">Gerar pontos cotados</button>
+          <button type="button" data-draw-tool="terrain-elevation-click">Consultar altitude no mapa</button>
+          <button type="button" data-draw-tool="cancel" class="draw-cancel-action">Cancelar ferramenta</button>
+        </div>
+      </div>
+              </div>
+            </div>
+          </section>
+
+      </aside>
+
+      <button id="sidePanelFloatToggle" class="sidepanel-floating-toggle" type="button" aria-label="Mostrar painel lateral" title="Mostrar painel lateral">
+        <span aria-hidden="true">›</span>
+      </button>
+
+      <main class="geo-map-stage">
+        <div id="mapSearchBar" class="geo-searchbar hidden" aria-hidden="true">
+          <div class="geo-search-input-wrap">
+            <input id="coordSearch" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="citySuggestBox" placeholder="Digite o nome da cidade" title="Escolha o tipo de pesquisa no seletor destacado antes de digitar.">
+            <div id="citySuggestBox" class="city-suggest hidden" role="listbox" aria-label="Sugestões de cidades"></div>
+          </div>
+          <button id="locateBtn">Localizar</button>
+          <button id="myLocationBtn">Minha localização</button>
+        </div>
+
+        <!-- Controles de mapa/importação/download movidos para a barra superior na v21.9.134. -->
+
+        <div id="map"></div>
+        <section id="earth3dPanel" class="earth3d-panel hidden" aria-hidden="true">
+          <div class="earth3d-panel-head">
+            <div><strong>Surveyor Earth 3D</strong><span>Globo 3D integrado ao mapa</span></div>
+            <button id="closeEarth3dPanel" type="button" aria-label="Fechar Earth 3D">×</button>
+          </div>
+          <iframe id="earth3dFrame" title="Surveyor Earth 3D" loading="lazy" allow="geolocation; fullscreen"></iframe>
+        </section>
+
+        <div id="coordinateReadout" class="coordinate-readout hidden">Lat: — &nbsp; Lng: —</div>
+
+        <div class="metrics">
+          <div><span>Área total</span><b id="totalArea">0,0000 ha</b></div>
+          <div><span>Perímetro selecionado</span><b id="selectedPerimeter">0,00 m</b></div>
+          <div><span>Elementos</span><b id="totalElements">0</b></div>
+          <div><span>Vértices</span><b id="totalVertices">0</b></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <aside id="details" class="details hidden">
+    <button id="closeDetails" class="close" type="button" aria-label="Fechar detalhes" title="Fechar detalhes">×</button>
+
+    <div class="detail-card-tabs" role="tablist" aria-label="Seções do elemento selecionado">
+      <button type="button" class="active" data-detail-tab="description">Descrição</button>
+      <button type="button" data-detail-tab="edit">Editar</button>
+    </div>
+
+    <section class="detail-card-panel active" data-detail-panel="description">
+      <h2 id="detailTitle">Área</h2>
+      <div class="detail-stats"><div><span>Área</span><b id="detailArea">—</b></div><div><span>Perímetro</span><b id="detailPerimeter">—</b></div><div><span>Vértices</span><b id="detailVertices">—</b></div><div title="Tarefa baiana: 4.356 m²"><span>Tarefas</span><b id="detailTasks">—</b></div></div>
+      <div class="detail-coordinates-block">
+        <div class="detail-coordinates-head"><b>Coordenadas</b><button id="copyCoordsBtn" type="button">Copiar</button></div>
+        <textarea id="coordsText" rows="8" readonly aria-label="Coordenadas do elemento"></textarea>
+      </div>
+    </section>
+
+    <section class="detail-card-panel" data-detail-panel="edit" hidden>
+      <label>Nome<input id="detailName"></label>
+      <label>Categoria<select id="detailCategory"></select></label>
+      <section id="servitudeDetailsSection" class="servitude-details-section hidden">
+        <div class="section-title"><b>Servidão</b><span>VIA</span></div>
+        <label>Via / identificação<input id="servitudeRoadName" placeholder="Ex.: BR-420"></label>
+        <label>Largura total (m)<input id="servitudeWidthMeters" type="number" min="0.5" max="2000" step="0.5" value="6"></label>
+        <button id="detectServitudeRoadBtn" type="button">Detectar via novamente</button>
+        <small id="servitudeDetectionStatus">A identificação é detectada automaticamente ao finalizar o traçado.</small>
+      </section>
+
+      <section id="confrontantesSection" class="confrontantes-section hidden">
+        <div class="section-title confrontantes-title"><b>Confrontantes por trecho</b><span id="confrontantesCount">0/0</span></div>
+        
+        <div class="confrontante-vertex-select-box">
+          <div class="confrontante-vertex-select-actions">
+            <button id="toggleConfrontanteVertexSelect" type="button">Selecionar vértices</button>
+            <button id="clearConfrontanteVertexSelection" type="button">Limpar seleção</button>
+          </div>
+          <div id="confrontanteVertexSelectionSummary" class="confrontante-vertex-selection-summary">Nenhum vértice selecionado.</div>
+          <div class="confrontante-vertex-name-row">
+            <input id="confrontanteQuickName" type="text" placeholder="Nome do confrontante">
+            <input id="confrontanteQuickProperty" type="text" placeholder="Nome da propriedade (opcional)">
+            <button id="saveConfrontanteVertexSelection" class="green" type="button">Aplicar</button>
+          </div>
+        </div>
+        <div id="confrontantesList" class="confrontantes-list"></div>
+      </section>
+
+      <div class="detail-actions compact-detail-actions">
+        <button id="copyBtn" type="button">Copiar CSV</button>
+        <details class="selected-download-menu">
+          <summary role="button" aria-label="Opções de download do elemento selecionado">Download</summary>
+          <div class="selected-download-list">
+            <button type="button" data-selected-download="geojson">GeoJSON</button>
+            <button type="button" data-selected-download="kml">KML</button>
+            <button type="button" data-selected-download="csv">CSV</button>
+            <button type="button" data-selected-download="txt">TXT</button>
+            <button type="button" data-selected-download="shp">Shapefile</button>
+          </div>
+        </details>
+        <button id="generateAppBtn" class="green hidden" type="button">Gerar APP</button>
+        <button id="deleteBtn" class="danger" type="button">Excluir</button>
+      </div>
+    </section>
+  </aside>
+
+  <dialog id="layerCatalogDialog" class="layer-catalog-dialog">
+    <header class="catalog-dialog-header">
+      <div>
+        <b>Adicionar camadas ao mapa</b>
+        <span>Catálogo compartilhado do Surveyor</span>
+      </div>
+      <div class="catalog-dialog-header-actions">
+        <button id="catalogLocationButton" class="catalog-location-button hidden" type="button" aria-label="Trocar estado do catálogo"><span aria-hidden="true">⌖</span><strong id="catalogLocationLabel">Bahia</strong><span aria-hidden="true">⌄</span></button>
+        <button id="closeLayerCatalog" class="close" type="button" aria-label="Fechar">×</button>
+      </div>
+    </header>
+    <section id="catalogLocationStep" class="catalog-location-step" aria-label="Seleção visual do estado do catálogo">
+      <div class="catalog-state-browser">
+        <section class="catalog-state-map-pane" aria-label="Mapa do Brasil para seleção de estado">
+          <div id="catalogStateMap" class="catalog-state-map" aria-label="Mapa interativo dos estados do Brasil"></div>
+        </section>
+        <section id="catalogStateLayersPane" class="catalog-state-layers-pane" aria-label="Camadas disponíveis no estado selecionado">
+          <div class="catalog-state-layers-heading">
+            <strong id="catalogStateLayersTitle">Camadas da Bahia</strong>
+          </div>
+          <div id="catalogStateLayersMount" class="catalog-state-layers-mount"></div>
+        </section>
+        <aside class="catalog-state-list-pane" aria-label="Lista de estados">
+          <div class="catalog-state-list-heading">
+            <div><span>ESTADOS</span><strong>Escolha a UF</strong></div>
+            <span id="catalogStateChoiceUf" class="catalog-state-choice-uf">BA</span>
+          </div>
+          <label class="catalog-state-search-wrap" for="catalogStateSearch">
+            <span aria-hidden="true">⌕</span>
+            <input id="catalogStateSearch" type="search" autocomplete="off" placeholder="Buscar estado ou UF">
+          </label>
+          <div id="catalogStateList" class="catalog-state-list" role="listbox" aria-label="Estados do Brasil"></div>
+          <div class="catalog-state-selection-summary">
+            <span>Selecionado</span>
+            <strong id="catalogStateChoiceLabel">Bahia</strong>
+          </div>
+          <select id="catalogStateSelect" class="catalog-state-native-select" aria-label="Estado do catálogo de camadas" tabindex="-1">
+            <option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option><option value="AM">Amazonas</option>
+            <option value="BA" selected>Bahia</option><option value="CE">Ceará</option><option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option>
+            <option value="GO">Goiás</option><option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option>
+            <option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option><option value="PR">Paraná</option>
+            <option value="PE">Pernambuco</option><option value="PI">Piauí</option><option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option>
+            <option value="RS">Rio Grande do Sul</option><option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option>
+            <option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
+          </select>
+          <button id="confirmCatalogLocation" class="catalog-location-confirm" type="button">Usar Bahia</button>
+        </aside>
+      </div>
+    </section>
+    <nav class="catalog-dialog-tabs" aria-label="Opções de camadas">
+      <button class="active" data-catalog-tab="catalog">Catálogo de Camadas</button>
+      <button data-catalog-tab="import">Importar Camada</button>
+      <button data-catalog-tab="service">Geoserviço</button>
+    </nav>
+    <section class="catalog-dialog-panel active" data-catalog-panel="catalog" aria-label="Catálogo de camadas">
+      <div class="catalog-dialog-layout">
+        <aside class="catalog-dialog-list">
+          <div class="catalog-search-row"><input id="catalogSearchInput" placeholder="Pesquisar camada"><span>⌕</span></div>
+          <div id="mapLayerCatalog" class="map-layer-catalog"></div>
+        </aside>
+        <article class="catalog-layer-preview" id="catalogLayerPreview">
+          <div class="catalog-preview-empty">Carregando prévia cartográfica real…</div>
+        </article>
+      </div>
+      <footer class="catalog-dialog-footer">
+        <span id="catalogSelectionCount">0 camada(s) selecionada(s)</span>
+        <div class="catalog-footer-actions"><button id="clearCatalogSelection" class="secondary" type="button">Limpar seleção</button><button id="applyCatalogLayers" type="button" disabled>Adicionar ao mapa</button></div>
+      </footer>
+    </section>
+    <section class="catalog-dialog-panel" data-catalog-panel="import">
+      <div class="catalog-import-grid">
+        <label class="catalog-import-card">
+          <strong>Arquivo do projeto</strong><span>GeoJSON, KML ou CSV editável</span>
+          <button id="triggerProjectImport" type="button">Selecionar arquivo</button>
+        </label>
+        <label class="catalog-import-card">
+          <strong>Camada de referência</strong><span>GeoJSON, KML ou ZIP completo do Shapefile</span>
+          <button id="triggerReferenceImport" type="button">Selecionar arquivo</button>
+        </label>
+      </div>
+    </section>
+    <section class="catalog-dialog-panel" data-catalog-panel="service">
+      <div class="geoservice-form">
+        <label>Tipo de serviço<select id="geoServiceType"><option value="wms">WMS</option><option value="geojson">GeoJSON por URL</option></select></label>
+        <label>Endereço do serviço<input id="geoServiceUrl" placeholder="https://servidor.exemplo/geoserver/wms"></label>
+        <label id="geoServiceLayerField">Nome da camada WMS<input id="geoServiceLayerName" placeholder="workspace:camada"></label>
+        <label>Nome de exibição<input id="geoServiceDisplayName" placeholder="Camada externa"></label>
+        <button id="addGeoService" type="button">Adicionar geosserviço</button>
+      </div>
+    </section>
+  </dialog>
+
+  <dialog id="confrontanteDialog" class="confrontante-dialog">
+    <button id="closeConfrontanteDialog" class="close">×</button>
+    <p class="eyebrow">CONFRONTANTE DO TRECHO</p>
+    <h2 id="segmentTitle">V-01 → V-02</h2>
+    <p class="segment-explanation">Você está editando o trecho destacado no mapa. Cadastre um único trecho ou aplique o mesmo confrontante a vários trechos consecutivos.</p>
+    <div class="confrontante-range">
+      <label>Aplicar do vértice<select id="confrontanteRangeStart"></select></label>
+      <span>até</span>
+      <label>Vértice final<select id="confrontanteRangeEnd"></select></label>
+      <small>Ex.: V-06 até V-08 aplica o confrontante nos trechos V-06→V-07 e V-07→V-08.</small>
+    </div>
+    <div class="confrontante-grid">
+      <label>Nome do confrontante<input id="confrontanteNome" placeholder="Ex.: João da Silva"></label>
+      <label>Nome da propriedade (opcional)<input id="confrontantePropriedade" placeholder="Ex.: Fazenda Jacuba"></label>
+      <label>CPF/CNPJ (opcional)<input id="confrontanteDocumento" placeholder="Somente quando necessário"></label>
+      <label>Tipo de limite<select id="confrontanteLimite"><option value="">Selecione</option><option>Cerca</option><option>Muro</option><option>Estrada</option><option>Rodovia</option><option>Rio</option><option>Córrego</option><option>Nascente</option><option>Linha seca</option><option>Divisa natural</option><option>Servidão</option><option>Propriedade vizinha</option><option>Outro</option></select></label>
+      <label>Orientação (opcional)<input id="confrontanteOrientacao" placeholder="Ex.: Norte, Leste"></label>
+      <label class="full">Observações<textarea id="confrontanteObservacao" rows="4" placeholder="Ex.: Cerca de arame, estrada vicinal, margem direita do córrego..."></textarea></label>
+    </div>
+    <div class="dialog-actions"><button id="clearConfrontante" class="danger">Limpar trecho</button><button id="saveConfrontante" class="green">Salvar confrontante</button></div>
+  </dialog>
+
+  <dialog id="validationDialog">
+    <header class="sv-audit-dialog-head">
+      <span class="sv-audit-dialog-icon" aria-hidden="true">✓</span>
+      <div><p class="eyebrow">CHECKLIST TÉCNICO</p><h2>Verificar Projeto</h2><p class="sv-audit-dialog-description">Valide as informações do projeto antes de finalizar. Corrija os itens pendentes para atender aos requisitos técnicos.</p></div>
+      <button id="closeDialog" class="close" type="button" aria-label="Fechar verificação">×</button>
+    </header>
+    <div id="validationList"></div>
+  </dialog>
+
+  <section id="gpsPointDialog" class="gps-point-dialog hidden" aria-labelledby="gpsPointTitle" aria-hidden="true">
+    <form class="gps-point-card gps-point-card-multi" onsubmit="return false">
+      <div class="gps-point-drag-handle" data-gps-drag-handle title="Arraste para mover este painel">
+        <div class="gps-point-head-title">
+          <span class="gps-drag-grip" aria-hidden="true" title="Arraste para mover">⋮⋮</span>
+          <div>
+            <p class="eyebrow">MARCAR PONTO</p>
+            <h2 id="gpsPointTitle">Marcar pontos</h2>
+          </div>
+        </div>
+        <button id="gpsPointCloseBtn" class="gps-dialog-close" type="button" aria-label="Fechar" title="Fechar">×</button>
+      </div>
+      <p id="gpsPointLiveStatus" class="gps-point-live-status hidden" aria-live="polite"></p>
+
+      <div class="gps-point-main-fields" data-point-row="0">
+        <label>Nome do ponto
+          <input id="gpsPointName" class="gps-multi-name" type="text" maxlength="120" placeholder="Ex.: Ponto da divisa" autocomplete="off">
+        </label>
+        <div class="gps-point-classification" data-point-classification>
+          <span>Tipo do ponto</span>
+          <strong id="gpsPointTypeBadge" class="gps-point-type-badge" data-point-type-badge>P-01 · Ponto</strong>
+          <select id="gpsPointTypeSelect" class="gps-point-type-select" aria-label="Tipo do ponto"><option value="P">P · Ponto</option><option value="M">M · Marco</option></select>
+          <label id="gpsPointHasMarkWrap" class="gps-point-mark-option hidden">
+            <input id="gpsPointHasMark" class="gps-point-has-mark" type="checkbox">
+            <span>Possui marco</span>
+          </label>
+        </div>
+        <label>Tipo de coordenadas
+          <select id="gpsPointCrs">
+            <option value="EPSG:4326">GPS — Latitude / Longitude (WGS 84)</option>
+            <option value="EPSG:4674">SIRGAS 2000 — Latitude / Longitude</option>
+            <option value="EPSG:31984">SIRGAS 2000 / UTM zona 24S</option>
+          </select>
+        </label>
+        <label>Coordenadas
+          <input id="gpsPointCoords" class="gps-multi-coords" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: -13.0312240, -39.6059600">
+        </label>
+        <input id="gpsPointFirst" type="hidden" aria-hidden="true">
+        <input id="gpsPointSecond" type="hidden" aria-hidden="true">
+        <span id="gpsPointFirstLabel" class="hidden" aria-hidden="true">Latitude</span>
+        <span id="gpsPointSecondLabel" class="hidden" aria-hidden="true">Longitude</span>
+      </div>
+
+      <div id="gpsAdditionalPoints" class="gps-additional-points" aria-live="polite"></div>
+      <p id="gpsPointAccuracy" class="gps-point-accuracy hidden"></p>
+
+      <div class="gps-point-icon-actions" aria-label="Ações de pontos">
+        <button id="gpsAddPointBtn" type="button" class="gps-icon-only gps-add-point" title="Adicionar outro ponto" aria-label="Adicionar outro ponto">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button id="gpsImportPointsBtn" type="button" class="gps-icon-only" title="Importar pontos de TXT, ZIP com KMLs, KML, CSV ou XLSX" aria-label="Importar pontos">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M5 18h14v2H5z"/></svg>
+        </button>
+        <input id="gpsImportPointsInput" type="file" accept=".txt,.zip,.kml,.csv,.xlsx,text/plain,application/zip,application/x-zip-compressed,application/vnd.google-earth.kml+xml,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+        <button id="gpsUseDeviceBtn" type="button" class="hidden" tabindex="-1" aria-hidden="true"></button>
+        <button id="gpsPickMapBtn" type="button" class="hidden active" tabindex="-1" aria-hidden="true" aria-pressed="true"></button>
+      </div>
+
+      <div id="gpsPolygonSuggestion" class="gps-polygon-suggestion hidden" aria-live="polite">
+        <div>
+          <strong id="gpsPolygonSuggestionTitle">3 pontos válidos</strong>
+          <span>Você já pode criar um polígono com estes pontos.</span>
+        </div>
+        <button id="gpsCreatePolygonBtn" type="button">Criar polígono</button>
+      </div>
+
+      <button id="gpsCreatePointBtn" type="button" class="gps-primary gps-save-multiple">Salvar pontos</button>
+    </form>
+  </section>
+
+
+
+  <svg id="ruralInfoArrow" class="rural-info-arrow" aria-hidden="true">
+    <circle id="ruralInfoArrowAnchor" cx="0" cy="0" r="2"></circle>
+    <line id="ruralInfoArrowLine" x1="0" y1="0" x2="0" y2="0"></line>
+    <polygon id="ruralInfoArrowHead" points="0,0 0,0 0,0"></polygon>
+  </svg>
+  <aside id="ruralInfoPanel" class="rural-info-panel" hidden aria-hidden="true" aria-label="Informações do imóvel selecionado">
+    <header class="rural-info-panel-head">
+      <div><span id="ruralInfoPanelEyebrow">IMÓVEL SELECIONADO</span><strong id="ruralInfoPanelTitle">Informações do imóvel</strong></div>
+      <button id="ruralInfoPanelClose" type="button" aria-label="Fechar informações do imóvel" title="Fechar">×</button>
+    </header>
+    <div id="ruralInfoDownloadActions" class="rural-info-download-actions" hidden>
+      <button id="ruralInfoDownloadProperty" type="button" class="rural-info-download-btn" disabled title="Baixar informações e polígono em um ZIP organizado">
+        <span aria-hidden="true">↓</span>
+        <span><strong>Baixar propriedade</strong><small>Informações + polígono</small></span>
+      </button>
+    </div>
+    <div class="rural-info-panel-scroll">
+      <section id="ruralInfoCarSection" class="rural-info-section">
+        <div class="rural-info-section-title"><span class="rural-info-dot"></span><h3>CAR</h3></div>
+        <div id="ruralInfoCar" class="rural-info-section-body"><p class="registry-empty">Selecione um imóvel para consultar.</p></div>
+      </section>
+      <section id="ruralInfoSigefSection" class="rural-info-section">
+        <div class="rural-info-section-title"><span class="rural-info-dot"></span><h3>SIGEF</h3></div>
+        <div id="ruralInfoSigef" class="rural-info-section-body"><p class="registry-empty">Selecione um imóvel para consultar.</p></div>
+      </section>
+      <section class="rural-info-section rural-info-coordinates">
+        <div class="rural-info-section-title"><span class="rural-info-dot"></span><h3>Coordenadas</h3></div>
+        <dl>
+          <div><dt>DD</dt><dd id="ruralInfoCoordDd">—</dd></div>
+          <div><dt>DMS</dt><dd id="ruralInfoCoordDms">—</dd></div>
+          <div><dt>UTM</dt><dd id="ruralInfoCoordUtm">—</dd></div>
+        </dl>
+      </section>
+    </div>
+  </aside>
+
+  <button id="svRightPanelSwitcher" class="sv-right-panel-switcher" type="button" aria-label="Alternar painel lateral" title="Alternar painel lateral" hidden>
+    <span data-panel-switch-glyph aria-hidden="true">‹</span>
+  </button>
+
+  <dialog id="certifiedNeighborsDialog" class="sv-advanced-dialog sv-certified-neighbors-dialog">
+    <form method="dialog" class="sv-advanced-dialog-card">
+      <header><div><strong>Vizinhos certificados</strong><small>Consulta pontual oficial SIGEF/SNCI ao redor do perímetro selecionado.</small></div><button value="cancel" aria-label="Fechar">×</button></header>
+      <div class="sv-advanced-dialog-body">
+        <div class="sv-certified-neighbors-summary" id="certifiedNeighborsSummary">Selecione um perímetro e execute a análise.</div>
+        <div class="sv-certified-neighbors-progress" id="certifiedNeighborsProgress" hidden><span></span></div>
+        <div id="certifiedNeighborsResults" class="sv-certified-neighbors-results"></div>
+      </div>
+      <footer><button type="button" id="certifiedNeighborsRefresh">Analisar novamente</button><button value="cancel">Fechar</button></footer>
+    </form>
+  </dialog>
+
+  <dialog id="mapPreferencesDialog" class="sv-advanced-dialog sv-map-preferences-dialog">
+    <form method="dialog" class="sv-advanced-dialog-card">
+      <header><div><strong>Preferências de navegação</strong><small>Ajustes locais do mapa neste navegador.</small></div><button value="cancel" aria-label="Fechar">×</button></header>
+      <div class="sv-advanced-dialog-body sv-map-preferences-grid">
+        <label>Sensibilidade do zoom<select id="mapZoomSensitivity"><option value="low">Suave</option><option value="normal">Normal</option><option value="high">Rápida</option></select></label>
+        <label>Escala dos controles<select id="mapUiScale"><option value="0.9">90%</option><option value="1">100%</option><option value="1.1">110%</option><option value="1.2">120%</option></select></label>
+      </div>
+      <footer><button type="button" id="mapPreferencesReset">Restaurar padrão</button><button value="cancel">Concluir</button></footer>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+
+  <script data-cfasync="false" src="/assets/js/features/mapa/bootstrap.js?v=1.0.0-rc.185.74"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/assets/vendor/Leaflet.VectorGrid.bundled.min.js?v=1.0.0-rc.185.74"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.3.0/turf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/shpjs@6.1.0/dist/shp.min.js"></script>
+  <script data-cfasync="false" src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/core/portal.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/core/projects.js?v=1.0.0-rc.185.74"></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.12.0/dist/proj4.js"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/crs.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/import.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/shapefile.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/gleba-geometry.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/geometry-math.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/coordinates.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/property-export.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/property-local-cache.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/draw.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/features/mapa/app.js?v=1.0.0-rc.185.74"></script>
+  <script data-cfasync="false" src="/assets/js/features/mapa/ux.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/features/mapa/panel.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/features/mapa/controls.js?v=1.0.0-rc.185.74"></script>    <script data-cfasync="false" src="/assets/js/features/mapa/interface.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/features/mapa/friendly-ui.js?v=1.0.0-rc.185.74"></script><script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/features/mapa/workspace.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/features/mapa/save-status.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/features/mapa/snap.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/features/mapa/audit.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/features/mapa/history.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/features/mapa/dossier.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/core/onboarding.js?v=1.0.0-rc.185.74"></script>
+<script data-cfasync="false" src="/assets/js/features/mapa/territorial-navigator.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>
+

@@ -1,0 +1,38 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const workspace=fs.readFileSync('assets/js/features/mapa/workspace.js','utf8');
+const app=fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const css=fs.readFileSync('assets/css/features/mapa/app.css','utf8').replace(/!important/g,'');
+const workspaceCss=fs.readFileSync('assets/css/features/mapa/app.css','utf8').replace(/!important/g,'');
+
+assert.match(workspace,/surveyor:map:draw-guide-size:v1/);
+assert.match(workspace,/DRAW_GUIDE_MIN = 6/);
+assert.match(workspace,/DRAW_GUIDE_MAX = 26/);
+assert.match(workspace,/polygon\?\.addEventListener\('contextmenu'/);
+assert.match(workspace,/Regular precisão/);
+assert.match(workspace,/type=\"range\"/);
+assert.match(app,/function liveDrawGuideMetrics\(\)/);
+assert.ok((app.match(/createLiveDrawVertex\(/g)||[]).length>=3,'guia deve alimentar os dois fluxos de vértice pelo mesmo construtor.');
+assert.match(app,/return \{ guide, radius: Math\.max\(2, \(guide - 2\) \/ 2\) \};/,'tamanho do guia deve virar raio visual sem alterar a coordenada central.');
+const liveVertexFactory=(app.match(/function createLiveDrawVertex\(latlng, options = \{\}\) \{([\s\S]*?)\n  \}/)||[])[1]||'';
+assert.ok(liveVertexFactory,'fábrica única do ponto-guia deve existir');
+assert.match(liveVertexFactory,/L\.circleMarker\(latlng/,'ponto-guia deve ser geometria SVG, não DIV icon.');
+assert.match(liveVertexFactory,/renderer: liveRenderer/,'ponto e linha devem compartilhar exatamente o mesmo renderer/projeção Leaflet.');
+assert.doesNotMatch(liveVertexFactory,/L\.divIcon\(|iconAnchor\s*:|margin(?:Left|Top)?\s*:/,'ponto-guia não pode depender de âncora/margem de ícone HTML.');
+const overlaySvgRule=(css.match(/\.leaflet-overlay-pane svg\{([^}]*)\}/)||[])[1]||'';
+assert.ok(overlaySvgRule,'regra base do SVG Leaflet deve existir');
+assert.doesNotMatch(overlaySvgRule,/(?:^|[;\s])width\s*:/,'CSS não pode sobrescrever a largura calculada pelo renderer SVG do Leaflet.');
+assert.doesNotMatch(overlaySvgRule,/(?:^|[;\s])height\s*:/,'CSS não pode sobrescrever a altura calculada pelo renderer SVG do Leaflet.');
+assert.match(css,/path\.surveyor-live-draw-point-svg/,'ponto-guia SVG deve possuir estilo próprio.');
+assert.doesNotMatch(css,/\.surveyor-live-draw-point\s*\{/,'implementação antiga baseada em DIV icon deve ter sido removida.');
+const liveSvgRule=(css.match(/\.leaflet-overlay-pane svg,[\s\S]*?\.leaflet-liveDrawPane-pane svg\{([^}]*)\}/)||[])[1]||'';
+assert.ok(liveSvgRule,'regra do SVG ao vivo deve existir');
+assert.doesNotMatch(liveSvgRule,/width:100%/,'SVG do Leaflet não pode ser redimensionado por CSS, pois isso separa linha e ponto do mesmo LatLng.');
+assert.doesNotMatch(liveSvgRule,/height:100%/,'SVG do Leaflet deve respeitar as dimensões calculadas pelo renderer.');
+assert.match(workspaceCss,/#svSmartSearchMode/);
+assert.match(workspaceCss,/#svCoordinateSubtypeMode/);
+assert.match(workspaceCss,/white-space:nowrap/);
+assert.match(workspaceCss,/--sv-smart-mode-offset/);
+assert.match(app,/wrap\.style\.setProperty\('--sv-smart-mode-offset'/);
+console.log('PASS map-draw-guide-search-chip: regulagem do guia e barra de pesquisa com modo explícito validadas.');

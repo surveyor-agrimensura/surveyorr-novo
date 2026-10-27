@@ -1,0 +1,78 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head>
+  <link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin>
+  <link rel="dns-prefetch" href="//api.surveyorr.com.br">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob: data: https:; manifest-src 'self'; upgrade-insecure-requests">
+  <script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script>
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="utf-8">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071225">
+  <link rel="manifest" href="/manifest.webmanifest?v=1.0.0-rc.185.74">
+  <link rel="apple-touch-icon" href="/assets/pwa/surveyor-192.png?v=1.0.0-rc.185.74">
+  <meta name="application-name" content="Surveyor">
+  <title>Visão geral — Surveyor</title>
+  <link rel="icon" type="image/png" href="assets/logo.png?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="/assets/css/core/ui.css?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="assets/home-hero.css?v=1.0.0-rc.185.74">
+</head>
+<body data-page="index.html">
+  <div class="suite home-suite">
+    <main class="main" aria-label="Página inicial">
+      <div class="home-landing">
+        <section class="home-hero" aria-labelledby="homeHeroTitle">
+          <div class="home-hero-copy">
+            <span class="home-eyebrow">INÍCIO</span>
+            <h1 id="homeHeroTitle">Bem-vindo ao Surveyor</h1>
+            <p>Plataforma completa para georreferenciamento,<br>agrimensura e gestão técnica de imóveis rurais em<br>um único ambiente.</p>
+            <div class="home-hero-actions">
+              <button class="home-btn primary" id="homeStartProject" type="button">Começar novo projeto no mapa</button>
+              <button class="home-btn secondary" id="homeOpenLastProject" type="button">Abrir último trabalho</button>
+            </div>
+          </div>
+          <div class="home-hero-mark" aria-hidden="true">
+            <img src="assets/logo.png?v=1.0.0-rc.185.74" alt="">
+          </div>
+        </section>
+
+        <footer class="home-footer">
+          <div class="home-footer-inner">
+            <div class="home-footer-brand">
+              <img src="assets/logo.png?v=1.0.0-rc.185.74" alt="" aria-hidden="true">
+              <span><strong>SURVEYOR</strong><small>Georreferenciamento e Agrimensura</small></span>
+            </div>
+            <div class="home-footer-support">
+              <span>SUPORTE</span>
+              <a href="mailto:suporte@surveyor.com.br">suporte@surveyor.com.br</a>
+              <small>Atendimento e ajuda técnica</small>
+            </div>
+            <div class="home-footer-legal">
+              <nav aria-label="Links legais do rodapé">
+                <a href="/privacidade/">Privacidade</a>
+                <a href="/termos/">Termos de Uso</a>
+                <a href="/seguranca/">Segurança</a>
+              </nav>
+              <small>© 2026 SURVEYOR • Todos os direitos reservados</small>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="suiteToast"></div>
+  <script src="assets/js/core/api.js?v=1.0.0-rc.185.74"></script>
+  <script src="assets/js/core/auth.js?v=1.0.0-rc.185.74"></script>
+  <script src="assets/js/core/layout.js?v=1.0.0-rc.185.74"></script>
+  <script src="assets/js/core/portal.js?v=1.0.0-rc.185.74"></script>
+  <script src="assets/home-hero.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>

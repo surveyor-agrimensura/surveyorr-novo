@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync('admin/index.html','utf8');
+const js=fs.readFileSync('assets/js/admin/app.js','utf8');
+const auth=fs.readFileSync('assets/js/core/auth.js','utf8');
+const api=fs.readFileSync('functions/surveyor-api/src/main.js','utf8');
+assert(!html.includes('Painel em modo de recuperação'));
+assert(!html.includes('Extras Mega'));
+assert(html.includes('data-tab="admin-ai"') && html.includes('id="tab-admin-ai"'));
+assert(html.includes('id="toggleSelectedLayerGroup"'));
+assert(js.includes('publishLayerGroup') && auth.includes('async function publishLayerGroup'));
+assert(api.includes('/api/admin/layer-groups') && api.includes('layer_group_unpublished'));
+assert(api.includes('/api/admin/ai/ask') && api.includes('OPENROUTER_API_KEY'));
+assert(api.includes("const APP_VERSION = '2.23.1-map-ux-21.11.2'"));
+assert(api.includes("String(group.status || 'active') === 'active'"));
+console.log('OK v21.10.0 REV9: grupos de camadas, datas de acesso, painel consolidado e IA administrativa validados.');

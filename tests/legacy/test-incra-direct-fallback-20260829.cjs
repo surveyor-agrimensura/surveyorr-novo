@@ -1,0 +1,12 @@
+const fs = require('fs');
+const map = fs.readFileSync('assets/js/features/mapa/app.js', 'utf8');
+const car = fs.readFileSync('assets/js/features/consulta-car/app.js', 'utf8');
+const ok = (c,m)=>{if(!c) throw new Error(m)};
+ok(map.includes('const urls = [...new Set([upstreamUrl, ...proxyUrls].filter(Boolean))]'), 'Mapa não tenta INCRA direto antes do Worker');
+ok(map.includes("mode: 'cors'"), 'Mapa não usa CORS legível na tentativa direta do INCRA');
+ok(map.includes("? 'direto' : 'Worker'"), 'Mapa não diferencia diagnóstico direto/Worker');
+ok(car.includes('function officialIncraInfoCandidateUrls'), 'Consulta CAR não possui candidatos direto + Worker');
+ok(car.includes("[direct, proxy]"), 'Consulta CAR não prioriza acesso direto ao INCRA');
+ok(car.includes("acesso direto") && car.includes("via Worker"), 'Consulta CAR não identifica origem do enriquecimento SIGEF');
+ok(!map.includes('async function fetchIncraRegistryWfsResult'), 'WFS SIGEF não deve voltar ao enriquecimento');
+console.log('PASS: INCRA GetFeatureInfo tenta navegador direto primeiro e Worker como fallback, sem reintroduzir WFS.');

@@ -1,0 +1,23 @@
+const fs=require('fs');
+const path=require('path');
+const root=path.resolve(__dirname,'../..');
+const auth=fs.readFileSync(path.join(root,'assets/js/core/auth.js'),'utf8');
+const admin=fs.readFileSync(path.join(root,'assets/js/admin/app.js'),'utf8');
+const guard=fs.readFileSync(path.join(root,'assets/js/admin/team.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'admin/index.html'),'utf8');
+const api=fs.readFileSync(path.join(root,'functions/surveyor-api/src/main.js'),'utf8');
+function ok(v,m){if(!v)throw new Error(m)}
+ok(auth.includes('/team/members')&&auth.includes('/subusers'), 'faltou fallback de rotas de equipe');
+ok(auth.includes('options.timeoutMs || 12000'), 'faltou timeout do carregamento de equipe');
+ok(admin.includes('data-workspace-retry'), 'faltou retry visual');
+ok(guard.includes("closest('#workspaceAddMemberToggle')"), 'faltou guard independente do botao adicionar');
+ok(html.includes('team.js'), 'guard nao carregado no admin');
+const start=api.indexOf('async function workspaceAdminSummary');
+const end=api.indexOf('function profileRoleFromWorkspaceRole', start);
+const summary=api.slice(start,end);
+ok(start>=0&&end>start, 'workspaceAdminSummary nao encontrado');
+ok(!summary.includes('logicalStorageUsageBytesForUser'), 'modal ainda baixa todos os arquivos do projeto');
+ok(summary.includes("listAllRows('projects'"), 'resumo rapido de projetos ausente');
+const versionMatch=api.match(/APP_VERSION\s*=\s*['"](\d+)\.(\d+)\.(\d+)-([^'"]+)['"]/);
+ok(versionMatch && (Number(versionMatch[1])>2 || (Number(versionMatch[1])===2 && (Number(versionMatch[2])>26 || (Number(versionMatch[2])===26 && Number(versionMatch[3])>=1)))), 'versao da API preserva hotfix de equipe 2.26.1+');
+console.log('OK admin team loading hotfix');

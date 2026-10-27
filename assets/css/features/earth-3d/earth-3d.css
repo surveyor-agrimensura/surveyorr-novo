@@ -1,0 +1,264 @@
+html,body,.earth-shell,#cesiumContainer{
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
+}
+*{box-sizing:border-box}
+body{
+  font-family:Inter,Arial,sans-serif;
+  background:#020817;
+}
+.earth-shell{position:relative}
+.earth-toolbar{
+  position:absolute;
+  z-index:20;
+  left:14px;
+  right:14px;
+  top:14px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  padding:9px;
+  background:rgba(7,18,37,.92);
+  border:1px solid rgba(148,163,184,.35);
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  backdrop-filter:blur(10px);
+}
+.earth-brand{
+  flex:0 0 112px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  border-radius:7px;
+  padding:4px 8px;
+}
+.earth-brand img{max-width:100%;max-height:28px}
+.earth-toolbar input{
+  flex:1 1 360px;
+  min-width:220px;
+}
+.earth-toolbar input,
+.earth-toolbar button,
+.earth-toolbar .back{
+  height:36px;
+  border-radius:7px;
+  border:1px solid #334155;
+  padding:0 13px;
+  font:600 13px/36px inherit;
+}
+.earth-toolbar input{
+  background:#fff;
+  color:#0f172a;
+  font-weight:500;
+}
+.earth-toolbar button,
+.earth-toolbar .back{
+  background:#16233d;
+  color:#fff;
+  text-decoration:none;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.earth-toolbar .primary{background:#2563eb;border-color:#3b82f6}
+.earth-toolbar .toggle[aria-pressed="true"]{
+  background:#0f766e;
+  border-color:#2dd4bf;
+  color:#ecfeff;
+}
+.earth-toolbar .toggle.clouds[aria-pressed="true"]{
+  background:#1d4ed8;
+  border-color:#93c5fd;
+  color:#eff6ff;
+}
+.earth-toolbar button:hover,
+.earth-toolbar .back:hover{filter:brightness(1.16)}
+.earth-basemap-label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#dbeafe;
+  font-weight:700;
+  font-size:12px;
+  white-space:nowrap;
+}
+.earth-basemap-label select{
+  height:36px;
+  border:1px solid #334a72;
+  border-radius:8px;
+  background:#0d1d39;
+  color:#fff;
+  padding:0 30px 0 10px;
+  font-weight:700;
+}
+.earth-status{
+  position:absolute;
+  z-index:20;
+  left:14px;
+  bottom:28px;
+  max-width:min(620px,calc(100vw - 28px));
+  padding:9px 12px;
+  border-radius:8px;
+  background:rgba(7,18,37,.9);
+  color:#e2e8f0;
+  font-size:12px;
+}
+.earth-status.ok{color:#bbf7d0}
+.earth-status.warn{color:#fde68a;background:rgba(69,46,10,.94)}
+.earth-status.error{color:#fecaca;background:rgba(69,10,10,.94)}
+.earth-help{
+  position:absolute;
+  z-index:20;
+  right:14px;
+  bottom:28px;
+  padding:8px 11px;
+  border-radius:8px;
+  background:rgba(7,18,37,.82);
+  color:#cbd5e1;
+  font-size:11px;
+}
+.cesium-viewer-bottom{
+  left:10px;
+  bottom:2px;
+  max-width:calc(100% - 20px);
+  font-size:10px;
+  opacity:.72;
+}
+.cesium-viewer-toolbar{
+  top:80px;
+  right:15px;
+}
+body.embedded .earth-shell{height:100vh;border:0;border-radius:0}
+body.embedded .earth-toolbar{padding-right:12px}
+body.embedded .earth-help{}
+body.embedded .earth-status{}
+@media(max-width:1100px){
+  .earth-toolbar input{order:2;flex-basis:100%}
+  .earth-basemap-label{margin-left:auto}
+  .cesium-viewer-toolbar{top:126px}
+}
+@media(max-width:760px){
+  .earth-toolbar{left:8px;right:8px;top:8px;padding:6px}
+  .earth-brand{flex-basis:86px}
+  .earth-toolbar input{min-width:0}
+  .earth-toolbar #earthHome,
+  .earth-toolbar .back{display:none}
+  .earth-help{display:none}
+  .cesium-viewer-toolbar{top:142px}
+}
+@media(max-width:520px){
+  .earth-toolbar button,
+  .earth-basemap-label,
+  .earth-toolbar .toggle{font-size:11px;padding-inline:9px}
+  .earth-toolbar #earthFit{display:none}
+}
+/* v21.9.5 Earth init fix: impede navegação acidental do iframe para o mapa 2D */
+body.embedded #earthBack{display:none}
+body.embedded .earth-brand{pointer-events:none;cursor:default}
+body.embedded .earth-toolbar{z-index:40}
+/* v21.9.10: botão separado para nuvens sem alterar o controle da atmosfera */
+
+/* v21.9.19 — ferramentas nativas de desenho no Earth 3D */
+.earth-drawbar{
+  position:absolute;
+  z-index:21;
+  left:14px;
+  top:72px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px;
+  max-width:min(1120px,calc(100vw - 28px));
+  padding:8px 10px;
+  background:rgba(7,18,37,.88);
+  border:1px solid rgba(148,163,184,.32);
+  border-radius:12px;
+  box-shadow:0 10px 28px rgba(0,0,0,.28);
+  backdrop-filter:blur(10px);
+}
+.earth-drawbar span{
+  color:#dbeafe;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-right:3px;
+}
+.earth-drawbar button{
+  height:31px;
+  border-radius:8px;
+  border:1px solid #334155;
+  background:#15233d;
+  color:#fff;
+  padding:0 11px;
+  font:800 12px/31px Inter,Arial,sans-serif;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.earth-drawbar button.active,
+.earth-drawbar button:hover{background:#2563eb;border-color:#60a5fa}
+.earth-drawbar button.danger{background:#3b1520;border-color:#7f1d1d;color:#fecaca}
+.earth-drawbar em{color:#cbd5e1;font-size:11px;font-style:normal;margin-left:2px;max-width:390px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.earth-drawing-active #cesiumContainer{cursor:crosshair}
+body.embedded .earth-drawbar{top:74px;z-index:41}
+@media(max-width:1100px){.earth-drawbar{top:128px}.earth-drawbar em{display:none}}
+@media(max-width:760px){.earth-drawbar{left:8px;right:8px;top:132px;padding:6px}.earth-drawbar button{font-size:11px;padding-inline:8px}}
+
+/* v21.9.24 — desenho 3D com prévia, coordenadas e ações */
+.earth-drawbar button.success{background:#123524;border-color:#15803d;color:#bbf7d0}
+.earth-draw-panel{
+  position:absolute;z-index:42;left:18px;top:124px;width:min(520px,calc(100vw - 36px));
+  padding:10px 12px;border:1px solid rgba(96,165,250,.35);border-radius:12px;
+  background:rgba(8,20,43,.88);box-shadow:0 14px 35px rgba(0,0,0,.28);backdrop-filter:blur(12px);
+  color:#e0f2fe;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+.earth-draw-panel b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#93c5fd;margin-bottom:5px}
+.earth-draw-panel pre{margin:0;max-height:92px;overflow:auto;white-space:pre-wrap;font:11px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace;color:#f8fafc}
+body.embedded .earth-draw-panel{top:116px;left:16px}
+@media(max-width:1100px){.earth-draw-panel{top:174px}.earth-drawbar{max-width:calc(100vw - 24px)}}
+@media(max-width:760px){.earth-draw-panel{left:8px;right:8px;top:180px;width:auto}.earth-draw-panel pre{max-height:72px}}
+
+
+/* v21.9.76 — Earth 3D simplificado: funções removidas da interface */
+#earthAtmosphere,
+#earthClouds,
+.earth-drawbar,
+.earth-draw-panel{
+  display:none;
+}
+
+body.embedded .earth-toolbar,
+.earth-toolbar{
+  align-items:center;
+}
+
+/* Com a barra de desenho removida, a toolbar pode ocupar menos altura. */
+@media(max-width:1100px){
+  .cesium-viewer-toolbar{top:126px;}
+}
+
+
+/* v21.9.244 — modo embutido no mapa: interface compacta, sem aparência de página separada. */
+body.embedded .earth-toolbar{
+  left:10px;
+  right:auto;
+  top:10px;
+  max-width:calc(100% - 72px);
+  border-radius:14px;
+  padding:7px;
+  background:rgba(7,18,37,.78);
+  border-color:rgba(148,163,184,.28);
+}
+body.embedded .earth-brand,
+body.embedded #earthBack{display:none;}
+body.embedded .earth-toolbar input{flex:1 1 270px;min-width:210px;height:34px;}
+body.embedded .earth-toolbar button,
+body.embedded .earth-toolbar .back,
+body.embedded .earth-basemap-label select{height:34px;line-height:34px;}
+body.embedded .earth-help{right:12px;bottom:10px;}
+body.embedded .earth-status{left:12px;bottom:10px;}
+body.embedded .cesium-viewer-toolbar{top:62px;right:12px;}

@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const croqui=readFileSync('assets/js/features/mapas/app.js','utf8');
+const controls=readFileSync('assets/js/features/mapa/controls.js','utf8');
+const types=controls.slice(controls.indexOf('  const POINT_TYPE_META'),controls.indexOf('  function pointRowClassifications()'));
+const env=vm.createContext({});
+vm.runInContext(types+'\nglobalThis.classify=pointTypeForRow;',env);
+const selector=(value)=>({querySelector(name){if(name==='.gps-point-type-select')return {value};return null;}});
+assert.equal(env.classify(selector('P')),'P','Ponto digitado pode ser P');
+assert.equal(env.classify(selector('M')),'M','Ponto digitado pode ser M');
+assert.equal(env.classify(selector('V')),'V','Ponto legado V continua legível');
+assert.equal(env.classify(selector('')),'P','Novo cadastro não deve receber V virtual implicitamente');
+assert.match(controls,/gpsPointTypeSelect.*addEventListener\('change'/,'Mudança manual de P/M deve sincronizar a classificação');
+assert.match(croqui,/const miniMercatorBounds=centeredMiniMapMercatorBounds\(boundsFromFeatures\(feature\?\[feature\]:\[\]\)\|\|featureBounds,330,210\);/,'Hidratação e desenho devem usar o mesmo bbox mercator');
+assert.match(croqui,/centeredMiniMapMercatorBounds\(boundsFromFeatures\(\[feature\]\) \|\| featureBounds, 330, 210\)/,'Prévia e carregamento inicial usam somente o perímetro');
+assert.match(croqui,/centeredMiniMapMercatorBounds\(boundsFromFeatures\(feature\?\[feature\]:\[\]\)\|\|featureBounds,330,210\)/,'Hidratação usa o mesmo perímetro');
+for(const template of ['svgForFeatureGeoref(f, project, visualSettings)','svgForFeature(f, mapProject, documentVisualSettings(p))','svgForFeature(f, project, visualSettings)','svgForFeature(f, planProject, documentVisualSettings(p))']){
+  const at=croqui.indexOf(template);
+  assert.ok(at>=0,'Gerador encontrado '+template);
+  assert.match(croqui.slice(Math.max(0,at-220),at),/!\['Point','MultiPoint'\]\.includes\(f\?\.geometry\?\.type\)/,'Pontos auxiliares GPS fora da geração '+template);
+}
+assert.match(croqui,/ownerSecondary \? `<line/, 'Duas linhas distintas devem ser usadas se houver segundo proprietário');
+assert.match(croqui,/svgWrappedText\(ownerPrimary[\s\S]*svgWrappedText\(ownerSecondary/, 'Ambos os titulares devem ser identificados por nome na prancha');
+const memorial=readFileSync('assets/js/features/memorial/app.js','utf8');
+assert.match(memorial,/ownerSecondary\?standardSignatureBox\(theme,data,'owner-secondary'\):''/,'Modelo padrão mostra segunda assinatura apenas quando há segundo proprietário');
+assert.match(memorial,/data\.ownerSecondary\?`<div class="custom-signature-box"/,'Modelo personalizado deve criar a segunda linha');
+assert.match(memorial,/ownerSecondary, ownerCpfPrimary, ownerCpfSecondary/,'Geração deve fornecer dados individuais de cada titular');
+assert.match(memorial,/const second=data\.ownerSecondary\?`<td/,'Word também deve receber uma segunda coluna de assinatura');
+console.log('PASS map-document-cartographic-consistency: P/M, minimapa Mercator, marcadores documentais e titularidade dupla.');

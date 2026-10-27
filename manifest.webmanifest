@@ -1,0 +1,58 @@
+{
+  "id": "./",
+  "name": "Surveyor — Georreferenciamento e Agrimensura",
+  "short_name": "Surveyor",
+  "description": "Plataforma Surveyor para georreferenciamento, agrimensura e gestão técnica de imóveis rurais.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0b5fe7",
+  "orientation": "any",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "assets/pwa/surveyor-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/surveyor-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mapa e cadastro",
+      "short_name": "Mapa",
+      "url": "mapa/",
+      "icons": [
+        {
+          "src": "assets/pwa/surveyor-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Projetos",
+      "short_name": "Projetos",
+      "url": "nuvem/",
+      "icons": [
+        {
+          "src": "assets/pwa/surveyor-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

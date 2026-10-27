@@ -1,0 +1,123 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head><link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin><link rel="dns-prefetch" href="//api.surveyorr.com.br"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="dns-prefetch" href="//cdn.jsdelivr.net"><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin><link rel="preconnect" href="https://unpkg.com" crossorigin><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' https:; manifest-src 'self'; upgrade-insecure-requests"><script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script><meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="utf-8">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071225">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/surveyor-192.png?v=1.0.0-rc.185.74">
+  <meta name="application-name" content="Surveyor">
+
+  <title>Suporte — Surveyor</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74">
+  
+  
+<link rel="stylesheet" href="/assets/css/core/ui.css?v=1.0.0-rc.185.74"></head>
+<body data-page="suporte.html">
+  <div class="suite">
+    <aside class="side" id="side">
+      <div class="brand">
+        <div class="brand-mark"><img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="" data-hide-on-error="1"></div>
+        <div><strong>Surveyor</strong><small>Georreferenciamento e Agrimensura</small></div>
+      </div>
+      <nav class="nav">
+        <a href="/"><span class="nav-icon nav-icon-image"><img class="module-icon-img" src="/assets/module-icons/inicio.png?v=1.0.0-rc.185.74" alt="" loading="lazy"></span><span>Visão geral</span></a>
+        <a href="/mapa/"><span class="nav-icon nav-icon-image"><img class="module-icon-img" src="/assets/module-icons/mapa-cadastro.png?v=1.0.0-rc.185.74" alt="" loading="lazy"></span><span>Mapa e cadastro</span></a>
+        <a href="/sobre/"><span>i</span><span>Sobre</span></a>
+      </nav>
+      <div class="side-note"></div>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div>
+          <button class="btn mobile-toggle" id="mobileToggle">☰</button>
+          <h1>Suporte Surveyor</h1>
+          <p>Envie dúvidas, correções, solicitações de acesso ou pedidos de nova função.</p>
+        </div>
+        <div class="top-actions">
+          <a class="link-btn" href="/planos/">Planos e preços</a>
+          <a class="link-btn" href="/sobre/">Sobre o projeto</a>
+          <a class="link-btn primary" href="/mapa/">Abrir mapa</a>
+        </div>
+      </header>
+
+      <section class="support-layout">
+        <article class="support-card support-form-card">
+          <span class="support-badge">Atendimento</span>
+          <h2>Abrir solicitação</h2>
+          <p class="support-desc">Preencha as informações abaixo. Este formulário envia sua solicitação para a Function do Surveyor, que encaminha o e-mail ao suporte oficial por uma Function separada da API principal.</p>
+
+          <form id="supportRequestForm" class="support-form" novalidate>
+            <div class="form-grid two">
+              <label>Seu nome
+                <input id="supportName" name="name" autocomplete="name" placeholder="Nome completo">
+              </label>
+              <label>Seu e-mail
+                <input id="supportEmail" name="email" type="email" autocomplete="email" placeholder="seuemail@exemplo.com" required>
+              </label>
+            </div>
+
+            <label>Tipo de solicitação
+              <select id="supportType" name="type" required>
+                <option value="ajuda">Preciso de ajuda / suporte</option>
+                <option value="erro">Reportar erro ou bug</option>
+                <option value="contratacao">Contratação de plano / proposta comercial</option>
+                <option value="renovacao">Renovação de plano / acesso bloqueado</option>
+<option value="acesso">Problema de acesso ou login</option>
+                <option value="privacidade">Privacidade / solicitação sobre meus dados</option>
+                <option value="nova_funcao">Pedir função nova</option>
+                <option value="outro">Outro assunto</option>
+              </select>
+            </label>
+
+            <div id="featureRequestAlert" class="support-alert hidden" role="alert">
+              Detalhe a função que deseja solicitar para implementação. Explique onde ela deve aparecer, como deve funcionar e qual problema ela resolve.
+            </div>
+
+            <label id="supportDetailsLabel">Mensagem
+              <textarea id="supportDetails" name="details" rows="8" placeholder="Descreva sua solicitação com detalhes." required></textarea>
+            </label>
+
+            <div class="support-actions">
+              <button class="btn primary" type="submit" id="supportSubmit">Enviar solicitação</button>
+              <button class="btn" type="button" id="supportClear">Limpar</button>
+            </div>
+
+            <div id="supportResult" class="support-result hidden" aria-live="polite"></div>
+          </form>
+        </article>
+
+        <aside class="support-card support-info-card">
+          <span class="support-badge">Contato oficial</span>
+          <h2>Canal de suporte</h2>
+          <p>As solicitações serão encaminhadas para o e-mail oficial do Surveyor.</p>
+          <div class="support-contact-box">
+            <strong>E-mail do suporte</strong>
+            <a href="mailto:suporte@surveyorr.com.br">suporte@surveyorr.com.br</a>
+          </div>
+          <div class="support-flow">
+            <h3>Fluxo planejado</h3>
+            <ol>
+              <li>Usuário preenche o formulário.</li>
+              <li>A Function recebe os dados.</li>
+              <li>A Function envia o e-mail ao suporte.</li>
+              <li>O suporte acompanha a solicitação.</li>
+            </ol>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="suiteToast"></div>
+  <script src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/layout.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/portal.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/support.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>

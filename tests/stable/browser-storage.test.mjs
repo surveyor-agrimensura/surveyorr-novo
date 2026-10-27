@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const map=fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const earth=fs.readFileSync('assets/js/features/earth-3d/earth-3d.js','utf8');
+const auth=fs.readFileSync('assets/js/core/auth.js','utf8');
+assert.ok(map.includes("sessionStorage.setItem('georuralEarthProject'"),'Earth 3D deve receber payload transitório via sessionStorage');
+assert.ok(earth.includes("sessionStorage.getItem('georuralEarthProject')"),'Earth 3D deve ler handoff da sessão');
+assert.ok(!map.includes("localStorage.setItem('georuralEarthProject'"),'Mapa não deve persistir handoff temporário do Earth 3D em localStorage');
+assert.ok(!/localStorage\.setItem\(KEYS\.session/.test(auth),'sessão principal não pode ser persistida em localStorage');
+console.log('PASS browser-storage: sessão/handoff temporários separados de preferências locais.');

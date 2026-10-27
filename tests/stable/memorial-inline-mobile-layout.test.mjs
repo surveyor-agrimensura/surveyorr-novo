@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const css = fs.readFileSync('assets/css/core/documents.css','utf8');
+const bodySelector='body.sv-document-inline-personalization .memorial-sign-modal.is-inline-personalization .memorial-sign-dialog-body';
+const desktop=css.indexOf(bodySelector);
+assert(desktop>0,'Memorial integrado precisa conservar o layout desktop');
+assert.match(css.slice(desktop,css.indexOf('}',desktop)),/grid-template-columns:clamp\(300px,24vw,350px\) minmax\(0,1fr\)/);
+const media=css.indexOf('@media(max-width:900px){',desktop);
+assert(media>desktop,'Memorial integrado deve possuir breakpoint até 900 px após a definição desktop');
+const mobile=css.indexOf(bodySelector+'{',media);
+assert(mobile>media,'Memorial precisa empilhar ferramentas e prévia por regra de mesma especificidade');
+const after=css.indexOf('}',mobile);
+assert.match(css.slice(mobile,after),/grid-template-columns:minmax\(0,1fr\)/);
+assert.match(css.slice(mobile,after),/grid-template-rows:auto minmax\(360px,60vh\)/);
+assert.match(css.slice(media,media+2700),/\.memorial-sign-dialog-foot\{[\s\S]*grid-template-areas/);
+assert.match(css.slice(media,media+2700),/\.memorial-footer-zoom\{\s*grid-area:zoom/);
+console.log('PASS: Memorial inline adapta bancada, prévia e rodapé em largura reduzida.');

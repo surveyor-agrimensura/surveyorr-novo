@@ -1,0 +1,163 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head>
+  <link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin>
+  <link rel="dns-prefetch" href="//api.surveyorr.com.br">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob: data: https:; manifest-src 'self'; upgrade-insecure-requests"><script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script>
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="utf-8">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071225">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/surveyor-192.png?v=1.0.0-rc.185.74">
+  <meta name="application-name" content="Surveyor">
+
+  <title>Consulta Pública CAR — Surveyor</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="/assets/css/core/ui.css?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="/assets/css/features/consulta-car/app.css?v=1.0.0-rc.185.74">
+</head>
+<body data-page="consulta-car.html">
+  <div class="suite">
+    <aside class="side" id="side">
+      <div class="brand">
+        <div class="brand-mark"><img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="" data-hide-on-error="1"></div>
+        <div><strong>Surveyor</strong><small>Georreferenciamento e Agrimensura</small></div>
+      </div>
+      <nav class="nav"></nav>
+      <div class="side-note"></div>
+    </aside>
+
+    <main class="main consulta-car-main" aria-label="Consulta Pública CAR">
+      <header class="top consulta-car-page-head">
+        <div>
+          <span class="consulta-car-kicker">DADOS PÚBLICOS · CADASTRO AMBIENTAL RURAL</span>
+          <h1>Consulta Pública CAR</h1>
+          <p>Consulte informações públicas do Cadastro Ambiental Rural na Bahia por número de registro ou município.</p>
+        </div>
+        <div class="top-actions">
+          <a class="link-btn" href="https://consulta.car.gov.br/" target="_blank" rel="noopener noreferrer">Portal oficial do CAR</a>
+        </div>
+      </header>
+
+      <section class="consulta-car-search-card" aria-labelledby="consultaCarBuscaTitulo">
+        <div class="consulta-car-search-intro">
+          <div class="consulta-car-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 6.5 12 3l8 3.5V12c0 4.6-3.1 7.4-8 9-4.9-1.6-8-4.4-8-9V6.5Z"/><path d="M8 12.5c2.8-4 6.1-4.9 9-4.5-1 4.2-3.4 7-7.2 7.1"/><path d="M8 17c1.1-2.4 2.8-4.2 5.5-5.6"/></svg>
+          </div>
+          <div>
+            <span class="consulta-car-eyebrow">Consulta integrada</span>
+            <h2 id="consultaCarBuscaTitulo">Encontre um imóvel</h2>
+            <p>Use o número de registro do CAR para uma busca direta ou filtre por município para localizar o cadastro desejado.</p>
+          </div>
+        </div>
+
+        <div class="consulta-car-mode" role="tablist" aria-label="Modo da consulta">
+          <button class="active" id="consultaCarModeRegistro" type="button" role="tab" aria-selected="true" data-mode="registro">Número do CAR</button>
+          <button id="consultaCarModeMunicipio" type="button" role="tab" aria-selected="false" data-mode="municipio">Município</button>
+        </div>
+
+        <form class="consulta-car-form" id="consultaCarForm" novalidate>
+          <label>UF
+            <select id="consultaCarUf" name="uf" autocomplete="address-level1" aria-label="UF disponível nesta versão">
+              <option value="BA" selected>BA — Bahia</option>
+            </select>
+          </label>
+          <label>Município
+            <input id="consultaCarMunicipio" name="municipio" list="consultaCarMunicipios" placeholder="Digite ou selecione um município da Bahia" autocomplete="address-level2">
+            <datalist id="consultaCarMunicipios"></datalist>
+          </label>
+          <label class="consulta-car-registro-field">Número de registro no CAR
+            <input id="consultaCarRegistro" name="registro" placeholder="Ex.: BA-2911006-..." autocomplete="off" spellcheck="false">
+          </label>
+          <button class="consulta-car-search-btn" id="consultaCarBuscar" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <span>Buscar CAR</span>
+          </button>
+        </form>
+        <p class="consulta-car-helper" id="consultaCarHelper">Informe o número do CAR ou selecione um município da Bahia para consultar os registros disponíveis.</p>
+      </section>
+
+      <div class="consulta-car-overview-head">
+        <div>
+          <span class="consulta-car-eyebrow">Panorama da Bahia</span>
+          <h2>Cadastro Ambiental Rural na Bahia</h2>
+        </div>
+        <span class="consulta-car-stats-context" id="consultaCarStatsContext">Bahia · dados públicos do CAR</span>
+      </div>
+      <section class="consulta-car-stats" aria-label="Indicadores do Cadastro Ambiental Rural na Bahia">
+        <article class="stat-imoveis"><span class="metric-icon blue">⌂</span><div><strong id="carStatImoveis">—</strong><small>Imóveis cadastrados</small><em id="carStatAreaImoveis">—</em></div></article>
+        <article class="stat-reserva"><span class="metric-icon green">◇</span><div><strong id="carStatReserva">—</strong><small>Reserva Legal</small><em>Total na Bahia</em></div></article>
+        <article class="stat-app"><span class="metric-icon cyan">≈</span><div><strong id="carStatApp">—</strong><small>APP</small><em>Total na Bahia</em></div></article>
+        <article class="stat-vegetacao"><span class="metric-icon forest">♧</span><div><strong id="carStatVegetacao">—</strong><small>Vegetação Nativa</small><em>Total na Bahia</em></div></article>
+        <article class="stat-consolidada"><span class="metric-icon amber">▧</span><div><strong id="carStatConsolidada">—</strong><small>Área Consolidada</small><em>Total na Bahia</em></div></article>
+      </section>
+
+      <section class="consulta-car-workspace">
+        <div class="consulta-car-map-card">
+          <div class="consulta-car-section-head">
+            <div><span class="consulta-car-eyebrow">Mapa</span><h2>Geometria do imóvel</h2></div>
+            <div class="consulta-car-map-tools">
+              <div class="consulta-car-map-actions">
+                <button type="button" id="consultaCarFit" disabled>Enquadrar imóvel</button>
+                <button type="button" id="consultaCarReset">Bahia</button>
+              </div>
+            </div>
+          </div>
+          <div id="consultaCarMap" class="consulta-car-map" aria-label="Mapa da consulta CAR"></div>
+          <div class="consulta-car-map-empty" id="consultaCarMapEmpty">Pesquise um imóvel para visualizar o perímetro oficial no mapa.</div>
+          <div class="consulta-car-map-legend">
+            <span><i class="legend-rural"></i> Imóveis rurais (CAR)</span>
+            <span><i class="legend-car"></i> Imóvel consultado</span>
+          </div>
+        </div>
+
+        <aside class="consulta-car-results-card" aria-live="polite" hidden>
+          <div class="consulta-car-section-head">
+            <div><span class="consulta-car-eyebrow">Imóvel</span><h2 id="consultaCarResultTitle">Dados do imóvel</h2></div>
+            <span class="consulta-car-result-count" id="consultaCarResultCount" hidden>0</span>
+          </div>
+          <div id="consultaCarResultBody" class="consulta-car-result-body">
+            <div class="consulta-car-empty-state">
+              <div class="consulta-car-empty-icon">⌕</div>
+              <strong>Os registros aparecerão aqui</strong>
+              <p>Pesquise pelo número do CAR ou por um município da Bahia.</p>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+    </main>
+  </div>
+
+
+  <div class="consulta-car-source-modal" id="consultaCarSourceModal" role="dialog" aria-modal="true" aria-labelledby="consultaCarSourceTitle" hidden>
+    <div class="consulta-car-source-modal-card">
+      <div class="consulta-car-source-modal-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M4 6.5 12 3l8 3.5V12c0 4.6-3.1 7.4-8 9-4.9-1.6-8-4.4-8-9V6.5Z"/><path d="M8 12.5c2.8-4 6.1-4.9 9-4.5-1 4.2-3.4 7-7.2 7.1"/></svg>
+      </div>
+      <span class="consulta-car-eyebrow">Fonte dos dados</span>
+      <h2 id="consultaCarSourceTitle">Informações públicas do CAR</h2>
+      <p>Os dados utilizados nesta área vêm do Cadastro Ambiental Rural (CAR/SICAR), por meio das informações públicas disponibilizadas no site e nos serviços oficiais do CAR.</p>
+      <div class="consulta-car-source-modal-actions">
+        <a href="https://consulta.car.gov.br/" target="_blank" rel="noopener noreferrer">Abrir portal oficial</a>
+        <button type="button" id="consultaCarSourceOk">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="suiteToast"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/layout.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/portal.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/features/consulta-car/app.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>

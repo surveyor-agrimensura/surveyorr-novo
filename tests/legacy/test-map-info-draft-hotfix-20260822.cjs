@@ -1,0 +1,12 @@
+const fs = require('fs');
+const assert = require('assert');
+const app = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+const workspace = fs.readFileSync('assets/js/features/mapa/workspace.js','utf8');
+assert(app.includes('ruralInfoTargetFeature = feature || null'), 'yellow feature must become info target');
+assert(app.includes('targetFeature = explicitFeature || (forceRural ? ruralInfoTargetFeature : null)'), 'info popup must use independent target');
+assert(workspace.includes("map.getPane('svCarSearchResult').style.pointerEvents = 'none'"), 'red CAR pane must not block yellow feature clicks');
+assert(workspace.includes('interactive: false'), 'red CAR geometry must be non-interactive');
+assert(app.includes("JSON.stringify({ f: snapshot.features || [], l: snapshot.liveDraft || null })"), 'draft fingerprint must ignore map view');
+assert(app.includes('if (!recoverySnapshotHasDrawing(snapshot))'), 'empty/stale drafts must be discarded');
+assert(app.includes("window.addEventListener('pagehide', () => persistRecoverySnapshotNow())"), 'real drawing draft must persist on navigation');
+console.log('OK map info selection + real draft recovery hotfix');

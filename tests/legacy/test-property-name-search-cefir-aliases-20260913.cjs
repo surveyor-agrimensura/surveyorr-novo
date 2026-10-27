@@ -1,0 +1,10 @@
+const fs = require('fs');
+const assert = require('assert');
+const src = fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+assert(src.includes("'nome_area', 'nom_area', 'nomearea'"), 'busca por nome precisa consultar nomearea');
+assert(src.includes('propertyNameAccentTolerantCql'), 'busca CEFIR deve tolerar diferença de acentuação');
+assert(src.includes('function propertyMunicipalitySearchClauses'), 'filtro municipal resiliente ausente');
+assert(/municipalityClauses\.(?:flatMap|map)/.test(src), 'aliases municipais devem ser tentados isoladamente');
+assert(src.includes("MAXFEATURES', municipality ? '120' : '40'"), 'busca contextual precisa ter janela suficiente para fallback');
+assert(src.includes('propertyFeatureMatchesMunicipality(feature, municipality'), 'resultado precisa ser validado pelo município no cliente');
+console.log('PASS: busca CEFIR por nome cobre nomearea e fallback municipal resiliente.');

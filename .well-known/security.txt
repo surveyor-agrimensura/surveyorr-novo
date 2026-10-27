@@ -1,0 +1,5 @@
+Contact: mailto:suporte@surveyorr.com.br
+Preferred-Languages: pt-BR, en
+Canonical: https://surveyorr.com.br/.well-known/security.txt
+Policy: https://surveyorr.com.br/seguranca/
+Expires: 2027-08-16T23:59:59Z

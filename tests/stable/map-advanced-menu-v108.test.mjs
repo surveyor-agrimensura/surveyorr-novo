@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync('mapa/index.html','utf8');
+const workspace=fs.readFileSync('assets/js/features/mapa/workspace.js','utf8');
+const css=fs.readFileSync('assets/css/features/mapa/app.css','utf8').replace(/!important/g,'');
+assert.match(html,/id="svAdvancedToolsMenu"/,'menu avançado dedicado deve existir');
+for(const key of ['cad-dimension','cad-dimension-remove','sig-certified-neighbors','terrain-elevation-click']) assert.ok(html.includes(`data-advanced-selector='[data-draw-tool="${key}"]'`),`${key} deve estar no menu avançado`);
+assert.ok(html.includes('data-advanced-selector="#mapNavigationSettingsBtn"'),'preferências de navegação devem estar no menu avançado');
+assert.match(workspace,/\['tools', 'Ferramentas avançadas'/,'drawer superior deve ter lançador dedicado');
+assert.match(workspace,/sv-context-\$\{name\}/,'atalhos do drawer devem possuir classe contextual própria');
+assert.match(workspace,/function bindAdvancedToolsMenu\(\)/,'menu avançado deve reutilizar os comandos existentes');
+assert.match(css,/\.sv-side-tools-command-source\{[\s\S]*pointer-events:none/,'UI antiga deve ficar invisível sem remover os comandos');
+assert.match(css,/\.sv-context-tools::before\{content:"NEW"/,'atalho avançado deve possuir badge NEW');
+console.log('PASS map-advanced-menu-v108: sem duplicidade visual e com acesso dedicado às novas ferramentas.');

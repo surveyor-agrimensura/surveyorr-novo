@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const root = new URL('../../', import.meta.url);
+const read = (rel) => fs.readFileSync(new URL(rel, root), 'utf8');
+const maps = read('assets/js/features/mapas/app.js');
+const memorial = read('assets/js/features/memorial/app.js');
+const html = read('memorial/index.html');
+assert.ok(maps.includes('window.SurveyorCroquiRenderer = Object.freeze'), 'Mapas/Croquis deve expor o renderer oficial compartilhado.');
+assert.ok(maps.includes('async function generateCroqui(p, renderOptions = {})'), 'Renderer oficial deve aceitar contexto de documento sem duplicar desenho.');
+assert.ok(memorial.includes('return renderer.generate(p'), 'Memorial deve chamar o renderer oficial de Mapas/Croquis.');
+assert.ok(!memorial.includes('memorialConfrontantes.smartConfrontanteLabels'), 'Memorial não deve manter um segundo motor próprio de confrontantes/cartografia.');
+for (const dep of ['mapas/dimensions.js','mapas/confrontantes.js','mapas/vertices.js','mapas/app.js']) assert.ok(html.includes(dep), `Memorial deve carregar ${dep}.`);
+assert.ok(html.indexOf('mapas/app.js') < html.indexOf('features/memorial/app.js'), 'Renderer de croqui deve carregar antes do Memorial.');
+console.log('PASS V192: Memorial usa a mesma fonte de verdade cartográfica de Mapas/Croquis.');

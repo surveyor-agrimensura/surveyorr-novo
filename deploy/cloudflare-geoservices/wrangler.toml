@@ -1,0 +1,9 @@
+name = "tiny-king-d719georural-geoservices"
+main = "src/worker.js"
+compatibility_date = "2025-08-01"
+workers_dev = true
+
+[observability]
+enabled = true
+
+# Segredo obrigatório de autenticação: configure fora do Git com:

@@ -1,0 +1,12 @@
+{
+  "name": "surveyor-save",
+  "version": "1.0.0-rc.185.74",
+  "type": "module",
+  "main": "src/main.js",
+  "description": "Surveyor Save Function — Security Safe R2 com autorização de plano, metadata server-owned e lock sem bypass por payload.",
+  "scripts": {
+    "check": "node --check src/main.js && node --check src/security/crypto.js"
+  },
+  "dependencies": {},
+  "surveyorRelease": "1.0.0-rc.185.74"
+}

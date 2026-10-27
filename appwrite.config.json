@@ -1,0 +1,78 @@
+{
+  "projectId": "surveyor-georural-pro",
+  "endpoint": "https://nyc.cloud.appwrite.io/v1",
+  "functions": [
+    {
+      "$id": "surveyor-api",
+      "name": "surveyor-api",
+      "runtime": "node-22",
+      "path": "functions/surveyor-api",
+      "entrypoint": "src/main.js",
+      "commands": "npm install --omit=dev",
+      "execute": [
+        "any"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 120,
+      "enabled": true,
+      "logging": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        ".env",
+        "*.log"
+      ],
+      "scopes": [],
+      "vars": []
+    },
+    {
+      "$id": "surveyor-support",
+      "name": "surveyor-support",
+      "runtime": "node-22",
+      "path": "functions/surveyor-support",
+      "entrypoint": "src/main.js",
+      "commands": "npm install --omit=dev",
+      "execute": [
+        "any"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 60,
+      "enabled": true,
+      "logging": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        ".env",
+        "*.log"
+      ],
+      "scopes": [],
+      "vars": []
+    },
+    {
+      "$id": "surveyor-save",
+      "name": "surveyor-save",
+      "runtime": "node-22",
+      "path": "functions/surveyor-save",
+      "entrypoint": "src/main.js",
+      "commands": "npm install --omit=dev",
+      "execute": [
+        "any"
+      ],
+      "events": [],
+      "schedule": "",
+      "timeout": 120,
+      "enabled": true,
+      "logging": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        ".env",
+        "*.log"
+      ],
+      "scopes": [],
+      "vars": []
+    }
+  ]
+}

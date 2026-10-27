@@ -1,0 +1,45 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const load = (path) => readFileSync(new URL('../../' + path, import.meta.url), 'utf8');
+const projects = load('assets/js/core/projects.js');
+const start = projects.indexOf('  function additionalOwner(project)');
+const stop = projects.indexOf('  window.GeoRuralProjects =', start);
+assert.ok(start > 0 && stop > start, 'Fonte canônica dos coproprietários não encontrada');
+const context = vm.createContext({});
+vm.runInContext(projects.slice(start,stop) + '\nglobalThis.helpers={additionalOwner,ownerNames,ownerDocuments,ownerRgs}', context);
+const {additionalOwner,ownerNames,ownerDocuments,ownerRgs}=context.helpers;
+const original={owner:'Ana Santos',metadata:{ownerCpf:'123.456.789-09',ownerRg:'12345'}};
+assert.equal(additionalOwner(original),null);
+assert.equal(ownerNames(original),'Ana Santos','Sem segundo proprietário, saída original preservada');
+assert.equal(ownerDocuments(original),'123.456.789-09');
+assert.equal(ownerRgs(original),'12345');
+const withSecond={...original, metadata:{...original.metadata,additionalOwner:{name:'Bruno Lima',cpfCnpj:'55.444.333/0001-22',rg:'9999'}}};
+assert.equal(ownerNames(withSecond),'Ana Santos / Bruno Lima');
+assert.equal(ownerDocuments(withSecond),'123.456.789-09 / 55.444.333/0001-22');
+assert.equal(ownerRgs(withSecond),'12345 / 9999');
+assert.equal(ownerNames(withSecond,'Maria Atualizada'),'Maria Atualizada / Bruno Lima');
+const unnamed={...original,metadata:{additionalOwner:{name:'',cpfCnpj:'55.444.333/0001-22'}}};
+assert.equal(additionalOwner(unnamed),null,'Documento do segundo titular sem nome não cria proprietário');
+assert.equal(ownerNames(unnamed),'Ana Santos');
+assert.equal(ownerDocuments(unnamed,'123'),'123');
+const mapHtml=load('mapa/index.html');
+for(const token of ['id="additionalOwnerSection"','id="additionalOwnerName"','id="additionalOwnerCpf"','id="additionalOwnerRg"','id="removeAdditionalOwner"']) assert.ok(mapHtml.includes(token),token);
+const map=load('assets/js/features/mapa/app.js');
+for(const token of ['additionalOwnerFromForm()','additionalOwner: additionalOwnerFromForm()','loadAdditionalOwner(project)','loadAdditionalOwner(tpl.project)','loadAdditionalOwner(null)']) assert.ok(map.includes(token),token);
+const startForm=map.indexOf('  function additionalOwnerFromForm()');
+const endForm=map.indexOf('  function loadAdditionalOwner(',startForm);
+assert.ok(startForm>0&&endForm>startForm);
+const buildForm=(name,cpf,rg)=>{
+ const c=vm.createContext({els:{additionalOwnerName:{value:name},additionalOwnerCpf:{value:cpf},additionalOwnerRg:{value:rg}}});
+ vm.runInContext(map.slice(startForm,endForm)+'\nglobalThis.make=additionalOwnerFromForm;',c);
+ return c.make();
+};
+assert.equal(buildForm('', '123','999'),null,'Campo extra vazio não deve ser salvo');
+assert.deepEqual(JSON.parse(JSON.stringify(buildForm(' Bruno Lima ',' 123 ',' 99 '))),{name:'Bruno Lima',cpfCnpj:'123',rg:'99'});
+for(const rel of ['assets/js/features/memorial/app.js','assets/js/features/mapas/app.js','assets/js/features/ods/app.js','assets/js/features/planialtimetria/app.js','assets/js/features/perimetros/app.js']){
+ const src=load(rel);
+ assert.ok(src.includes('GeoRuralProjects?.ownerNames?.'),rel+' deve mostrar dois nomes');
+}
+assert.ok(load('assets/js/features/memorial/app.js').includes('GeoRuralProjects?.ownerDocuments?.'),'Memorial precisa trazer os dois documentos');
+console.log('PASS second-owner-optional: cadastro, salvamento, leitura e apresentação condicional dos dois titulares validados.');

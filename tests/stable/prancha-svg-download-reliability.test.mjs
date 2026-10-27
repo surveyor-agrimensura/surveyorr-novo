@@ -1,0 +1,46 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+
+const downloadsSource=readFileSync('assets/js/core/downloads.js','utf8');
+const mapSource=readFileSync('assets/js/features/mapas/app.js','utf8');
+const documentsSource=readFileSync('assets/js/core/documents.js','utf8');
+assert.match(mapSource,/SurveyorDocumentDownloads\?\.saveSvg/, 'A exportação SVG deve usar o salvamento compartilhado e seguro.');
+assert.doesNotMatch(mapSource,/setTimeout\(\(\) => URL\.revokeObjectURL\(url\), 1000\)/, 'Download SVG não pode revogar o Blob em um segundo.');
+assert.match(documentsSource,/item\.addEventListener\('click',\(event\)=>\{\s*event\.preventDefault\(\); event\.stopPropagation\(\);/, 'Cada clique no menu deve acionar um único download.');
+
+const clicked=[];
+const revoked=[];
+const timers=[];
+const alerts=[];
+const list={classList:{contains:()=>true},children:[],querySelector(selector){return this.children.find(b=>selector==='[data-sv-svg-retry]' && b.attributes['data-sv-svg-retry']==='1')||null;},appendChild(child){this.children.push(child);child.parent=this;return child;}};
+let projectId='imovel-1';
+let currentSvg='<svg xmlns="http://www.w3.org/2000/svg"><path id="perimetro-real"/></svg>';
+const body={dataset:{page:'pranchas.html'},children:[],appendChild(a){this.children.push(a);a.parent=this;return a;}};
+function makeElement(tag){return {tag,attributes:{},style:{},hidden:false,events:{},parent:null,setAttribute(name,value){this.attributes[name]=value;},addEventListener(k,cb){this.events[k]=cb;},remove(){if(this.parent)this.parent.children=this.parent.children.filter(x=>x!==this);},click(){if(tag==='a')clicked.push({download:this.download,url:this.href,attached:body.children.includes(this)});else this.events.click?.({preventDefault(){},stopPropagation(){}});}};}
+const window={SurveyorPranchaExportSource:()=>currentSvg};
+const context={Blob,console,window,URL:{createObjectURL:()=>`blob:prancha-${clicked.length+1}`,revokeObjectURL:url=>revoked.push(url)},document:{readyState:'loading',body,addEventListener(){},getElementById:id=>id==='projectSelect'?{value:projectId}:null,querySelectorAll:q=>q==='.export-menu .export-menu-list, .sv-prancha-footer-download-menu'?[list]:[],createElement:makeElement},setTimeout:(fn,delay)=>{timers.push({fn,delay});},alert:m=>alerts.push(m)};
+vm.runInNewContext(downloadsSource,context,{filename:'downloads.js'});
+assert.equal(typeof window.SurveyorDocumentDownloads?.saveSvg,'function','O helper de SVG deve estar disponível quando clicado.');
+assert.throws(()=>window.SurveyorDocumentDownloads.saveSvg('vazio.svg',''), /SVG|vazio|inválido/i);
+window.SurveyorDocumentDownloads.saveSvg('imovel-real.svg',currentSvg);
+assert.equal(clicked.length,1);
+assert.equal(clicked[0].attached,true,'O link para salvar precisa estar conectado ao DOM.');
+assert.equal(clicked[0].download,'imovel-real.svg');
+assert.equal(revoked.length,0,'A URL Blob não pode ser revogada imediatamente.');
+assert.ok(timers.some(t=>t.delay>=120000),'O endereço temporário deve permanecer válido para downloads demorados.');
+const retry=list.querySelector('[data-sv-svg-retry]');
+assert.ok(retry,'Deve haver nova ação manual para salvar o mesmo SVG se Chrome bloquear a primeira.');
+retry.click();
+assert.equal(clicked.length,2,'Retry deve salvar sem renderizar novamente.');
+projectId='imovel-2';retry.click();
+assert.equal(clicked.length,2,'Retry nunca deve enviar a prancha de outro imóvel.');
+projectId='imovel-1'; currentSvg='<svg><path id="alterado"/></svg>'; retry.click();
+assert.equal(clicked.length,2,'Retry não deve exportar uma edição antiga após alteração da cena.');
+assert.ok(alerts.some(m=>/alterad|mudou|projeto/i.test(m)));
+for (const t of timers.filter(t=>t.delay===2000)) t.fn();
+assert.equal(body.children.length,0,'Âncoras retiradas sem apagar blobs em uso.');
+assert.equal(revoked.length,0);
+for (const t of timers.filter(t=>t.delay===180000)) t.fn();
+assert.equal(revoked.length,2,'Blobs só revogados após janela de download.');
+console.log('PASS prancha-svg-download-reliability: download estável, retry, validação de projeto e fonte, sem revogação precoce.');

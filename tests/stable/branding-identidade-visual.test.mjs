@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+const root = path.resolve('.');
+const read = file => fs.readFileSync(path.join(root,file),'utf8');
+const login = read('login/index.html');
+const home = read('index.html');
+const map = read('mapa/index.html');
+const layout = read('assets/js/core/layout.js');
+const ui = read('assets/js/core/ui.js');
+const loginCss=read('assets/css/core/login.css');
+const homeCss=read('assets/home-hero.css');
+const mapCss=read('assets/css/features/mapa/app.css');
+for (const file of ['assets/logo.png','assets/nome.png','assets/pwa/surveyor-192.png','assets/pwa/surveyor-512.png'])
+  assert(fs.statSync(path.join(root,file)).size>5000,`asset presente: ${file}`);
+assert(home.includes('class="home-hero-mark"') && /home-hero-mark[^]*?<img src="assets\/logo\.png/.test(home));
+assert(layout.includes('class="sv-wordmark-image" src="${assetUrl(\'/assets/nome.png\')}"'));
+assert(homeCss.includes('.sv-wordmark-brand img.sv-wordmark-image'));
+assert(/class="login-brand-wordmark" src="\/assets\/nome.png/.test(login));
+assert(!login.includes('class="login-brand-copy"'));
+assert(/class="login-logo"[^]*?<img src="\/assets\/nome.png/.test(login));
+assert(loginCss.includes('.login-brand img.login-brand-wordmark'));
+assert(/class="sv-map-brand-wordmark"[^]*?\/assets\/nome.png/.test(map));
+for (const text of [layout,ui]) assert(text.includes('class="sv-map-brand-wordmark"') && text.includes("assets/nome.png"));
+assert(!ui.includes('class="sv-map-nav-brand-copy"'));
+assert(mapCss.includes('.brand>a.sv-map-brand-wordmark img'));
+assert(!/class="brand-mark"/.test(map), 'sem ícone circular duplicado no cabeçalho do mapa');
+console.log('PASS identidade visual RC185.15: home, login, mapa e ícones gerais.');

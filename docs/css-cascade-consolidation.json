@@ -1,0 +1,356 @@
+{
+  "method": "same selector + same at-rule context, retaining last declaration; no important in CSS",
+  "changes": [
+    {
+      "file": "assets/css/admin/app.css",
+      "removed": 3,
+      "sample": [
+        {
+          "selector": ".admin-ops-section",
+          "property": "border-radius",
+          "old": "border-radius:14px;"
+        },
+        {
+          "selector": ".admin-ops-section>summary",
+          "property": "padding",
+          "old": "padding:16px 0"
+        },
+        {
+          "selector": "#toggleSelectedLayerGroup",
+          "property": "min-width",
+          "old": "min-width:150px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/documents.css",
+      "removed": 8,
+      "sample": [
+        {
+          "selector": ".plan-documents-section",
+          "property": "border-radius",
+          "old": "border-radius:14px;"
+        },
+        {
+          "selector": ".plan-documents-section h3",
+          "property": "color",
+          "old": "color:#0b2c5f;"
+        },
+        {
+          "selector": ".plan-doc-preview",
+          "property": "border-radius",
+          "old": "border-radius:14px;"
+        },
+        {
+          "selector": ".plan-doc-preview",
+          "property": "background",
+          "old": "background:#f8fafc;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/admin/organization.css",
+      "removed": 5,
+      "sample": [
+        {
+          "selector": ".workspace-team-dialog .workspace-team-summary",
+          "property": "grid-template-columns",
+          "old": "grid-template-columns:repeat(5,minmax(110px,1fr));"
+        },
+        {
+          "selector": ".workspace-team-dialog .workspace-team-summary article",
+          "property": "padding",
+          "old": "padding:10px 11px"
+        },
+        {
+          "selector": ".workspace-team-dialog .workspace-subuser-form",
+          "property": "margin-top",
+          "old": "margin-top:10px"
+        },
+        {
+          "selector": ".workspace-team-dialog",
+          "property": "width",
+          "old": "width:min(1120px,calc(100vw - 32px));"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/documents.css",
+      "removed": 1,
+      "sample": [
+        {
+          "selector": "body.sv-document-inline-personalization .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-sheet",
+          "property": "min-width",
+          "old": "min-width:720px;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/layout.css",
+      "removed": 48,
+      "sample": [
+        {
+          "selector": ":root",
+          "property": "--radius",
+          "old": "--radius:6px;"
+        },
+        {
+          "selector": ":root",
+          "property": "--radius-sm",
+          "old": "--radius-sm:4px;"
+        },
+        {
+          "selector": ".workspace-brand small",
+          "property": "line-height",
+          "old": "line-height:1.2;"
+        },
+        {
+          "selector": ".workspace-topbar",
+          "property": "grid-template-columns",
+          "old": "grid-template-columns:minmax(320px,560px) minmax(0,1fr) auto;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/suite.css",
+      "removed": 26,
+      "sample": [
+        {
+          "selector": ".customization-layout",
+          "property": "grid-template-columns",
+          "old": "grid-template-columns:340px minmax(0,1fr);"
+        },
+        {
+          "selector": ".document-preview",
+          "property": "min-height",
+          "old": "min-height:360px;"
+        },
+        {
+          "selector": ".notification-center",
+          "property": "z-index",
+          "old": "z-index:80"
+        },
+        {
+          "selector": ".notification-panel",
+          "property": "z-index",
+          "old": "z-index:999"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/core/ui.css",
+      "removed": 4,
+      "sample": [
+        {
+          "selector": ".project-card-preview .project-preview-tiles",
+          "property": "z-index",
+          "old": "z-index:0;"
+        },
+        {
+          "selector": ".project-card-preview .project-cloud-pill",
+          "property": "z-index",
+          "old": "z-index:5;"
+        },
+        {
+          "selector": "body.sv-toolmenu-page .sv-home-nav.sv-compact-nav>a,\nbody.sv-toolmenu-page .sv-home-nav.sv-compact-nav .sv-home-tools-btn,\nbody.sv-toolmenu-page .workspace-topbar-actions .sv-pwa-install-button,\nbody[data-page=\"index.html\"] .sv-home-nav.sv-compact-nav>a,\nbody[data-page=\"index.html\"] .sv-home-nav.sv-compact-nav .sv-home-tools-btn,\nbody[data-page=\"index.html\"] .workspace-topbar-actions .sv-pwa-install-button",
+          "property": "justify-content",
+          "old": "justify-content:flex-start;"
+        },
+        {
+          "selector": "body.sv-toolmenu-page .sv-home-nav.sv-compact-nav>a,\nbody.sv-toolmenu-page .sv-home-nav.sv-compact-nav .sv-home-tools-btn,\nbody.sv-toolmenu-page .workspace-topbar-actions .sv-pwa-install-button,\nbody[data-page=\"index.html\"] .sv-home-nav.sv-compact-nav>a,\nbody[data-page=\"index.html\"] .sv-home-nav.sv-compact-nav .sv-home-tools-btn,\nbody[data-page=\"index.html\"] .workspace-topbar-actions .sv-pwa-install-button",
+          "property": "gap",
+          "old": "gap:7px;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/assinatura-digital/app.css",
+      "removed": 12,
+      "sample": [
+        {
+          "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head",
+          "property": "margin",
+          "old": "margin:0 auto 18px;"
+        },
+        {
+          "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head",
+          "property": "padding",
+          "old": "padding:8px 0 0"
+        },
+        {
+          "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child",
+          "property": "padding-left",
+          "old": "padding-left:54px;"
+        },
+        {
+          "selector": "body[data-page=\"assinatura-digital.html\"] .signature-page-head>div:first-child:before",
+          "property": "top",
+          "old": "top:0;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/consulta-car/app.css",
+      "removed": 33,
+      "sample": [
+        {
+          "selector": ".consulta-car-search-intro",
+          "property": "grid-template-columns",
+          "old": "grid-template-columns:52px minmax(0,1fr) auto;"
+        },
+        {
+          "selector": ".consulta-car-helper",
+          "property": "color",
+          "old": "color:#728096;"
+        },
+        {
+          "selector": ".consulta-car-stats",
+          "property": "gap",
+          "old": "gap:12px;"
+        },
+        {
+          "selector": ".consulta-car-stats",
+          "property": "margin",
+          "old": "margin:14px 0"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/customizacao/app.css",
+      "removed": 233,
+      "sample": [
+        {
+          "selector": "body[data-page=\"customizacao.html\"] .custom-target-grid",
+          "property": "grid-template-columns",
+          "old": "grid-template-columns:repeat(2,minmax(0,1fr));"
+        },
+        {
+          "selector": "body[data-page=\"customizacao.html\"] .custom-target-grid",
+          "property": "grid-template-columns",
+          "old": "grid-template-columns:repeat(3,minmax(0,1fr));"
+        },
+        {
+          "selector": "body[data-page=\"customizacao.html\"] .custom-target-grid",
+          "property": "grid-template-columns",
+          "old": "grid-template-columns:repeat(3,minmax(0,1fr));"
+        },
+        {
+          "selector": "body[data-page=\"customizacao.html\"] .custom-target-grid",
+          "property": "gap",
+          "old": "gap:12px;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/earth-3d/earth-3d.css",
+      "removed": 3,
+      "sample": [
+        {
+          "selector": "body.embedded .earth-toolbar",
+          "property": "border-radius",
+          "old": "border-radius:0;"
+        },
+        {
+          "selector": "body.embedded .earth-help",
+          "property": "bottom",
+          "old": "bottom:8px"
+        },
+        {
+          "selector": "body.embedded .earth-status",
+          "property": "bottom",
+          "old": "bottom:8px"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/mapa/layer-location.css",
+      "removed": 5,
+      "sample": [
+        {
+          "selector": "#layerCatalogDialog .catalog-state-browser.layers-visible",
+          "property": "grid-template-columns",
+          "old": "grid-template-columns:minmax(300px,36%) minmax(360px,1fr) 300px"
+        },
+        {
+          "selector": "body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-list",
+          "property": "height",
+          "old": "height:100%;"
+        },
+        {
+          "selector": "body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer",
+          "property": "min-height",
+          "old": "min-height:50px;"
+        },
+        {
+          "selector": "body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer",
+          "property": "justify-content",
+          "old": "justify-content:space-between;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/mapa/territorial-navigator.css",
+      "removed": 1,
+      "sample": [
+        {
+          "selector": "body[data-page=\"mapa.html\"].surveyor-territorial-mode .sv-map-search-host #coordSearch",
+          "property": "background",
+          "old": "background:#fff;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/memorial/memorial-preview.css",
+      "removed": 1,
+      "sample": [
+        {
+          "selector": ".memorial-pdf-preview-error",
+          "property": "color",
+          "old": "color:#475569;"
+        }
+      ]
+    },
+    {
+      "file": "assets/css/features/public-project/public-project.css",
+      "removed": 4,
+      "sample": [
+        {
+          "selector": ".public-header",
+          "property": "background",
+          "old": "background:#173b76;"
+        },
+        {
+          "selector": ".public-header",
+          "property": "color",
+          "old": "color:#fff"
+        },
+        {
+          "selector": ".public-sidebar",
+          "property": "background",
+          "old": "background:#fff;"
+        },
+        {
+          "selector": ".public-sidebar",
+          "property": "border-right",
+          "old": "border-right:1px solid #cbd5e1"
+        }
+      ]
+    },
+    {
+      "file": "assets/home-hero.css",
+      "removed": 2,
+      "sample": [
+        {
+          "selector": "body[data-page=\"index.html\"]",
+          "property": "height",
+          "old": "height:100vh;"
+        },
+        {
+          "selector": "body[data-page=\"index.html\"] .home-suite,\nbody[data-page=\"index.html\"] .suite,\nbody[data-page=\"index.html\"] .workspace-main,\nbody[data-page=\"index.html\"] .main",
+          "property": "height",
+          "old": "height:100vh;"
+        }
+      ]
+    }
+  ]
+}

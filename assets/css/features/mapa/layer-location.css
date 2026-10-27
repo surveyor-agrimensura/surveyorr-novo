@@ -1,0 +1,251 @@
+/* Seleção territorial do catálogo de camadas — navegador Brasil + lista de UFs. */
+#layerCatalogDialog .catalog-dialog-header-actions{display:flex;align-items:center;gap:8px}
+#layerCatalogDialog .catalog-location-button{min-height:34px;display:inline-flex;align-items:center;gap:7px;padding:0 11px;border:1px solid #cfe0ff;border-radius:10px;background:#f7faff;color:#0f5bdc;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+#layerCatalogDialog .catalog-location-button:hover{background:#eef5ff;border-color:#9fc4ff}
+#layerCatalogDialog .catalog-location-button.hidden{display:none}
+#layerCatalogDialog .catalog-location-step{display:none;min-height:0;padding:0;background:#f5f8fc;overflow:hidden}
+body.georural-map-page #layerCatalogDialog.layer-catalog-dialog.choosing-location[open]{
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr);
+  width:min(1280px,calc(100vw - 24px));
+  height:min(820px,calc(100vh - 24px));
+  max-width:none;
+  max-height:none;
+}
+body.georural-map-page #layerCatalogDialog.choosing-location .catalog-location-step{
+  display:grid;
+  grid-template-rows:minmax(0,1fr);
+  min-height:0;
+  height:100%;
+  overflow:hidden;
+}
+body.georural-map-page #layerCatalogDialog.choosing-location .catalog-dialog-tabs,
+body.georural-map-page #layerCatalogDialog.choosing-location .catalog-dialog-panel{
+  display:none;
+  visibility:hidden;
+  height:0;
+  min-height:0;
+  overflow:hidden;
+  padding:0;
+  margin:0;
+  border:0;
+}
+
+#layerCatalogDialog .catalog-state-browser{position:relative;height:100%;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 0 300px;background:#f7f9fc;overflow:hidden;transition:none}
+#layerCatalogDialog .catalog-state-browser.layers-visible{}
+#layerCatalogDialog .catalog-state-map-pane{position:relative;z-index:1;min-width:0;min-height:0;height:100%;display:grid;grid-template-rows:minmax(0,1fr);background:linear-gradient(180deg,#f8fbfe 0%,#eef4f8 100%);border-right:1px solid #dbe4ee;overflow:hidden;backface-visibility:hidden}
+#layerCatalogDialog .catalog-state-map{width:100%;height:100%;min-height:320px;background:#eef4f8;outline:0}
+#layerCatalogDialog .catalog-state-map:focus,
+#layerCatalogDialog .catalog-state-map .leaflet-container:focus,
+#layerCatalogDialog .catalog-state-map .leaflet-interactive:focus,
+#layerCatalogDialog .catalog-state-map svg path:focus{outline:none;box-shadow:none}
+#layerCatalogDialog .catalog-state-map .leaflet-container{width:100%;height:100%;background:#eef4f8;outline:0}
+#layerCatalogDialog .catalog-state-map .leaflet-interactive{cursor:pointer;transition:fill .12s ease,stroke .12s ease;outline:none}
+#layerCatalogDialog .catalog-state-tooltip{margin-top:-5px;padding:5px 7px;border:0;border-radius:7px;background:#13263c;color:#fff;box-shadow:0 8px 20px rgba(15,23,42,.18);font-size:10px;font-weight:800}
+#layerCatalogDialog .catalog-state-tooltip:before{border-top-color:#13263c}
+
+#layerCatalogDialog .catalog-state-layers-pane{position:relative;z-index:2;min-width:0;min-height:0;height:100%;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;padding:16px 0 14px;background:#fbfdff;border-right:1px solid #dbe4ee;overflow:hidden;opacity:0;transform:none;pointer-events:none;transition:none;backface-visibility:hidden}
+#layerCatalogDialog .catalog-state-browser.layers-visible .catalog-state-layers-pane{padding-left:14px;padding-right:14px;opacity:1;transform:translateX(0);pointer-events:auto}
+#layerCatalogDialog .catalog-state-layers-heading{display:flex;align-items:center;justify-content:flex-start;gap:12px;min-width:0}
+#layerCatalogDialog .catalog-state-layers-heading strong{display:block;color:#13253b;font-size:16px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#layerCatalogDialog .catalog-state-layers-mount{min-width:0;min-height:0;height:100%;overflow:hidden}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-list{width:100%;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);padding:0;border:0;background:transparent;overflow:hidden}
+#layerCatalogDialog .catalog-state-layers-mount .catalog-search-row{margin:0 0 8px}
+#layerCatalogDialog .catalog-state-layers-mount .map-layer-catalog{min-height:0;overflow:auto;padding-right:3px;scrollbar-width:thin}
+#layerCatalogDialog .catalog-state-list-pane{position:relative;z-index:3;min-width:0;min-height:0;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;gap:10px;padding:16px 14px 14px;background:#fff;overflow:hidden}
+#layerCatalogDialog .catalog-state-list-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#layerCatalogDialog .catalog-state-list-heading>div{display:grid;gap:2px}
+#layerCatalogDialog .catalog-state-list-heading span:first-child{color:#718096;font-size:9px;font-weight:900;letter-spacing:.11em}
+#layerCatalogDialog .catalog-state-list-heading strong{color:#13253b;font-size:16px;line-height:1.2}
+#layerCatalogDialog .catalog-state-choice-uf{width:34px;height:28px;display:grid;place-items:center;border:1px solid #b7d1f8;border-radius:8px;background:#eef5ff;color:#0f62e8;font-size:10px;font-weight:900;letter-spacing:0}
+#layerCatalogDialog .catalog-state-search-wrap{height:38px;display:grid;grid-template-columns:26px minmax(0,1fr);align-items:center;border:1px solid #d7e1ed;border-radius:10px;background:#f8fafc;color:#789;overflow:hidden}
+#layerCatalogDialog .catalog-state-search-wrap>span{display:grid;place-items:center;font-size:16px}
+#layerCatalogDialog .catalog-state-search-wrap input{height:100%;min-width:0;border:0;outline:0;background:transparent;color:#20344c;font:inherit;font-size:11px;font-weight:650;padding:0 8px 0 0}
+#layerCatalogDialog .catalog-state-list{min-height:0;overflow:auto;display:grid;align-content:start;gap:5px;padding:2px 4px 2px 0;scrollbar-width:thin;scrollbar-color:#c8d4e0 transparent}
+#layerCatalogDialog .catalog-state-option{width:100%;min-height:40px;display:grid;grid-template-columns:minmax(0,1fr) 34px;align-items:center;gap:8px;padding:0 9px 0 11px;border:1px solid transparent;border-radius:9px;background:transparent;color:#30445d;text-align:left;cursor:pointer}
+#layerCatalogDialog .catalog-state-option:hover{background:#f3f7fb;border-color:#e2e9f1}
+#layerCatalogDialog .catalog-state-option.active{background:#eaf4f8;border-color:#9dc7d5;color:#145f78;box-shadow:inset 3px 0 0 #2386a4}
+#layerCatalogDialog .catalog-state-option-name{font-size:11px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#layerCatalogDialog .catalog-state-option-uf{display:grid;place-items:center;height:24px;border-radius:7px;background:#eef2f6;color:#697a8f;font-size:9px;font-weight:900}
+#layerCatalogDialog .catalog-state-option.active .catalog-state-option-uf{background:#d7edf4;color:#145f78}
+#layerCatalogDialog .catalog-state-list-empty{padding:18px 8px;color:#7a8799;font-size:11px;text-align:center}
+#layerCatalogDialog .catalog-state-selection-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:38px;padding:7px 9px;border-top:1px solid #edf1f5;color:#7a8799;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+#layerCatalogDialog .catalog-state-selection-summary strong{color:#13253b;font-size:12px;text-transform:none;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#layerCatalogDialog .catalog-state-native-select{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+#layerCatalogDialog .catalog-location-confirm{min-height:42px;border:0;border-radius:10px;background:#0f62e8;color:#fff;font:inherit;font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 8px 18px rgba(15,98,232,.17)}
+#layerCatalogDialog .catalog-location-confirm:hover{background:#0d58d2}
+#layerCatalogDialog .catalog-location-empty{margin:18px 0;padding:16px;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc;color:#64748b;line-height:1.5}
+
+.catalog-reference-badge{display:inline-flex;margin-left:6px;padding:1px 6px;border-radius:999px;border:1px solid rgba(37,99,235,.22);background:rgba(37,99,235,.07);color:#1d4ed8;font-size:10px;font-style:normal;font-weight:700;vertical-align:middle}
+
+@media(max-width:760px){
+  body.georural-map-page #layerCatalogDialog.layer-catalog-dialog.choosing-location{width:calc(100vw - 12px);height:calc(100vh - 12px)}
+  #layerCatalogDialog .catalog-state-browser{grid-template-columns:1fr;grid-template-rows:minmax(280px,42vh) 0 minmax(0,1fr)}
+  #layerCatalogDialog .catalog-state-browser.layers-visible{grid-template-columns:1fr;grid-template-rows:minmax(220px,32vh) minmax(260px,1fr) minmax(180px,.72fr)}
+  #layerCatalogDialog .catalog-state-map-pane{border-right:0;border-bottom:1px solid #dbe4ee}
+  #layerCatalogDialog .catalog-state-layers-pane{border-right:0;border-bottom:1px solid #dbe4ee;transform:translateY(12px)}
+  #layerCatalogDialog .catalog-state-browser.layers-visible .catalog-state-layers-pane{transform:translateY(0)}
+  #layerCatalogDialog .catalog-state-map{min-height:220px}
+  #layerCatalogDialog .catalog-state-list-pane{grid-template-rows:auto auto minmax(160px,1fr) auto auto;padding:12px}
+}
+
+
+/* RC107/V158 — painel estadual recolhível, cor da UF ligada à camada ativa e acordeões estáveis. */
+#layerCatalogDialog .catalog-state-layers-heading{align-items:center;}
+#layerCatalogDialog .catalog-state-layers-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0;}
+#layerCatalogDialog .catalog-state-layers-close{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;padding:0;border:1px solid #d7e1ed;border-radius:9px;background:#fff;color:#42566f;font:800 18px/1 Arial,sans-serif;cursor:pointer;box-shadow:0 2px 6px rgba(15,23,42,.05);}
+#layerCatalogDialog .catalog-state-layers-close:hover,#layerCatalogDialog .catalog-state-layers-close:focus-visible{border-color:#b9cbe0;background:#f7faff;color:#0f62e8;outline:none;}
+#layerCatalogDialog .catalog-state-layers-pane .map-catalog-group>summary{overflow:visible;}
+#layerCatalogDialog .catalog-state-layers-pane .map-catalog-group-toggle{padding-right:9px;}
+#layerCatalogDialog .catalog-state-layers-pane .map-catalog-group-chevron{width:22px;height:22px;flex:0 0 22px;display:grid;place-items:center;overflow:visible;color:#50647c;transition:transform .16s ease;}
+#layerCatalogDialog .catalog-state-layers-pane .map-catalog-group-chevron svg{display:block;width:15px;height:15px;overflow:visible;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+@media(max-width:980px){#layerCatalogDialog .catalog-state-layers-hint{display:none;}#layerCatalogDialog .catalog-state-layers-actions{gap:4px;}}
+
+/* RC108/V159 — catálogo oficial permanece no navegador estadual e acordeões usam <details>. */
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount{
+  display:grid;
+  grid-template-rows:minmax(0,1fr) auto;
+  gap:8px;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-list{
+  min-height:0;
+  height:auto;
+  align-self:stretch;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer{
+  position:static;
+  width:100%;
+  
+  padding:8px 0 0;
+  margin:0;
+  border-top:1px solid #e3eaf3;
+  background:transparent;
+  box-shadow:none;
+  display:flex;
+  align-items:center;
+  
+  gap:8px;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer .catalog-footer-actions{
+  
+  align-items:center;
+  gap:7px;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer button{
+  min-height:34px;
+  padding:0 12px;
+  border-radius:8px;
+  font-size:9.5px;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group{
+  display:block;
+  width:100%;
+  height:auto;
+  min-height:36px;
+  overflow:visible;
+  border:1px solid #d9e3ef;
+  border-radius:10px;
+  background:#fff;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group>summary.map-catalog-group-toggle{
+  list-style:none;
+  width:100%;
+  min-height:36px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:0 9px 0 10px;
+  border:0;
+  background:#f9fbfd;
+  color:#17314c;
+  font-size:10.5px;
+  font-weight:850;
+  text-align:left;
+  cursor:pointer;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group>summary.map-catalog-group-toggle::-webkit-details-marker{display:none;}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group>summary.map-catalog-group-toggle::marker{content:"";}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group:not([open])>.map-catalog-items{display:none;}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group[open]>.map-catalog-items{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:7px;
+  padding:7px;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  visibility:visible;
+  opacity:1;
+  overflow:visible;
+  background:#fff;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group[open]>.map-catalog-items>.map-catalog-item{
+  display:grid;
+  visibility:visible;
+  opacity:1;
+  min-height:54px;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group .map-catalog-group-chevron{transform:none;}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group[open] .map-catalog-group-chevron{transform:rotate(180deg);}
+
+@media(max-width:980px){
+  body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer{align-items:flex-start;flex-direction:column;}
+  body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer .catalog-footer-actions{width:100%;}
+  body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer button{flex:1 1 0;}
+}
+
+
+/* RC109/V160 — limpeza do cabeçalho de camadas, recolhimento por duplo clique na UF e expansão em lista. */
+#layerCatalogDialog .catalog-state-layers-actions,
+#layerCatalogDialog .catalog-state-layers-hint,
+#layerCatalogDialog .catalog-state-layers-close{display:none;}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane .map-layer-catalog{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:10px;
+  min-height:0;
+  overflow:auto;
+  padding-right:3px;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group{
+  flex:0 0 auto;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-pane details.map-catalog-group[open]>.map-catalog-items{
+  position:static;
+}
+
+
+/* RC110/V161 — painel de camadas compacto, clique só pré-visualiza e a confirmação usa o botão da UF. */
+#layerCatalogDialog .catalog-state-browser.layers-visible{grid-template-columns:minmax(360px,1fr) minmax(280px,380px) 300px}
+#layerCatalogDialog .catalog-state-layers-pane{max-width:380px}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer{
+  min-height:36px;
+  padding:8px 0 0;
+  justify-content:flex-start;
+}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount .catalog-dialog-footer .catalog-footer-actions{display:none;}
+body.georural-map-page #layerCatalogDialog .catalog-state-layers-mount #catalogSelectionCount{font-size:12px;}
+#layerCatalogDialog .map-catalog-item{padding:10px 12px;user-select:none;}
+#layerCatalogDialog .map-catalog-item .map-catalog-toggle{align-self:start;justify-self:end;}
+#layerCatalogDialog .map-catalog-item .map-catalog-copy{cursor:pointer;}
+#layerCatalogDialog .catalog-state-list .catalog-state-option.active{cursor:default;}
+@media(max-width:1180px){
+  #layerCatalogDialog .catalog-state-browser.layers-visible{grid-template-columns:minmax(300px,.95fr) minmax(260px,.8fr) 280px}
+  #layerCatalogDialog .catalog-state-layers-pane{max-width:none}
+}
+
+
+/* RC114/V165 — animação territorial em compositor: sem grid animado e sem resize do Leaflet a cada frame. */
+#layerCatalogDialog .catalog-state-browser.layers-animating-open,
+#layerCatalogDialog .catalog-state-browser.layers-animating-close{contain:layout paint;}
+#layerCatalogDialog .catalog-state-browser.layers-animating-open .catalog-state-map-pane,
+#layerCatalogDialog .catalog-state-browser.layers-animating-close .catalog-state-map-pane{z-index:1;}
+#layerCatalogDialog .catalog-state-browser.layers-animating-open .catalog-state-layers-pane,
+#layerCatalogDialog .catalog-state-browser.layers-animating-close .catalog-state-layers-pane{z-index:4;}
+@media(prefers-reduced-motion:reduce){
+  #layerCatalogDialog .catalog-state-browser,
+  #layerCatalogDialog .catalog-state-layers-pane{transition:none;animation:none;}
+}

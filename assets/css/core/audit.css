@@ -1,0 +1,79 @@
+/* Surveyor v21.9.408 — auditoria de espaçamento e legibilidade */
+.nav a > span:not(.nav-icon):not(.nav-icon-image),
+.workspace-nav a > span:not(.nav-icon):not(.nav-icon-image){
+  min-width:0;
+  white-space:normal;
+  overflow-wrap:break-word;
+  word-break:normal;
+  line-height:1.25;
+}
+.top h1,.top p,.panel h2,.panel h3,.panel-desc,.field-help,
+button,.btn,.link-btn,label,.custom-target-card b,.custom-target-card span{
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+.button-row,.top-actions,.model-choice-tabs{gap:10px;flex-wrap:wrap}
+.form-grid>label,.customization-form label{line-height:1.35}
+.form-grid>label>input,.form-grid>label>select,.form-grid>label>textarea{margin-top:6px}
+.form-grid>label>small{display:block;margin-top:6px;line-height:1.4}
+.custom-target-grid{gap:14px}
+.custom-target-card{
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-content:start;
+  gap:7px;
+  padding:17px;
+  text-align:left;
+  line-height:1.3;
+}
+.custom-target-card b{display:block;font-size:15px;line-height:1.25}
+.custom-target-card span{display:block;font-size:12.5px;line-height:1.45}
+
+/* Personalização em duas etapas: primeiro escolha, depois edição. */
+body[data-page="customizacao.html"] .customization-layout{max-width:1180px;margin:0 auto}
+.customization-chooser{display:grid;gap:12px}
+.customization-chooser[hidden],.customization-editor[hidden]{display:none}
+.customization-chooser-head{max-width:760px}
+.customization-chooser-head h2{margin:0 0 7px}
+.customization-chooser-head p{margin:0;color:#64748b;line-height:1.55}
+.customization-chooser .custom-target-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  margin-top:8px;
+}
+.customization-chooser .custom-target-card{
+  border:1px solid #d7e0ec;
+  background:#fff;
+  border-radius:8px;
+  box-shadow:none;
+  cursor:pointer;
+}
+.customization-chooser .custom-target-card:hover,
+.customization-chooser .custom-target-card:focus-visible{
+  border-color:#145edb;
+  background:#f5f9ff;
+  outline:3px solid rgba(20,94,219,.14);
+}
+.customization-editor{display:grid;gap:14px}
+.document-picker-summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 0 4px;
+  padding:14px 16px;
+  border:1px solid #d7e0ec;
+  border-left:4px solid #145edb;
+  background:#f8fbff;
+}
+.document-picker-summary>div{display:grid;gap:4px;min-width:0}
+.document-picker-summary strong{line-height:1.25}
+#saveCustomizationTop[hidden]{display:none}
+
+@media(max-width:760px){
+  .customization-chooser .custom-target-grid{grid-template-columns:1fr}
+  .document-picker-summary{align-items:stretch;flex-direction:column}
+  .document-picker-summary button{width:100%}
+  
+}

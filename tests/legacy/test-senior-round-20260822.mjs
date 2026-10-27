@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+const read=(p)=>fs.readFileSync(new URL('../'+p, import.meta.url),'utf8');
+const ux=read('assets/js/features/mapa/ux.js');
+const app=read('assets/js/features/mapa/app.js');
+const runtime=read('assets/js/core/ui.js');
+const login=read('assets/css/core/login.css');
+const mapcss=read('assets/css/features/mapa/app.css');
+const assert=(v,m)=>{if(!v) throw new Error(m)};
+assert(!ux.includes('data-action="more"'), 'botão de três pontos ainda existe');
+assert(ux.includes("data-action=\"home\"]')?.addEventListener('click', focusDrawnContent"), 'casa não foca geometria');
+assert(ux.includes('#topQuickPolygonBtn'), 'polígono superior não reseta rotação');
+assert(app.includes('fetchConfiguredPropertyLayerEnrichment'), 'popup não prioriza camada configurada');
+assert(app.includes('getSelectedLayer: () => selectedLayer'), 'selected layer não exposta');
+assert(runtime.includes("['Produção técnica'"), 'menu prioritário não aplicado');
+assert(runtime.includes("['/earth-3d','earth-3d'"), 'grupo final não fecha 18 módulos');
+assert(login.includes('surveyorLoginSharpIn'), 'slideshow nítido não aplicado');
+assert(mapcss.includes('painel Marcar pontos compacto'), 'painel compacto não aplicado');
+console.log('OK senior round 2026-08-22');

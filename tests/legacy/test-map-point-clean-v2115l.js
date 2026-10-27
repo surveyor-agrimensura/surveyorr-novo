@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const html=fs.readFileSync('mapa/index.html','utf8');
+const runtime=fs.readFileSync('assets/js/features/mapa/controls.js','utf8');
+const app=fs.readFileSync('assets/js/features/mapa/app.js','utf8');
+assert.match(html,/21\.11\.5(?:l-point-clean|m-auto-polygon|n-editable-import)/);
+assert.doesNotMatch(html,/Hotfix 21\.11\.5d: fallback defensivo/);
+assert.match(runtime,/Estado inicial sempre limpo/);
+assert.match(runtime,/showNewPointPanel/);
+assert.match(runtime,/silent: true/);
+assert.match(runtime,/hidePointPanel\(\)/);
+assert.match(runtime,/detail\.reason !== 'click'/);
+assert.match(app,/Ponto marcado/);
+assert.match(app,/surveyor-gps-pin-icon/);
+console.log('OK: v21.11.5l — Marcar ponto inicia limpo, usa alfinete amarelo e não reabre automaticamente.');

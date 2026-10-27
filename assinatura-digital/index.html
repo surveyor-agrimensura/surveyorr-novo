@@ -1,0 +1,173 @@
+<!doctype html>
+<html class="surveyor-ui-booting" lang="pt-BR">
+<head>
+  <link rel="preconnect" href="https://api.surveyorr.com.br" crossorigin>
+  <link rel="dns-prefetch" href="//api.surveyorr.com.br">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self' https://api.surveyorr.com.br; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://js-agent.newrelic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com https:; connect-src 'self' https: https://bam.nr-data.net https://bam-cell.nr-data.net; media-src 'self' data: blob: https:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob: data: https:; manifest-src 'self'; upgrade-insecure-requests"><script src="/assets/js/core/auth-guard.js?v=1.0.0-rc.185.74"></script>
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="utf-8">
+  <script src="/assets/js/core/telemetry.js?v=1.0.0-rc.185.74"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071225">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/surveyor-192.png?v=1.0.0-rc.185.74">
+  <meta name="application-name" content="Surveyor">
+
+  <title>Assinatura digital — Surveyor</title>
+  <link rel="icon" type="image/png" href="/assets/logo.png?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="/assets/css/features/assinatura-digital/app.css?v=1.0.0-rc.185.74">
+  <link rel="stylesheet" href="/assets/css/core/ui.css?v=1.0.0-rc.185.74">
+</head>
+<body data-page="assinatura-digital.html">
+  <div class="suite">
+    <aside class="side" id="side">
+      <div class="brand">
+        <div class="brand-mark"><img src="/assets/logo.png?v=1.0.0-rc.185.74" alt="" data-hide-on-error="1"></div>
+        <div><strong>Surveyor</strong><small>Georreferenciamento e Agrimensura</small></div>
+      </div>
+      <nav class="nav">
+        <a href="/"><span class="nav-icon nav-icon-image"><img class="module-icon-img" src="/assets/module-icons/inicio.png?v=1.0.0-rc.185.74" alt=""></span><span>Visão geral</span></a>
+        <a href="/mapa/"><span class="nav-icon nav-icon-image"><img class="module-icon-img" src="/assets/module-icons/mapa-cadastro.png?v=1.0.0-rc.185.74" alt=""></span><span>Mapa e cadastro</span></a>
+        <a href="/nuvem/"><span class="nav-icon nav-icon-image"><img class="module-icon-img" src="/assets/module-icons/projetos.svg?v=1.0.0-rc.185.74" alt=""></span><span>Projetos</span></a>
+        <a href="/customizacao/"><span class="nav-icon nav-icon-image"><img class="module-icon-img" src="/assets/module-icons/customizacao.svg?v=1.0.0-rc.185.74" alt=""></span><span>Personalização</span></a>
+        <a class="active" href="/assinatura-digital/"><span class="nav-icon nav-icon-image"><img class="module-icon-img" src="/assets/module-icons/assinatura-digital.svg?v=1.0.0-rc.185.74" alt=""></span><span>Assinatura digital</span></a>
+      </nav>
+      <div class="side-note"></div>
+    </aside>
+
+    <main class="main signature-main">
+      <header class="top signature-page-head">
+        <div>
+          <button class="btn mobile-toggle" id="mobileToggle">☰</button>
+          <h1>Assinatura digital</h1>
+          <p>Revise o PDF e aplique a assinatura cadastrada na sua Personalização.</p>
+        </div>
+        <div class="top-actions">
+          <button class="link-btn" id="signatureHowWorks" type="button">Como funciona</button>
+        </div>
+      </header>
+
+      <section class="signature-workspace" aria-label="Área de assinatura digital">
+        <aside class="signature-sidebar">
+          <section class="signature-card signature-doc-card">
+            <div class="signature-card-title"><span>1</span><h2>Documento</h2></div>
+            <input id="signaturePdfFile" type="file" accept="application/pdf,.pdf" hidden>
+            <button class="signature-file-picker" id="signatureChooseFile" type="button">
+              <span class="signature-pdf-icon" aria-hidden="true">PDF</span>
+              <span class="signature-file-copy">
+                <b id="signatureFileName">Escolher documento PDF</b>
+                <small id="signatureFileMeta">Selecione um arquivo para revisar e assinar.</small>
+              </span>
+              <span class="signature-file-action">Escolher</span>
+            </button>
+            <div class="signature-drop-zone" id="signatureDropZone" tabindex="0" role="button" aria-label="Arraste um PDF ou clique para escolher">
+              Arraste um PDF para esta área ou clique para selecionar.
+            </div>
+            <div class="signature-status" id="signatureDocumentStatus" data-state="idle">Nenhum documento selecionado.</div>
+          </section>
+
+          <section class="signature-card signature-identity-card">
+            <div class="signature-card-title"><span>2</span><h2>Assinatura cadastrada</h2></div>
+            <div class="signature-identity">
+              <div class="signature-image-frame" id="signatureImageFrame">
+                <img id="signatureSavedImage" alt="Assinatura cadastrada" hidden>
+                <span id="signatureMissingMark">Sem assinatura</span>
+              </div>
+              <div class="signature-identity-copy">
+                <b id="signatureTechName">Responsável técnico</b>
+                <span id="signatureTechRegistry">Dados da Personalização</span>
+              </div>
+            </div>
+            <p class="signature-helper" id="signatureIdentityHelp">A assinatura usada aqui é a mesma cadastrada em Personalização.</p>
+            <a class="signature-edit-link" href="/customizacao/?section=tecnico">Editar em Personalização</a>
+          </section>
+
+          <section class="signature-card signature-position-card">
+            <div class="signature-card-title"><span>3</span><h2>Aplicação</h2></div>
+            <div class="signature-form-row">
+              <label for="signaturePageSelect">Página</label>
+              <select id="signaturePageSelect" disabled><option value="">Carregue um PDF</option></select>
+            </div>
+            <div class="signature-form-row">
+              <label for="signaturePosition">Posição inicial</label>
+              <select id="signaturePosition" disabled>
+                <option value="bottom-left">Inferior esquerda</option>
+                <option value="bottom-center" selected>Inferior central</option>
+                <option value="bottom-right">Inferior direita</option>
+              </select>
+            </div>
+            <div class="signature-form-row signature-range-row">
+              <label for="signatureSize">Tamanho <output id="signatureSizeOutput">24%</output></label>
+              <input id="signatureSize" type="range" min="12" max="38" step="1" value="24" disabled>
+            </div>
+            <p class="signature-helper signature-helper-compact">Clique ou arraste a assinatura diretamente dentro da pré-visualização do documento.</p>
+            <div class="signature-action-group">
+              <button class="btn primary signature-apply-btn" id="signatureApply" type="button" disabled>Aplicar assinatura</button>
+              <button class="btn signature-secondary-btn" id="signatureApplyMore" type="button" disabled>Aplicar mais uma assinatura</button>
+              <button class="btn signature-download-btn" id="signatureDownload" type="button" disabled>Baixar PDF assinado</button>
+            </div>
+          </section>
+
+          <div class="signature-security-note">
+            <span aria-hidden="true">✓</span>
+            <p>O arquivo é processado localmente no navegador para aplicar a imagem da assinatura cadastrada.</p>
+          </div>
+        </aside>
+
+        <section class="signature-review-card">
+          <div class="signature-review-head">
+            <div>
+              <h2>Revise o documento</h2>
+              <p>Confira o PDF antes de aplicar a assinatura.</p>
+            </div>
+            <button class="btn" id="signatureFullscreen" type="button" disabled>Tela cheia</button>
+          </div>
+          <div class="signature-viewer-shell" id="signatureViewerShell" data-state="empty">
+            <div class="signature-viewer-empty" id="signatureViewerEmpty">
+              <span class="signature-viewer-empty-icon" aria-hidden="true">PDF</span>
+              <strong>Nenhum documento carregado</strong>
+              <p>Escolha um PDF no painel à esquerda para iniciar a revisão.</p>
+              <button class="btn primary" id="signatureChooseFileEmpty" type="button">Selecionar PDF</button>
+            </div>
+            <div class="signature-canvas-stage" id="signatureCanvasStage" hidden>
+              <canvas id="signatureMainCanvas" class="signature-main-canvas" aria-label="Pré-visualização interativa do PDF"></canvas>
+              <img id="signatureMainStamp" class="signature-main-stamp" alt="Posição da assinatura" hidden>
+            </div>
+          </div>
+          <div class="signature-review-footer" id="signatureReviewFooter" hidden>
+            <span id="signatureReviewState">Documento pronto para revisão.</span>
+            <span id="signatureHash" title="Identificador SHA-256 do PDF"></span>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="signature-how-dialog" id="signatureHowDialog">
+    <form method="dialog">
+      <header><div><h2>Como funciona</h2><p>Fluxo simples, sem repetir os dados do responsável técnico.</p></div><button type="submit" aria-label="Fechar">×</button></header>
+      <ol>
+        <li><b>Selecione o PDF.</b><span>O documento aparece na área principal e a assinatura pode ser posicionada com o mouse.</span></li>
+        <li><b>Confira a assinatura cadastrada.</b><span>O Surveyor reutiliza a assinatura salva na Personalização.</span></li>
+        <li><b>Escolha página e tamanho.</b><span>Depois, posicione a assinatura diretamente em cima do documento com o mouse.</span></li>
+        <li><b>Baixe a cópia assinada.</b><span>O documento original permanece inalterado.</span></li>
+      </ol>
+      <div class="signature-dialog-note">Esta área aplica a imagem da assinatura cadastrada ao PDF. Ela não substitui, por si só, uma assinatura criptográfica com certificado digital.</div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="suiteToast"></div>
+  <script src="/assets/js/core/api.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/auth.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/layout.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/portal.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/document-theme.js?v=1.0.0-rc.185.74"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="/assets/js/features/assinatura-digital/app.js?v=1.0.0-rc.185.74"></script>
+  <script src="/assets/js/core/ui.js?v=1.0.0-rc.185.74"></script>
+
+<script src="/assets/js/core/car-menu.js?v=1.0.0-rc.185.74"></script>
+</body>
+</html>

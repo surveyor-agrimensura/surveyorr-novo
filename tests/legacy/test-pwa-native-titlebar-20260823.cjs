@@ -1,0 +1,11 @@
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const root = path.resolve(__dirname, '../..');
+const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8'));
+const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
+assert.strictEqual(manifest.display, 'standalone', 'PWA deve continuar em modo standalone');
+assert.ok(!('display_override' in manifest), 'display_override deve ser removido para usar a barra nativa do Windows');
+assert.ok(!JSON.stringify(manifest).includes('window-controls-overlay'), 'window-controls-overlay não pode estar ativo');
+assert.ok(/const SURVEYOR_SW_VERSION = '[^']+';/.test(sw), 'Service worker deve manter identificador de versão para atualização');
+console.log('OK: PWA usa barra de título nativa e mantém modo standalone.');

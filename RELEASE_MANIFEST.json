@@ -1,0 +1,581 @@
+{
+  "release": "1.0.0-rc.185.74",
+  "releasedAt": "2026-10-26",
+  "frontend": {
+    "version": "1.0.0-rc.185.74",
+    "provider": "GitHub Pages",
+    "domain": "https://surveyorr.com.br",
+    "wwwDomain": "https://www.surveyorr.com.br",
+    "legacyDomain": "https://surveyoragrimensura.tech",
+    "migrationMode": "official-domain-only-by-default"
+  },
+  "api": {
+    "version": "1.0.0-rc.185.74",
+    "provider": "Appwrite Functions",
+    "active": true,
+    "deployment": {
+      "source": "GitHub",
+      "branch": "main",
+      "rootDirectory": "functions/surveyor-api",
+      "entrypoint": "src/main.js",
+      "runtime": "node-22"
+    },
+    "publicEndpoint": "https://api.surveyorr.com.br",
+    "lastConfirmedHealthVersion": "2.26.8-security-safe-r2",
+    "endpointMigration": "custom-domain-stable",
+    "bundledSourceVersion": "1.0.0-rc.185.74",
+    "customDomain": "https://api.surveyorr.com.br",
+    "automaticFunctionDomainDeprecated": true,
+    "deploymentRequired": true
+  },
+  "support": {
+    "version": "1.0.0-rc.185.74",
+    "provider": "Appwrite Functions",
+    "active": true,
+    "email": "suporte@surveyorr.com.br",
+    "senderEmail": "suporte@surveyorr.com.br",
+    "deployment": {
+      "source": "GitHub",
+      "branch": "main",
+      "rootDirectory": "functions/surveyor-support",
+      "entrypoint": "src/main.js",
+      "runtime": "node-22"
+    }
+  },
+  "geoservices": {
+    "version": "1.0.0-rc.185.74",
+    "provider": "Cloudflare Workers",
+    "active": true,
+    "reason": "Proxy WMS/WFS autenticado para CAR/SICAR nacional, INEMA/GeoBahia e demais fontes oficiais, com seleção de UF no catálogo.",
+    "deploymentRequired": true
+  },
+  "geoservicesAppwriteFallback": {
+    "version": "1.0.0-rc.185.74",
+    "provider": "Appwrite Functions",
+    "active": false
+  },
+  "paymentPortal": {
+    "provider": "GitHub Pages + Cloudflare Workers",
+    "active": true,
+    "testMode": false,
+    "officialApiProvisioning": true,
+    "firstAccessPasswordRequired": true,
+    "sandboxDisabledByDefault": true
+  },
+  "database": "Appwrite Databases",
+  "storage": "Appwrite Storage",
+  "authenticationBase": "Appwrite Auth com sessão própria da API Surveyor",
+  "commercialPlans": {
+    "billingPolicy": "annual-only",
+    "legacyMonthlyPlans": "inactive-compatibility-only",
+    "projectsPolicy": "unlimited-storage-bounded",
+    "basic": {
+      "annualCents": 39900,
+      "users": 1,
+      "projects": null,
+      "includedStorageBytes": 209715200,
+      "maxStorageBytes": 2147483648,
+      "downloadsPerDay": 5,
+      "exportsPerDay": 5
+    },
+    "plus": {
+      "annualCents": 69900,
+      "users": 2,
+      "projects": null,
+      "includedStorageBytes": 524288000,
+      "maxStorageBytes": 5368709120,
+      "downloadsPerDay": 20,
+      "exportsPerDay": 20
+    },
+    "pro": {
+      "annualCents": 119900,
+      "users": 4,
+      "projects": null,
+      "includedStorageBytes": 1073741824,
+      "maxStorageBytes": 10737418240,
+      "downloadsPerDay": null,
+      "exportsPerDay": null
+    },
+    "addons": {
+      "storageBlockBytes": 524288000,
+      "storageBlockCents": 1500,
+      "storagePricing": "linear",
+      "whiteLabel": "proposal"
+    }
+  },
+  "onboarding": {
+    "guidedUserCreation": true,
+    "automaticBillingDates": true,
+    "signedReceiptPdf": true,
+    "automaticWelcomeEmail": true,
+    "passwordSentByEmail": false,
+    "adminGeneratedPassword": false,
+    "forcedFirstPasswordChange": true,
+    "secureFirstAccessLink": true,
+    "firstAccessLinkTtlMinutes": 30
+  },
+  "workspaceTeams": {
+    "enabled": true,
+    "adminOnlyManagement": true,
+    "sharedProjects": true,
+    "sharedStorage": true,
+    "includedSeatsCountOwner": true,
+    "collection": "workspace_members",
+    "basicAllowsSubusers": false,
+    "plusIncludedTotalSeats": 2,
+    "proIncludedTotalSeats": 4,
+    "subuserStorageLimitBytes": 5368709120,
+    "subuserRoles": [
+      "collaborator",
+      "technician",
+      "manager"
+    ],
+    "additionalSeatsPricing": "annual-proposal",
+    "membersInheritOwnerPlanEntitlements": true,
+    "memberRoleRestrictsCommercialFeatures": false,
+    "sharedCustomization": true
+  },
+  "localDevelopment": {
+    "enabled": true,
+    "server": "http://localhost:5500",
+    "api": "official Appwrite Function",
+    "corsLocalhost": false,
+    "fileProtocolSupported": false,
+    "requiresExplicitCorsEnable": true
+  },
+  "deploymentModel": {
+    "repository": "codebykaua/surveyor_agrimensura",
+    "functionsFromGit": true,
+    "manualFunctionUploadRecommended": false
+  },
+  "fixes": {
+    "appwritePhoneParameter": true,
+    "stagedPasswordRecovery": true,
+    "passwordRecoveryResend": true,
+    "whatsappCenter": false,
+    "supportEmail": "suporte@surveyorr.com.br",
+    "whatsappWebRemoved": true
+  },
+  "userManagement": {
+    "audit": "integrity-aware",
+    "partialAccountRepair": true,
+    "blockUnblock": true,
+    "deleteButtonVisible": true,
+    "deleteIncomplete": true,
+    "deleteCompleteWithoutProtectedData": true,
+    "deleteCompleteWithProtectedData": false
+  },
+  "adminAccountManagement": {
+    "changeLoginEmailWithoutDataLoss": true,
+    "preserveUserId": true,
+    "emailChangeAudit": true,
+    "notifyOldAndNewEmail": true,
+    "adminPasswordReset": true,
+    "emailChangeInsideUserEditor": true,
+    "whatsappPreferencesRemovedFromEditor": true,
+    "phoneRemainsContactOnly": true
+  },
+  "releasePackaging": {
+    "updateMethod": "zip-installer",
+    "historicalFilesRemoved": true,
+    "currentDocumentationOnly": true,
+    "backupBeforeInstall": true,
+    "automaticRollbackOnValidationFailure": true,
+    "organizedRoot": true,
+    "legacyHtmlRedirectsCentralized": true,
+    "sourceMapDocumented": true
+  },
+  "securityHardening": {
+    "globalAdminAuthorization": "strict-role-or-admin-all",
+    "commercialPermissionsSanitized": true,
+    "loginRateLimit": "persistent-with-local-fallback-no-login-503",
+    "refreshTokenRotation": true,
+    "logoutRevocation": true,
+    "appwriteTimeoutMsDefault": 15000,
+    "publicSharePassword": "scrypt-v1-with-legacy-migration",
+    "sharePasswordQueryString": false,
+    "passwordResetEnumerationProtected": true,
+    "debugRoutesDisabledByDefault": true,
+    "genericServerErrorsWithRequestId": true,
+    "supportAbuseProtection": "rate-limit-honeypot-optional-turnstile",
+    "readinessChecksDatabase": true,
+    "securityResponseHeaders": true,
+    "autoRepairDefaultsLeastPrivilege": true,
+    "publicHealthMinimal": true,
+    "saveFunctionMinimal": true,
+    "saveFunctionServerSideOwnerValidation": true,
+    "saveFunctionDelegatesSessionValidationToMainApi": true,
+    "saveFunctionBodyAndFeatureLimits": true,
+    "unknownCorsOriginNotReflected": true,
+    "frontendAuthorizationIsPresentationOnly": true,
+    "passwordResetRateLimit": "persistent-with-local-fallback",
+    "minimumPasswordLength": 12,
+    "passwordComplexity": "upper-lower-number-symbol",
+    "firstAccessPasswordChangeRequired": true,
+    "publicShareTokenBoundToShareId": true,
+    "customizationWebsiteHttpOnly": true,
+    "adminAiPiiDefault": "anonymized",
+    "localCorsDisabledByDefault": true,
+    "geoservicesHttpsFirst": true,
+    "insecureGeoservicesFallbacksDefault": false,
+    "projectGeometryServerValidation": true,
+    "polygonSelfIntersectionBlockedInEditor": true,
+    "refreshTokenReplayDetection": true,
+    "refreshTokenFamilyRotation": true,
+    "sharedGeometryValidatorApiAndSave": true,
+    "projectGeometryHardResourceLimits": true,
+    "bootstrapRoutesDisabledByDefault": true,
+    "legacyApiGeoTlsBypassRemoved": true,
+    "localRecoveryIndexedDb": true,
+    "productionAppwriteAuditTooling": true,
+    "securityTxt": true,
+    "loginAccountLock": "3-invalid-credentials-5-hours",
+    "loginInfrastructureErrorsDoNotCountAsPasswordFailures": true,
+    "appwritePublicAccountLoginWithoutAdminApiKey": true,
+    "planAuthorizationServerSide": true,
+    "directLayerDataRespectsAllowedPlans": true,
+    "apiBurstRateLimit": "per-instance-ip-defense-in-depth",
+    "noNewRequiredEnvironmentVariables": false,
+    "noNewRequiredCollections": true,
+    "noNewRequiredScopes": true,
+    "saveFunctionBurstRateLimit": "120-writes-per-minute-per-ip-instance",
+    "geoservicesInternalToken": "fail-closed-min-24-constant-time",
+    "publicReleaseNestedEnvBlocked": true,
+    "publicReleaseSecretScan": true,
+    "repositoryGitignoreHardened": true,
+    "paymentFullPriceRequiredByDefault": true,
+    "commercialFirstAccess": "signed-link-no-password-email",
+    "backupEncryption": "AES-256-GCM-required-by-default",
+    "geobahiaBrowserMixedContent": "proxied-via-geoservices",
+    "accessAuthorization": "signed-jwt-snapshot-revalidated-on-refresh",
+    "accessTokenMaxTtlSeconds": 900,
+    "accessTokenTtlCappedBySubscriptionExpiry": true,
+    "saveFunctionSessionValidation": "local-hs256-jwt-no-auth-me-per-save",
+    "geoservicesBrowserAuthorization": "short-lived-hs256-token-scope-geoservices-proxy",
+    "geoservicesFailClosedWithoutSecret": true,
+    "normalApiRequestsDoNotQueryAppwriteForAuth": true,
+    "refreshRevalidatesAppwriteProfileAndAccount": true,
+    "requiredR19Secrets": [
+      "JWT_SECRET shared by surveyor-api and surveyor-save"
+    ]
+  },
+  "storageIntegrity": {
+    "copyOnWriteProjects": true,
+    "copyOnWriteDocuments": true,
+    "copyOnWriteLayers": true,
+    "copyOnWriteCustomizationAssets": true
+  },
+  "mapRegistryPopup": {
+    "car": true,
+    "sigef": true,
+    "snciWhenActive": true,
+    "helpIcon": "?"
+  },
+  "backupStatus": "logical-backup-tooling-ready; production-backup-and-restore-drill-required",
+  "shapefileExport": {
+    "version": "21.10.0",
+    "destinationProfiles": [
+      "seia-cefir-ba",
+      "sicar-car",
+      "sigef-incra-reference",
+      "qgis-arcgis",
+      "other"
+    ],
+    "sirgas2000": true,
+    "zipRootFiles": true,
+    "geometryValidation": true,
+    "polygonButtonUsesSameFlow": true,
+    "cloudDownloads": [
+      "kml",
+      "txt",
+      "geojson",
+      "csv",
+      "shapefile"
+    ],
+    "legacyDxfMenuRemoved": true,
+    "compactModal": true
+  },
+  "version": "21.11.5",
+  "title": "Surveyor v21.11.5 — R19 Segurança, Cota e Limpeza",
+  "summary": "R19 reduz consultas repetidas ao Appwrite com autorização por snapshot JWT assinado, autentica o GeoServices Cloudflare, mantém validação de plano/expiração no login e refresh e remove resíduos legados com gate completo.",
+  "consolidationRev11": {
+    "stability": true,
+    "performance": true,
+    "availability": true,
+    "compatibility": true,
+    "technicalCleanup": true,
+    "loginNonBlockingSessionWarmup": true,
+    "deduplicatedConcurrentGets": true,
+    "customizationAvoidsUnchangedAssetReupload": true,
+    "lazyAdminDocumentLibraries": true,
+    "optimizedLoginImagesWebp": true,
+    "apiParallelIdentityReads": true,
+    "apiPlanRuntimeCacheSeconds": 60
+  },
+  "adminAi": {
+    "version": "rev15",
+    "textModel": "OPENROUTER_MODEL",
+    "visionModel": "OPENROUTER_VISION_MODEL",
+    "imageInput": true,
+    "imageMaxClientBytes": 1258291,
+    "browserDictation": true,
+    "audioUploadedToSurveyor": false,
+    "audioUploadedToOpenRouter": false
+  },
+  "saveFunction": {
+    "version": "2.2.2-security-safe-r2",
+    "provider": "Appwrite Functions",
+    "active": true,
+    "publicEndpoint": "https://6a7bce66000fc9c90d88.nyc.appwrite.run",
+    "deployment": {
+      "source": "GitHub",
+      "branch": "main",
+      "rootDirectory": "functions/surveyor-save",
+      "entrypoint": "src/main.js",
+      "runtime": "node-22"
+    },
+    "purpose": "Cloud Save isolado",
+    "authAuthority": "JWT HS256 local assinado pela surveyor-api; Appwrite revalidado no login/refresh",
+    "minimalRouteSurface": true,
+    "clientTransport": "POST text/plain no-preflight envelope v1",
+    "jwtSecretDuplicated": true,
+    "explicitServerApiKey": true,
+    "jwtSecretNote": "JWT_SECRET deve ter exatamente o mesmo valor na surveyor-api e surveyor-save; somente variável de ambiente, nunca frontend/repositório."
+  },
+  "hardening2111": {
+    "criticalSecurityFixesApplied": true,
+    "firstAccessEnforced": true,
+    "revokedShareCannotFallbackToAnotherShare": true,
+    "trustedProxyIpPriority": [
+      "cf-connecting-ip",
+      "x-real-ip",
+      "x-forwarded-for:first"
+    ],
+    "customizationImageLimits": true,
+    "publicOrderPiiMasked": true,
+    "adminAiAnonymizedByDefault": true,
+    "mapReferenceLayersNotAutoPromotedForEditing": true,
+    "serverGeometryValidation": true,
+    "ciRunsFullTestSuite": true,
+    "dependencyToolingPinned": true,
+    "structuralFollowUps": [
+      "remove-unsafe-inline-style-csp",
+      "vendor-or-sri-external-cdns",
+      "reduce-innerHTML-and-document.write",
+      "split-large-js-modules",
+      "production-backup-and-restore-drill",
+      "browser-e2e-suite"
+    ],
+    "persistentLoginPasswordResetAndShareRateLimits": true,
+    "customizationWebsiteHttpsOnlyInProduction": true,
+    "securityRateLimitStorePreserved": true
+  },
+  "mapUx2112": {
+    "blockedUserSessionRevocation": true,
+    "sessionHeartbeatVisibleSeconds": 60,
+    "sessionHeartbeatHiddenSeconds": 300,
+    "forcedLogoutOnNextAuthenticated401": true,
+    "iconOnlyMapToolbar": true,
+    "iconOnlyNavigationWithPerItemHoverLabel": true,
+    "smallerMapPanelToggle": true,
+    "bottomMetricsBoxRemoved": true,
+    "metricScaleControl": true,
+    "orientationControl": true,
+    "viewRotationDegreesStep": 15,
+    "rotatedViewPanning": true,
+    "north2dReset": true,
+    "deviceOrientationSupport": true,
+    "verticalZoomControl": true,
+    "rotationAutoResetsBeforeGeometryEditing": true,
+    "gpsPointTool": {
+      "deviceGeolocation": true,
+      "mapClick": true,
+      "manualCoordinates": true,
+      "supportedCrs": [
+        "EPSG:4326",
+        "EPSG:4674",
+        "EPSG:31984"
+      ],
+      "storedAsProjectFeature": true,
+      "accuracyMetadata": true
+    }
+  },
+  "mapUx2113": {
+    "classicLayersButton": true,
+    "baseMapIconMenu": true,
+    "downloadProjectActiveCaption": true,
+    "sideToolButtonsIconOnly": true,
+    "sideToolHoverLabels": true,
+    "transparentOrientationControls": true,
+    "smoothViewRotation": true,
+    "gpsAndSessionFeaturesPreservedFrom2112": true
+  },
+  "mapUx2114": {
+    "yellowGpsPin": true,
+    "gpsPanelNonModal": true,
+    "gpsPanelDraggable": true,
+    "mapRemainsInteractiveWithGpsPanel": true,
+    "directMapClickFillsCoordinates": true,
+    "directMapClickShowsDraftPin": true,
+    "gpsPinClickReopensEditor": true,
+    "gpsPinDraggable": true,
+    "drawCadSigTerrainSubmenusIconOnly": true,
+    "submenuHoverLabels": true
+  },
+  "mapQuickTools": {
+    "enabled": true,
+    "primaryTools": [
+      "polygon",
+      "gps-point"
+    ],
+    "expandable": true,
+    "iconOnly": true,
+    "tooltips": true,
+    "reusesExistingToolHandlers": true
+  },
+  "mapPointImport": {
+    "draggablePanel": true,
+    "persistentPanelPositionInSession": true,
+    "mapClickCreatesYellowPinPreview": true,
+    "kmlPointImport": true,
+    "csvPointImport": true,
+    "xlsxPointImport": true,
+    "batchFitBounds": true,
+    "maxImportPoints": 5000
+  },
+  "commercialBuild": "21.11.5-commercial-ready-1",
+  "commercialReadiness": {
+    "targetScore": 8,
+    "packageTechnicalScore": 8.5,
+    "productionCertificationPendingExternalChecks": true,
+    "codeControls": {
+      "geometryValidationApiSaveParity": true,
+      "refreshReplayProtection": true,
+      "indexedDbRecoveryDrafts": true,
+      "logicalBackupExportVerifyRestore": true,
+      "appwritePermissionAuditScript": true,
+      "githubValidatedDeployWorkflow": true,
+      "scheduledPublicSmokeMonitor": true,
+      "privacyTermsSecurityPages": true,
+      "incidentResponseRunbook": true,
+      "backupRestoreRunbook": true,
+      "dependencyAuditHighSeverity": true,
+      "scriptCspUnsafeInlineRemoved": true,
+      "htmlInlineEventHandlersRemoved": true,
+      "secretPatternScanInTestSuite": true,
+      "backupCorruptionTest": true,
+      "paymentSandboxDisabledByDefault": true,
+      "printFlowsCompatibleWithStrictScriptCsp": true
+    },
+    "externalActivationRequired": [
+      "set-github-pages-source-to-github-actions",
+      "run-production-appwrite-permission-audit",
+      "run-first-production-backup-and-restore-drill",
+      "redeploy-changed-appwrite-functions",
+      "review-legal-pages-before-broad-sale"
+    ],
+    "knownFollowUps": [
+      "browser-e2e-suite",
+      "remove-unsafe-inline-style-csp",
+      "internalize-or-sri-third-party-cdns",
+      "modularize-large-javascript-files"
+    ]
+  },
+  "operations": {
+    "publicSmokeEveryMinutes": 30,
+    "productionSmokeWorkflow": ".github/workflows/production-smoke.yml",
+    "productionSmokeScript": "scripts/smoke-production.mjs",
+    "backupScript": "scripts/backup.mjs",
+    "backupVerifyScript": "scripts/backup-verify.mjs",
+    "restoreScript": "scripts/restore.mjs",
+    "appwriteAuditScript": "scripts/audit-production.mjs",
+    "securityContact": "suporte@surveyorr.com.br"
+  },
+  "maintenancePatch": "2026-08-31-security-safe-r3-r4",
+  "homeCards": {
+    "active": true,
+    "route": "/admin-cards/",
+    "defaultCards": 0,
+    "behavior": "hidden-when-empty"
+  },
+  "consultaCar": {
+    "active": true,
+    "route": "/consulta-car/",
+    "provider": "SICAR/CAR public WFS + CEFIR/INEMA official WFS; no embedded cadastral database",
+    "dataRoot": null,
+    "states": [
+      "BA"
+    ],
+    "municipalityFiles": 0,
+    "records": null,
+    "workerRequired": false,
+    "r2RequiredForSearch": false,
+    "geometryIncludedInLocalCsv": false,
+    "geometrySource": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+    "geometryFallback": "SICAR WMS filtered by cod_imovel",
+    "statsBehavior": "local static totals hidden; current cadastral data is requested online"
+  },
+  "repositoryCleanup": {
+    "agrGestaoArtifactsRemoved": true,
+    "electronDesktopStackRemoved": true
+  },
+  "securitySafeRelease": {
+    "version": "R3+R4",
+    "base": "R2",
+    "noNewRequiredEnv": true,
+    "noNewRequiredCollections": true,
+    "noNewRequiredScopes": true,
+    "loginAttempts": 3,
+    "loginLockHours": 5,
+    "transientAuthTokens": "HttpOnly cookies on official domain; local-dev token fallback",
+    "auditIntegrity": "HMAC-SHA256 using existing JWT_SECRET with domain separation"
+  },
+  "commercial": {
+    "publicPlansPage": "/planos/",
+    "currency": "BRL",
+    "activationFlow": "attended",
+    "supportRoute": "/suporte/",
+    "officialPrices": {
+      "basic": {
+        "annualCents": 39900,
+        "users": 1,
+        "projects": 20,
+        "storageBytes": 2147483648
+      },
+      "plus": {
+        "annualCents": 69900,
+        "users": 2,
+        "projects": 100,
+        "storageBytes": 21474836480
+      },
+      "pro": {
+        "annualCents": 119900,
+        "users": 4,
+        "projects": null,
+        "storageBytes": 107374182400
+      }
+    },
+    "addons": {
+      "pricing": "annual-proposal",
+      "whiteLabel": "proposal"
+    },
+    "billingPolicy": "annual-only",
+    "legacyMonthlyPlans": "inactive-compatibility-only"
+  },
+  "commercialHardeningRevision": "R21",
+  "geobahiaCatalog": {
+    "stateSelector": true,
+    "defaultState": "BA",
+    "allStatesAvailable": true,
+    "showAllLocationsOption": false,
+    "nationalCoverageSupported": true,
+    "bahiaOfficialTechnicalLayers": 82,
+    "sicarStatePropertyLayers": 27,
+    "propertyBoundarySource": "CAR / SICAR oficial por UF",
+    "source": "GeoBahia / INEMA para camadas BA + CAR/SICAR nacional para limites de propriedade",
+    "wmsViaSecureProxy": true,
+    "statePreferencePersistedPerAccount": true,
+    "stabilityBaseline": "R20 + migração SICAR nacional R21"
+  },
+  "releaseChannel": "candidate"
+}

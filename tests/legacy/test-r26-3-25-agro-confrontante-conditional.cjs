@@ -1,0 +1,12 @@
+const fs=require('fs');
+const assert=require('assert');
+const memorial=fs.readFileSync('assets/js/features/memorial/app.js','utf8');
+const templates=fs.readFileSync('assets/js/features/memorial/templates.js','utf8');
+const html=fs.readFileSync('memorial/index.html','utf8');
+assert(memorial.includes("const confrontantSection=confrontants.length?"),'Agro+ deve ocultar seção de confrontantes quando não houver dados.');
+assert(!memorial.includes('while(confrontants.length<4)'),'Agro+ não pode criar linhas vazias para completar quatro confrontantes.');
+assert(memorial.includes('agro-confrontants-${confrontants.length}'),'Grade deve refletir somente a quantidade real de confrontantes.');
+assert(templates.includes('stripAgroEmptyConfrontantSection'),'DOCX Agro+ deve remover a seção vazia de confrontantes.');
+assert(templates.includes("if(hasConfrontant"),'DOCX deve preservar a seção quando houver confrontante real.');
+assert(html.includes('agro-confrontant-conditional-r25'),'Página deve invalidar cache do gerador corrigido.');
+console.log('OK: R26.3.25 Agro+ oculta linhas/seção de confrontantes vazios.');

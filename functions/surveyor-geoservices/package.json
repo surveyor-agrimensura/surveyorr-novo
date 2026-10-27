@@ -1,0 +1,14 @@
+{
+  "name": "surveyor-geoservices",
+  "version": "1.0.0-rc.185.74",
+  "type": "module",
+  "main": "src/main.js",
+  "description": "Surveyor GeoServices Appwrite fallback com CORS por allowlist.",
+  "scripts": {
+    "check": "node --check src/main.js"
+  },
+  "dependencies": {
+    "shpjs": "6.1.0"
+  },
+  "surveyorRelease": "1.0.0-rc.185.74"
+}

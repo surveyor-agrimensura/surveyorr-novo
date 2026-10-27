@@ -1,0 +1,286 @@
+/* Biblioteca de ícones documentais do SURVEYORR.
+   Somente SVGs selecionados (Lucide + Tabler), decorativos; texto e aria-label continuam canônicos.
+   Os SVGs de ferramentas existentes são preservados no DOM como fallback sem JS. */
+:where(body.sv-document-workspace-page) :where(
+  .sv-doc-save-changes,
+  .sv-doc-draft-btn,
+  .sv-doc-nav-btn,
+  .sv-doc-compact-footer-actions .export-menu > .btn,
+  .sv-doc-draft-dock .export-menu > .btn,
+  .sv-prancha-footer-download-trigger,
+  .sv-prancha-footer-download-item,
+  .memorial-sign-tools .btn,
+  .sv-memorial-personalization-tabs button,
+  .sv-editor-full-button
+){
+  --sv-ui-icon-size:14px;
+}
+/* A mesma caixa de texto é mantida: o SVG não recebe eventos nem substitui a ação. */
+body.sv-document-workspace-page .sv-doc-save-changes,
+body.sv-document-workspace-page .sv-doc-draft-btn,
+body.sv-document-workspace-page .sv-doc-nav-btn,
+body.sv-document-workspace-page .sv-prancha-footer-download-trigger,
+body.sv-document-workspace-page .sv-doc-compact-footer-actions .export-menu > .btn,
+body.sv-document-workspace-page .sv-doc-draft-dock .export-menu > .btn,
+body[data-page="memorial.html"] .memorial-sign-tools .memorial-sign-control button[data-icon-role]{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+body.sv-document-workspace-page .sv-doc-save-changes::before,
+body.sv-document-workspace-page .sv-doc-draft-btn::before,
+body.sv-document-workspace-page .sv-doc-nav-btn::before,
+body.sv-document-workspace-page .sv-prancha-footer-download-trigger::before,
+body.sv-document-workspace-page .sv-doc-compact-footer-actions .export-menu > .btn::before,
+body.sv-document-workspace-page .sv-doc-draft-dock .export-menu > .btn::before {
+  content:"";display:inline-block;flex:0 0 14px;width:14px;height:14px;
+  background-color:currentColor;
+  -webkit-mask-image:var(--sv-ui-icon);mask-image:var(--sv-ui-icon);
+  -webkit-mask-position:center;mask-position:center;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-size:contain;mask-size:contain;
+  pointer-events:none;
+}
+body.sv-document-workspace-page .sv-doc-save-changes,
+body.sv-document-workspace-page .sv-doc-draft-btn:not(.is-restore){--sv-ui-icon:url('/assets/icons/ui/lucide-save.svg')}
+body.sv-document-workspace-page .sv-doc-draft-btn.is-restore{--sv-ui-icon:url('/assets/icons/ui/lucide-refresh-cw.svg')}
+body.sv-document-workspace-page .sv-doc-nav-btn.is-primary{--sv-ui-icon:url('/assets/icons/ui/lucide-arrow-right.svg')}
+body.sv-document-workspace-page .sv-doc-nav-btn.is-secondary{--sv-ui-icon:url('/assets/icons/ui/lucide-arrow-left.svg')}
+body.sv-document-workspace-page .sv-prancha-footer-download-trigger,
+body.sv-document-workspace-page .sv-doc-compact-footer-actions .export-menu > .btn,
+body.sv-document-workspace-page .sv-doc-draft-dock .export-menu > .btn{--sv-ui-icon:url('/assets/icons/ui/lucide-download.svg')}
+/* A grade das opções da Prancha tem duas colunas; aplicamos o ícone dentro
+   da etiqueta de formato, sem adicionar uma terceira célula ao menu. */
+body.sv-document-workspace-page .sv-prancha-footer-download-item span{
+  display:inline-flex;align-items:center;justify-content:center;gap:3px;
+}
+/* Ações reais do editor técnico de pranchas/croquis: apenas comandos com rótulo. */
+body.sv-document-inline-personalization [data-editor-action="reset-signature-position"],
+body.sv-document-inline-personalization [data-editor-action="fit"],
+body.sv-document-inline-personalization [data-editor-action="import-signature"],
+body.sv-document-inline-personalization [data-editor-action="remove-imported-signature"]{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+}
+body.sv-document-inline-personalization [data-editor-action="reset-signature-position"]::before,
+body.sv-document-inline-personalization [data-editor-action="fit"]::before,
+body.sv-document-inline-personalization [data-editor-action="import-signature"]::before,
+body.sv-document-inline-personalization [data-editor-action="remove-imported-signature"]::before{
+  content:"";display:inline-block;width:14px;height:14px;flex:none;
+  background-color:currentColor;-webkit-mask:var(--sv-ui-icon) center / contain no-repeat;mask:var(--sv-ui-icon) center / contain no-repeat;
+  pointer-events:none;
+}
+body.sv-document-inline-personalization [data-editor-action="reset-signature-position"]{--sv-ui-icon:url('/assets/icons/ui/lucide-refresh-cw.svg')}
+body.sv-document-inline-personalization [data-editor-action="fit"]{--sv-ui-icon:url('/assets/icons/ui/lucide-zoom-in.svg')}
+body.sv-document-inline-personalization [data-editor-action="import-signature"]{--sv-ui-icon:url('/assets/icons/ui/lucide-file-down.svg')}
+body.sv-document-inline-personalization [data-editor-action="remove-imported-signature"]{--sv-ui-icon:url('/assets/icons/ui/lucide-trash.svg')}
+/* Aba de personalização do memorial: mesma sequência, rótulos e comportamento. */
+body[data-page="memorial.html"] [data-memorial-personalization-tool]{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+}
+body[data-page="memorial.html"] [data-memorial-personalization-tool]::before{
+  content:"";display:inline-block;flex:none;width:14px;height:14px;background-color:currentColor;
+  -webkit-mask:var(--sv-ui-icon) center / contain no-repeat;mask:var(--sv-ui-icon) center / contain no-repeat;
+  pointer-events:none;
+}
+body[data-page="memorial.html"] [data-memorial-personalization-tool="memorial"]{--sv-ui-icon:url('/assets/icons/ui/tabler-file-description.svg')}
+body[data-page="memorial.html"] [data-memorial-personalization-tool="map"]{--sv-ui-icon:url('/assets/icons/ui/tabler-map-2.svg')}
+body[data-page="memorial.html"] [data-memorial-personalization-tool="signature"]{--sv-ui-icon:url('/assets/icons/ui/tabler-signature.svg')}
+/* O trilho técnico já possuía desenhos inline. Troca-se só a representação
+   quando existe um ícone mapeado; caso contrário, o SVG original permanece visível. */
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="zoom"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="sheet"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="elements"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="miniMap"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="map"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="vertices"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="lines"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="servitudes"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="confrontantes"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="appearance"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="dimensions"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="signature"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="ai"] svg,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="history"] svg{display:none}
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="zoom"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="sheet"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="elements"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="miniMap"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="map"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="vertices"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="lines"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="servitudes"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="confrontantes"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="appearance"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="dimensions"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="signature"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="ai"]::before,
+body.sv-document-inline-personalization .sv-editor-tool-rail .sv-editor-tool-button[data-editor-tool="history"]::before{
+  content:"";display:block;width:18px;height:18px;flex:none;margin:auto;
+  background-color:currentColor;-webkit-mask:var(--sv-ui-icon) center / contain no-repeat;mask:var(--sv-ui-icon) center / contain no-repeat;
+  pointer-events:none;
+}
+body.sv-document-inline-personalization [data-editor-tool="zoom"]{--sv-ui-icon:url('/assets/icons/ui/lucide-zoom-in.svg')}
+body.sv-document-inline-personalization [data-editor-tool="sheet"]{--sv-ui-icon:url('/assets/icons/ui/tabler-file-description.svg')}
+body.sv-document-inline-personalization [data-editor-tool="elements"]{--sv-ui-icon:url('/assets/icons/ui/tabler-layers-intersect.svg')}
+body.sv-document-inline-personalization [data-editor-tool="miniMap"]{--sv-ui-icon:url('/assets/icons/ui/tabler-map-2.svg')}
+body.sv-document-inline-personalization [data-editor-tool="map"]{--sv-ui-icon:url('/assets/icons/ui/tabler-map-2.svg')}
+body.sv-document-inline-personalization [data-editor-tool="vertices"]{--sv-ui-icon:url('/assets/icons/ui/tabler-polygon.svg')}
+body.sv-document-inline-personalization [data-editor-tool="lines"]{--sv-ui-icon:url('/assets/icons/ui/tabler-vector.svg')}
+body.sv-document-inline-personalization [data-editor-tool="servitudes"]{--sv-ui-icon:url('/assets/icons/ui/tabler-route.svg')}
+body.sv-document-inline-personalization [data-editor-tool="confrontantes"]{--sv-ui-icon:url('/assets/icons/ui/tabler-layers-intersect.svg')}
+body.sv-document-inline-personalization [data-editor-tool="appearance"]{--sv-ui-icon:url('/assets/icons/ui/tabler-palette.svg')}
+body.sv-document-inline-personalization [data-editor-tool="dimensions"]{--sv-ui-icon:url('/assets/icons/ui/tabler-ruler-measure.svg')}
+body.sv-document-inline-personalization [data-editor-tool="signature"]{--sv-ui-icon:url('/assets/icons/ui/tabler-signature.svg')}
+body.sv-document-inline-personalization [data-editor-tool="ai"]{--sv-ui-icon:url('/assets/icons/ui/tabler-sparkles.svg')}
+body.sv-document-inline-personalization [data-editor-tool="history"]{--sv-ui-icon:url('/assets/icons/ui/lucide-undo.svg')}
+
+/* Consistência visual dos ícones nos comandos de documentos.
+   Nunca substituir o texto do botão, que continua sendo o fallback acessível. */
+body.sv-document-workspace-page .sv-doc-save-changes::before,
+body.sv-document-workspace-page .sv-doc-draft-btn::before,
+body.sv-document-workspace-page .sv-doc-nav-btn::before,
+body.sv-document-workspace-page .sv-prancha-footer-download-trigger::before,
+body.sv-document-workspace-page .sv-doc-compact-footer-actions .export-menu > .btn::before,
+body.sv-document-workspace-page .sv-doc-draft-dock .export-menu > .btn::before{
+  width:16px;height:16px;flex-basis:16px;
+}
+body[data-page="memorial.html"] [data-memorial-personalization-tool]::before{
+  width:16px;height:16px;
+}
+
+
+/* SURVEYORR: modo compacto de ações documentais, aprovado para Mapas/Croquis e Pranchas.
+   A fonte de verdade de ações e rótulos permanece nos controladores originais. */
+body.sv-document-icon-mode .sv-doc-module-title h1{
+  font-weight:650;letter-spacing:-.02em;
+}
+body.sv-document-icon-mode .sv-doc-tab.is-active{font-weight:650;}
+body.sv-document-icon-mode .sv-doc-step-head h2,
+body.sv-document-icon-mode .sv-doc-fields label,
+body.sv-document-icon-mode .sv-editor-tool-label{font-weight:600;}
+
+/* A seta funciona igual ao botão original, apenas com a área de toque circular. */
+body.sv-document-icon-mode .sv-doc-nav-btn,
+body.sv-document-icon-mode.sv-document-compact-model .sv-doc-nav-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:44px;min-width:44px;height:44px;min-height:44px;
+  padding:0;border-radius:50%;font-size:0;line-height:0;
+}
+body.sv-document-icon-mode .sv-doc-nav-btn::before{width:19px;height:19px;flex-basis:19px;}
+
+/* Botões de rodapé somente com ícone; os nomes seguem presentes no DOM e na acessibilidade. */
+body.sv-document-icon-mode .sv-doc-draft-btn,
+body.sv-document-icon-mode .sv-doc-save-changes,
+body.sv-document-icon-mode .sv-prancha-footer-download-trigger,
+body.sv-document-icon-mode .sv-doc-compact-footer-actions .export-menu > .btn,
+body.sv-document-icon-mode .sv-doc-draft-dock .export-menu > .btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:40px;min-width:40px;height:40px;min-height:40px;
+  padding:0;border-radius:9px;font-size:0;line-height:0;white-space:nowrap;
+  overflow:visible;
+}
+body.sv-document-icon-mode .sv-doc-draft-btn::before,
+body.sv-document-icon-mode .sv-doc-save-changes::before,
+body.sv-document-icon-mode .sv-prancha-footer-download-trigger::before{
+  flex-basis:19px;width:19px;height:19px;
+}
+body.sv-document-icon-mode .sv-doc-save-changes{width:48px;min-width:48px;}
+body.sv-document-icon-mode .sv-doc-save-changes{--sv-ui-icon:url('/assets/icons/ui/lucide-save-all.svg');}
+body.sv-document-icon-mode .sv-doc-draft-btn.is-restore{--sv-ui-icon:url('/assets/icons/ui/lucide-rotate-ccw.svg');}
+body.sv-document-icon-mode .sv-doc-draft-btn:not(.is-restore){--sv-ui-icon:url('/assets/icons/ui/lucide-save.svg');}
+body.sv-document-icon-mode .sv-doc-draft-btn.is-saved span:not(.sv-doc-draft-mark){display:none;}
+body.sv-document-icon-mode .sv-doc-draft-mark{
+  position:absolute;right:7px;top:6px;display:block;width:10px;height:10px;
+  background:#166534;border-radius:2px;box-shadow:0 0 0 2px #eaf8ef;
+  -webkit-mask:url('/assets/icons/ui/lucide-file-pen-line.svg') center / contain no-repeat;
+  mask:url('/assets/icons/ui/lucide-file-pen-line.svg') center / contain no-repeat;
+  pointer-events:none;
+}
+
+/* As ferramentas superiores exibem só SVG Lucide/Tabler reais com title/aria-label.
+   Preservamos os captions no DOM para compatibilidade de leitura. */
+body.sv-document-icon-mode.sv-document-inline-personalization .sv-confrontante-editor-modal.is-inline-beta .sv-editor-tool-rail{
+  position:relative;z-index:4;overflow:visible;background:#fff;
+}
+body.sv-document-icon-mode.sv-document-inline-personalization .sv-confrontante-editor-modal.is-inline-beta .sv-editor-tool-button{
+  min-height:48px;height:48px;padding:6px;border-right:0;
+  font-size:0;background:#fff;border-radius:8px 8px 0 0;
+}
+body.sv-document-icon-mode.sv-document-inline-personalization .sv-confrontante-editor-modal.is-inline-beta .sv-editor-tool-button .sv-editor-tool-caption{
+  display:none;
+}
+body.sv-document-icon-mode.sv-document-inline-personalization .sv-confrontante-editor-modal.is-inline-beta .sv-editor-tool-button::before{
+  width:23px;height:23px;
+}
+body.sv-document-icon-mode.sv-document-inline-personalization .sv-confrontante-editor-modal.is-inline-beta .sv-editor-tool-button.active{
+  background:#edf4ff;border-bottom-color:#1765df;
+}
+
+/* Comandos do rodapé do editor técnico: mesma ação, ícones originais do pack. */
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="reset"],
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="cancel"],
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="save"]{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:40px;min-width:40px;height:40px;min-height:40px;
+  padding:0;border-radius:9px;font-size:0;line-height:0;overflow:visible;
+}
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="save"]{
+  width:48px;min-width:48px;
+}
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="reset"]::before,
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="cancel"]::before,
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="save"]::before{
+  content:"";display:block;width:19px;height:19px;flex:none;
+  background:currentColor;
+  -webkit-mask:var(--sv-ui-icon) center / contain no-repeat;
+  mask:var(--sv-ui-icon) center / contain no-repeat;
+  pointer-events:none;
+}
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta [data-editor-action="reset"]{--sv-ui-icon:url('/assets/icons/ui/lucide-rotate-ccw.svg');}
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta [data-editor-action="cancel"]{--sv-ui-icon:url('/assets/icons/ui/lucide-x.svg');}
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta [data-editor-action="save"]{--sv-ui-icon:url('/assets/icons/ui/lucide-save-all.svg');}
+/* Botões históricos já usam ícones de texto; trocamos pelo SVG real, sem alterar eventos. */
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="undo"],
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="redo"]{
+  position:relative;font-size:0;line-height:0;
+}
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="undo"]{--sv-ui-icon:url('/assets/icons/ui/lucide-undo-2.svg');}
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="redo"]{--sv-ui-icon:url('/assets/icons/ui/lucide-redo-2.svg');}
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="undo"]::before,
+body.sv-document-icon-mode .sv-confrontante-editor-modal.is-inline-beta .sv-confrontante-editor-footer [data-editor-action="redo"]::before{
+  content:"";display:block;width:18px;height:18px;margin:auto;background:currentColor;
+  -webkit-mask:var(--sv-ui-icon) center / contain no-repeat;
+  mask:var(--sv-ui-icon) center / contain no-repeat;
+}
+body.sv-document-icon-mode .sv-doc-nav-btn:focus-visible,
+body.sv-document-icon-mode .sv-doc-draft-btn:focus-visible,
+body.sv-document-icon-mode .sv-doc-save-changes:focus-visible,
+body.sv-document-icon-mode .sv-confrontante-editor-footer button:focus-visible,
+body.sv-document-icon-mode .sv-editor-tool-button:focus-visible{
+  outline:2px solid #1765df;outline-offset:2px;
+}
+@media (max-width:640px){
+  body.sv-document-icon-mode .sv-doc-draft-btn,
+  body.sv-document-icon-mode .sv-doc-save-changes{width:38px;min-width:38px;height:38px;min-height:38px;}
+}
+
+/* RC185.65: corrigir especificidade das regras legadas de rodapé.
+   O CSS de documents.css aplica font-size:11px no Download do modelo
+   compacto, vencendo o modo icon-only. Manter apenas o SVG do pacote;
+   texto canônico segue no DOM, com title/aria-label para acessibilidade. */
+body.sv-document-icon-mode.sv-document-compact-model.sv-document-workspace-page .sv-doc-compact-footer-actions > .export-menu > .btn,
+body.sv-document-icon-mode.sv-document-compact-model.sv-document-workspace-page .sv-doc-draft-dock .export-menu > .btn,
+body[data-page="pranchas.html"].sv-document-icon-mode.sv-document-workspace-page .sv-prancha-footer-download-trigger{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;min-width:40px;max-width:40px;
+  height:40px;min-height:40px;padding:0;
+  border-radius:9px;font-size:0;line-height:0;font-weight:400;
+  gap:0;white-space:nowrap;
+}
+body.sv-document-icon-mode.sv-document-compact-model.sv-document-workspace-page .sv-doc-compact-footer-actions > .export-menu > .btn::before,
+body.sv-document-icon-mode.sv-document-compact-model.sv-document-workspace-page .sv-doc-draft-dock .export-menu > .btn::before,
+body[data-page="pranchas.html"].sv-document-icon-mode.sv-document-workspace-page .sv-prancha-footer-download-trigger::before{
+  width:19px;height:19px;flex-basis:19px;
+}
+/* A seta decorativa antiga não deve reaparecer como texto no botão icon-only. */
+body[data-page="pranchas.html"].sv-document-icon-mode.sv-document-workspace-page .sv-prancha-footer-download-trigger::after{
+  content:none;
+}
