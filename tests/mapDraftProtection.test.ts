@@ -43,7 +43,7 @@ describe('proteção de desenhos incompletos no mapa', () => {
 
   it('mantém cancelamento explícito pelo Escape e pelo menu de contexto', () => {
     expect(page).toMatch(/if\(toolRef\.current!=='pan'\)await changeTool\('pan',true\)/);
-    expect(page).toContain("await changeTool('pan',true);setMapContext(null)");
+    expect(page).toContain("if(await changeTool('pan',true)){setPointDialog(false);setMapContext(null);}}}>Cancelar ferramenta atual</button>");
     expect(page).toContain('Desenho em andamento cancelado.');
   });
 
