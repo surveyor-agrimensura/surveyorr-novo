@@ -135,15 +135,14 @@ describe('gestos dos editores em telas de toque', () => {
     expect(page).not.toMatch(/onMouseMove=\{e\s*=>/);
   });
 
-  it('não mostra avisos internos de funções pendentes na interface do mapa', () => {
+  it('mantém a bússola simples e não mostra avisos internos de funções pendentes', () => {
     const page = readSource('src/features/map/OperationalMap.tsx');
     const css = readSource('src/features/map/map.css');
 
-    expect(page).toMatch(/className="map-compass-control map-compass-safe map-compass-pad" role="group" aria-label=\{`Rotação do mapa, rumo/);
-    expect(page).toMatch(/aria-label="Orientar o mapa para norte"/);
-    expect(page).toMatch(/aria-label="Orientar o mapa para leste"/);
-    expect(page).toMatch(/aria-label="Orientar o mapa para sul"/);
-    expect(page).toMatch(/aria-label="Orientar o mapa para oeste"/);
+    expect(page).toMatch(/className="map-compass-control map-compass-safe" role="img" aria-label="Orientação do mapa: norte para cima"/);
+    expect(page).toMatch(/className="map-north-readonly" aria-hidden="true">N<\/span>/);
+    expect(page).not.toMatch(/map-compass-pad|Orientar o mapa para (norte|leste|sul|oeste)/);
+    expect(page).not.toMatch(/leaflet-rotate|setBearing|mapBearing/);
     expect(page).not.toMatch(/Motor em migração|temporariamente desativada|map-legacy-pending/);
     expect(css).not.toMatch(/map-legacy-pending|map-pending-dot|map-north-reset|map-export-pending/);
   });

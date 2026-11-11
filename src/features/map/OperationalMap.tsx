@@ -4,9 +4,8 @@ import { projectOwners } from '../projects/projectOwners';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import * as L from 'leaflet';
-import '@tomickigrzegorz/leaflet-rotate';
 import type { Feature, FeatureCollection, Geometry, GeoJsonProperties } from 'geojson';
-import { ArrowLeft, ArrowUp, ArrowRight, ArrowDown, Copy, Check, CheckCircle2, ChevronDown, Download, History, Home, Layers3, LocateFixed, Map as MapIcon, MapPin, Minus, Pentagon, Plus, Route, Save, Share2, Undo2, Redo2, Upload, X, MousePointer2, Circle, Square, Pencil, Trash2, RefreshCw, Ruler, SlidersHorizontal, Mountain, Globe2, Scissors, Crosshair, PanelRightClose, Waypoints, Grid3X3 } from 'lucide-react';
+import { ArrowLeft, Copy, Check, CheckCircle2, ChevronDown, Download, History, Home, Layers3, LocateFixed, Map as MapIcon, MapPin, Minus, Pentagon, Plus, Route, Save, Share2, Undo2, Redo2, Upload, X, MousePointer2, Circle, Square, Pencil, Trash2, RefreshCw, Ruler, SlidersHorizontal, Mountain, Globe2, Scissors, Crosshair, PanelRightClose, Waypoints, Grid3X3 } from 'lucide-react';
 import { useToast } from '../../components/Toast';
 import {requestConfirmation} from '../../components/ConfirmDialogHost';
 import {addRouteTransitionConfirmation} from '../../lib/routeTransitions';
@@ -49,8 +48,6 @@ import { AdvancedTerrainModal, reversePolygonRing, featuresToDxf, type AdvancedT
 type Tool = 'pan'|'point'|'line'|'polygon'|'rectangle'|'circle'|'arc'|'measure';
 type Basemap='default'|'satellite'|'cloudless'|'hybrid'|'streets'|'topo'|'relief';
 type MapFeature=Feature<Geometry,GeoJsonProperties>;
-type RotatableLeafletMap=L.Map&{setBearing:(bearing:number)=>void;getBearing:()=>number};
-type RotatableLeafletMapOptions=L.MapOptions&{rotate?:boolean;dragRotate?:boolean;touchRotate?:boolean;shiftKeyRotate?:boolean};
 const mapToolLabels:Record<Tool,string>={pan:'Mapa',point:'Pontos',line:'Linha',polygon:'Polígono',rectangle:'Retângulo',circle:'Círculo',arc:'Arco',measure:'Medição'};
 const osm='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const satellite='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
@@ -123,7 +120,6 @@ export function OperationalMap(){
  const [mapReady,setMapReady]=useState(false);
  const [coords,setCoords]=useState<[number,number]>(place?.center||[-12.99,-39.6]);
  const [zoom,setZoom]=useState(13);
- const [mapBearing,setMapBearing]=useState(0);
  const [projectName,setProjectName]=useState('');
  const [panel,setPanel]=useState<Panel|'gleba'>(null);
  const [analysisOpen,setAnalysisOpen]=useState(false);
@@ -786,7 +782,7 @@ export function OperationalMap(){
     const center:L.LatLngExpression=urlCenter?[linkLat,linkLng]:
       (savedView?[savedView.lat,savedView.lng]:(selectedCenter&&selectedCenter.length===2&&selectedCenter.every(Number.isFinite)?selectedCenter:[-12.99,-39.6]));
     const initialZoom=urlCenter&&Number.isFinite(linkZoom)?Math.min(20,Math.max(3,linkZoom)):savedView?Math.min(20,Math.max(3,savedView.zoom)):13;
-     const map=L.map(element,{center,zoom:initialZoom,zoomControl:false,attributionControl:false,preferCanvas:true,minZoom:3,maxZoom:20,zoomSnap:.25,dragging:true,rotate:true,dragRotate:false,touchRotate:false,shiftKeyRotate:false} as RotatableLeafletMapOptions) as RotatableLeafletMap;
+     const map=L.map(element,{center,zoom:initialZoom,zoomControl:false,attributionControl:false,preferCanvas:true,minZoom:3,maxZoom:20,zoomSnap:.25,dragging:true});
      map.getContainer().classList.toggle('map-pan-ready',toolRef.current==='pan');
      activeMap=map;mapRef.current=map;
      L.control.attribution({prefix:false,position:'bottomright'}).addTo(map);
@@ -1233,7 +1229,6 @@ export function OperationalMap(){
  };
  const legacyIcons:Record<string,ReactNode>={pointer:<MousePointer2/>,pentagon:<Pentagon/>,route:<Route/>,square:<Square/>,circle:<Circle/>,arc:<Waypoints/>,pin:<MapPin/>,edit:<Pencil/>,points:<Grid3X3/>,minus:<Minus/>,trash:<Trash2/>,refresh:<RefreshCw/>,ruler:<Ruler/>,coordinate:<Crosshair/>,measure:<SlidersHorizontal/>,split:<PanelRightClose/>,terrain:<Mountain/>,profile:<Route/>,cutfill:<Scissors/>,contours:<Layers3/>,spot:<MapPin/>,earth:<Globe2/>,x:<X/>};
  const formatMapCoordinates=(lat:number,lng:number)=>`Lat ${lat.toFixed(7)} · Lon ${lng.toFixed(7)}`;
- const rotateMapTo=(heading:number)=>{const map=mapRef.current as RotatableLeafletMap|null;if(!map)return;const normalized=((heading%360)+360)%360;map.setBearing((360-normalized)%360);setMapBearing(normalized);};
  const copyMapCoordinates=async(lat:number,lng:number)=>{
   const value=`${lat.toFixed(7)}, ${lng.toFixed(7)}`;
   try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);notify('Coordenadas copiadas em latitude, longitude.');return;}throw new Error('Clipboard API indisponível');}
@@ -1341,13 +1336,7 @@ export function OperationalMap(){
   {modal==='verify'&&<ValidationDialog issues={validateIssues()} onClose={()=>setModal(null)}/>}
   {terrainModal&&<AdvancedTerrainModal tool={terrainModal} features={features} selectedFeatureId={selectedFeature} onSelectFeature={id=>setSelectedFeature(id)} onAddFeatures={items=>{setFeatures(current=>{const next=[...current,...items];featureRef.current=next;return next;});}} onUpdateFeature={(id,patch)=>{setFeatures(current=>{const next=current.map(f=>String(f.id)===id?{...f,...patch,properties:{...f.properties,...patch.properties}}:f);featureRef.current=next;return next;});}} onClose={()=>setTerrainModal(null)} notify={notify} />}
   {analysisOpen&&<SpatialAnalysis features={features} onClose={()=>setAnalysisOpen(false)} onOpenGleba={id=>{setAnalysisOpen(false);setSelectedFeature(id);setPanel('gleba');}} onClear={()=>{spatialOverlayRef.current?.remove();spatialOverlayRef.current=null;notify('Comparação visual removida.');}} onOverlay={(a,b)=>{const map=mapRef.current;if(!map)return;spatialOverlayRef.current?.remove();const group=L.layerGroup().addTo(map);spatialOverlayRef.current=group;const matches=[a,b].map(id=>features.find(f=>String(f.id)===id)).filter((f):f is MapFeature=>!!f);matches.forEach((f,i)=>L.geoJSON(f,{interactive:false,style:{color:i===0?'#2563eb':'#ed7100',weight:4,dashArray:i===0?'8 4':'4 3',fillOpacity:.10}}).addTo(group));const bounds=L.featureGroup(group.getLayers()).getBounds();if(bounds.isValid())map.fitBounds(bounds,{padding:[45,45]});setAnalysisOpen(false);notify('Perímetros A (azul) e B (laranja) sobrepostos visualmente. Os dados não foram alterados.');}} onFocus={id=>{setAnalysisOpen(false);setSelectedFeature(id);const f=features.find(item=>String(item.id)===id);if(f){const bounds=L.geoJSON(f as Feature).getBounds();if(bounds.isValid())mapRef.current?.fitBounds(bounds,{padding:[60,60],maxZoom:18});}}}/>}
-   <div className="map-right-controls"><div className="map-compass-control map-compass-safe map-compass-pad" role="group" aria-label={`Rotação do mapa, rumo ${Math.round(mapBearing)} graus`}>
-    <button type="button" className="map-compass-arrow map-compass-arrow--north" aria-label="Orientar o mapa para norte" title="Norte para cima" aria-pressed={mapBearing===0} onClick={()=>rotateMapTo(0)}><ArrowUp size={14}/></button>
-    <button type="button" className="map-compass-arrow map-compass-arrow--east" aria-label="Orientar o mapa para leste" title="Leste para cima" aria-pressed={mapBearing===90} onClick={()=>rotateMapTo(90)}><ArrowRight size={14}/></button>
-    <button type="button" className="map-compass-arrow map-compass-arrow--south" aria-label="Orientar o mapa para sul" title="Sul para cima" aria-pressed={mapBearing===180} onClick={()=>rotateMapTo(180)}><ArrowDown size={14}/></button>
-    <button type="button" className="map-compass-arrow map-compass-arrow--west" aria-label="Orientar o mapa para oeste" title="Oeste para cima" aria-pressed={mapBearing===270} onClick={()=>rotateMapTo(270)}><ArrowLeft size={14}/></button>
-    <button type="button" className="map-compass-center" aria-label="Restaurar norte para cima" title="Restaurar norte para cima" aria-pressed={mapBearing===0} onClick={()=>rotateMapTo(0)}>N</button>
-   </div><button type="button" aria-label="Voltar ao enquadramento inicial do município" title="Voltar ao município" onClick={home}><Home size={19}/></button><button aria-label="Minha localização" title="Minha localização" onClick={locateUser}><LocateFixed size={20}/></button><button title="Aproximar" onClick={()=>mapRef.current?.zoomIn()}><Plus size={22}/></button><button title="Afastar" onClick={()=>mapRef.current?.zoomOut()}><Minus size={22}/></button></div>
+   <div className="map-right-controls"><div className="map-compass-control map-compass-safe" role="img" aria-label="Orientação do mapa: norte para cima" title="Norte para cima"><span className="map-north-readonly" aria-hidden="true">N</span></div><button type="button" aria-label="Voltar ao enquadramento inicial do município" title="Voltar ao município" onClick={home}><Home size={19}/></button><button aria-label="Minha localização" title="Minha localização" onClick={locateUser}><LocateFixed size={20}/></button><button title="Aproximar" onClick={()=>mapRef.current?.zoomIn()}><Plus size={22}/></button><button title="Afastar" onClick={()=>mapRef.current?.zoomOut()}><Minus size={22}/></button></div>
   <div className="map-mini-map" ref={miniMapElement} aria-label="Minimapa de localização"/>
   {(tool==='measure'&&draft.length>0||features.some(f=>String(f.id)===selectedFeature&&f.geometry.type==='LineString'&&f.properties?.name==='Medição'))&&<div className="map-measure-readout" role="status"><Ruler size={16}/><span>{tool==='measure'? 'Medindo distância' : 'Medição concluída'}</span><strong>{(()=>{
    const current=features.find(f=>String(f.id)===selectedFeature&&f.geometry.type==='LineString'&&f.properties?.name==='Medição');

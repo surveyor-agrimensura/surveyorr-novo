@@ -202,6 +202,7 @@ body .workspace-shell.document-workflow{grid-template-rows:minmax(0,1fr)!importa
 .workspace-shell.document-workflow .doc-layout--editing-closed{grid-template-columns:minmax(0,1fr)!important}
 .workspace-shell.document-workflow .doc-layout--editing-closed>.doc-sidebar{display:none}
 .workspace-shell.document-workflow .doc-workflow-bar--croqui~.doc-container .doc-layout:not(.doc-layout--editing-closed){grid-template-columns:minmax(360px,clamp(380px,29vw,560px)) minmax(0,1fr)}
+@media screen and (min-width:981px){.workspace-shell.document-workflow .doc-root.lot-center-page .doc-workflow-bar--croqui~.doc-container .doc-layout:not(.doc-layout--editing-closed){grid-template-columns:minmax(280px,320px) minmax(0,1fr)!important}}
 .doc-step-navigation{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding-top:13px;border-top:1px solid #d8e2ec}
 .doc-sidebar--workflow{display:flex;flex-direction:column}
 .doc-panel--workflow{display:flex;flex:1 0 auto;flex-direction:column;min-height:100%;box-sizing:border-box}

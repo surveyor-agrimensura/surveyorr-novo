@@ -35,7 +35,6 @@
     "test:zoom-overlays": "node tests/zoomCartographicSync.node.cjs"
   },
   "dependencies": {
-    "@tomickigrzegorz/leaflet-rotate": "0.3.0",
     "konva": "^10.0.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.468.0",
