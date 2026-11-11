@@ -18,7 +18,7 @@ describe('gestos dos editores em telas de toque', () => {
     expect(css).toMatch(/\.map-operational-search\{height:44px\}\.map-operational-search button\{width:44px;height:44px;flex:none\}/);
     expect(css).toMatch(/\.map-feature-context button,\.map-basemap-popover button,\.map-export-popover button,\.map-flyout-head button,\.map-flyout-body>button,\.map-point-batch-menu>button,\.map-legacy-tool\{min-height:44px/);
     expect(css).toMatch(/\.map-work-sidebar\{top:114px\}\.map-tools-palette\{top:116px\}/);
-    expect(page).toMatch(/if\(e\.key!=='Escape'\|\|navigationOpen\)return;/);
+    expect(page).toMatch(/if\(e\.key!=='Escape'\)return;/);
     expect(page).toMatch(/if\(mapContext\|\|contextAt\)\{setMapContext\(null\);setContextAt\(null\);return;\}/);
     expect(page).toMatch(/if\(terrainModal\)\{setTerrainModal\(null\);return;\}/);
     expect(page).toMatch(/if\(modal\)\{setModal\(null\);return;\}/);
