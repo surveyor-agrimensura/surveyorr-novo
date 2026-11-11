@@ -232,7 +232,7 @@
  .cq-workspace{flex:1 1 0;min-height:0}
  .cq-viewer{flex:1 1 0;min-height:0}
  .cq-bottom{flex:0 0 auto}
- .cq-bottom button{min-height:44px}
+.cq-subtabs button,.cq-bottom button{min-height:44px}
 }
 @media screen and (max-width:650px){.cq-accordion>summary{min-height:44px;box-sizing:border-box}.cq-more{min-width:44px;min-height:44px}.cq-dialog button{min-height:44px}}
 @media screen and (max-width:650px){.cq-field>input:not([type=range]):not([type=file]),.cq-field>select,.cq-neighbor-row input,.cq-neighbor-row details summary{min-height:44px;box-sizing:border-box}}

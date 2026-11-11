@@ -48,10 +48,13 @@ describe('proteção de desenhos incompletos no mapa', () => {
   });
 
   it('avisa antes de sair do mapa com um desenho provisório', () => {
-    const openSection = findArrowBody('openSection');
+    const navigateBack = findArrowBody('navigateBack');
+    const navigateHome = findArrowBody('navigateHome');
 
-    expect(openSection).toContain('if(!await confirmMapExit())return');
-    expect(openSection.indexOf('confirmMapExit()')).toBeLessThan(openSection.indexOf('navigate(href)'));
+    expect(navigateBack).toContain('if(await confirmMapExit())navigate');
+    expect(navigateHome).toContain('if(await confirmMapExit())navigate');
+    expect(navigateBack.indexOf('confirmMapExit()')).toBeLessThan(navigateBack.indexOf('navigate('));
+    expect(navigateHome.indexOf('confirmMapExit()')).toBeLessThan(navigateHome.indexOf('navigate('));
     expect(page).toContain("addEventListener('beforeunload',protectMapWork)");
     expect(page).toContain("addEventListener('surveyor:before-route-change',protectMapNavigation)");
     expect(page).toContain("addRouteTransitionConfirmation(event,requestConfirmation({title:'Sair do mapa?'");

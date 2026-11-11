@@ -12,7 +12,7 @@ describe('gestos dos editores em telas de toque', () => {
     expect(css).toMatch(/\.map-point-draggable\s*\{[^}]*touch-action:\s*auto/);
     expect(css).toMatch(/\.map-point-draggable\s+\.map-drag-handle\s*\{[^}]*touch-action:\s*none/);
     expect(css).toMatch(/\.map-grab-edge\s*\{[^}]*touch-action:\s*none/);
-    expect(css).toMatch(/@media\(max-width:700px\)\{\.map-hamburger\{width:44px;height:44px\}\.map-tools-group\{height:44px\}\.map-tool\{min-height:44px;min-width:44px;font-size:9px\}/);
+    expect(css).toMatch(/@media\(max-width:700px\)\{\.map-tools-group\{height:44px\}\.map-tool\{min-height:44px;min-width:44px;font-size:9px\}/);
     expect(css).toMatch(/\.map-work-sidebar button,\.map-work-sidebar summary,\.map-feature-details button,\.map-point-dialog button,\.map-modal-backdrop button,\.map-index-modal-backdrop button,\.map-municipality-download button\{min-height:44px\}/);
     expect(css).toMatch(/\.map-drawing-bar button\{min-height:44px;box-sizing:border-box\}/);
     expect(css).toMatch(/\.map-operational-search\{height:44px\}\.map-operational-search button\{width:44px;height:44px;flex:none\}/);
@@ -66,7 +66,7 @@ describe('gestos dos editores em telas de toque', () => {
     expect(css).toMatch(/\.cq-svg\s+\[data-croqui-label\][^}]*touch-action:\s*none/);
     expect(css).toMatch(/\.cq-svg\s+\[data-croqui-road-handle\][^}]*touch-action:\s*none/);
     expect(css).toMatch(/\.cq-svg\s+\[data-croqui-road-body\][^}]*touch-action:\s*none/);
-    expect(css).toMatch(/\.cq-tabs button,\.cq-bottom button\{min-height:44px\}/);
+    expect(css).toMatch(/\.cq-subtabs button,\.cq-bottom button\{min-height:44px\}/);
     expect(css).toMatch(/\.cq-accordion>summary\{min-height:44px/);
     expect(css).toMatch(/\.cq-more\{min-width:44px;min-height:44px\}/);
     expect(css).toMatch(/\.cq-field>input:not\(\[type=range\]\):not\(\[type=file\]\),\.cq-field>select,\.cq-neighbor-row input,\.cq-neighbor-row details summary\{min-height:44px/);
