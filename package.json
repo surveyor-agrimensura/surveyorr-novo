@@ -44,7 +44,7 @@
     "react-dom": "^19.1.0",
     "react-konva": "^19.1.0",
     "react-router-dom": "^7.6.0",
-    "read-excel-file": "^9.3.12",
+    "read-excel-file": "^9.3.14",
     "shpjs": "^6.2.0"
   },
   "devDependencies": {
