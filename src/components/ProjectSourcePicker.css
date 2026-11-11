@@ -1,0 +1,20 @@
+.project-source-picker{display:grid;gap:10px;width:100%;margin:8px 0 12px}
+.project-source-select{display:grid;gap:6px;font-size:11px;font-weight:700;color:#203b60}
+.project-source-select select{width:100%;min-height:40px;padding:8px 10px;border:1px solid #bdcce0;border-radius:7px;background:#fff;color:#163756;font:inherit;font-weight:500}
+.project-import-dropzone{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;padding:12px;border:1px dashed #2565bd;border-radius:7px;background:#fff;color:#1559b7;transition:background .15s,border-color .15s}
+.project-import-dropzone.is-dragging{background:#eaf2fc;border-color:#1558b5;box-shadow:0 0 0 3px #1558b522}
+.project-import-dropzone>svg{flex:none;margin-top:2px}
+.project-import-dropzone>div:not(.file-upload-field){display:grid;gap:4px;flex:1;min-width:180px}
+.project-import-dropzone>div>strong{font-size:12px;font-weight:650}
+.project-import-dropzone>div>small{font-size:11px;line-height:1.4;color:#607997}
+.project-import-control{flex:1 0 100%;margin-top:3px}
+.project-import-control .file-upload-dropzone{min-height:38px;padding:7px 10px}
+.project-import-control .file-upload-dropzone>span{display:flex;align-items:center}
+.project-import-control .file-upload-dropzone strong{font-style:normal;font-weight:700;color:#1559b7}
+.project-source-local{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border:1px solid #c9d7e9;border-radius:7px;background:#f7faff;color:#195cae}
+.project-source-local>div{display:flex;align-items:center;gap:9px;min-width:0}
+.project-source-local>div>span{display:grid;gap:3px;min-width:0}
+.project-source-local strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.project-source-local small{font-size:10px;color:#607997}
+.project-source-local button{display:inline-flex;align-items:center;gap:5px;flex:none;border:1px solid #c9d7e9;border-radius:6px;padding:7px 9px;background:#fff;color:#1559b7;font-size:11px;cursor:pointer}
+.project-import-error{margin:0;color:#b42318;font-size:11px}

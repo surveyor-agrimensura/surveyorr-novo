@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import { validateProjectFeatures } from './geometry-validation.js';
 import { assertCryptoReady, encryptJsonText, decryptJsonText } from './security/crypto.js';
+import { compareAndSwapProjectRow, shouldCleanupStagedFiles } from './save-cas.js';
 
 const APP_VERSION = '1.0.0-rc.185.74';
 const SERVICE_NAME = 'Surveyor Save Function';
@@ -517,11 +518,22 @@ async function listAllRows(name, baseQueries = [], pageSize = 250) {
   return result;
 }
 
-async function getRow(name, idValue) {
+async function getRowWithMode(name, idValue) {
   const id = collectionId(name);
   const legacy = `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents/${encodeURIComponent(idValue)}`;
+  try { return { row: rowData(await awFetch(legacy)), mode: 'documents' }; } catch (error) { if (!isPathUnsupported(error)) throw error; }
+  const table = `/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(idValue)}`;
+  return { row: rowData(await awFetch(table)), mode: 'tables' };
+}
+
+async function getRow(name, idValue, options = {}) {
+  const id = collectionId(name);
+  const legacy = `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents/${encodeURIComponent(idValue)}`;
+  const table = `/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(idValue)}`;
+  if (options.mode === 'documents') return rowData(await awFetch(legacy));
+  if (options.mode === 'tables') return rowData(await awFetch(table));
   try { return rowData(await awFetch(legacy)); } catch (error) { if (!isPathUnsupported(error)) throw error; }
-  return rowData(await awFetch(`/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(idValue)}`));
+  return rowData(await awFetch(table));
 }
 
 async function createRow(name, data, rowId = appwriteId()) {
@@ -531,11 +543,15 @@ async function createRow(name, data, rowId = appwriteId()) {
   return rowData(await rowWriteWithDateRetry(`/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows`, 'POST', { rowId }, data));
 }
 
-async function updateRow(name, rowId, data) {
+async function updateRows(name, queries, data, mode) {
   const id = collectionId(name);
-  const legacy = `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents/${encodeURIComponent(rowId)}`;
-  try { return rowData(await rowWriteWithDateRetry(legacy, 'PATCH', {}, data)); } catch (error) { if (!isPathUnsupported(error)) throw error; }
-  return rowData(await rowWriteWithDateRetry(`/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(rowId)}`, 'PATCH', {}, data));
+  const path = mode === 'tables'
+    ? `/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows`
+    : `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents`;
+  const result = await rowWriteWithDateRetry(path, 'PATCH', { queries }, data);
+  if (Array.isArray(result?.documents)) return { ...result, documents: result.documents.map(rowData) };
+  if (Array.isArray(result?.rows)) return { ...result, rows: result.rows.map(rowData) };
+  return result;
 }
 
 async function createFile(bucket, fileName, content, mimeType = 'application/json', fileId = appwriteId()) {
@@ -605,8 +621,8 @@ function mapProject(row = {}, payload = {}) {
       featureCount: Array.isArray(payload?.features) ? payload.features.length : Number(storedMetadata.featureCount || 0)
     },
     createdAt: row.createdAt || row.$createdAt || null,
-    updatedAt: row.updatedAt || row.$updatedAt || null,
-    revision: String(row.updatedAt || row.$updatedAt || '')
+    updatedAt: row.$updatedAt || row.updatedAt || null,
+    revision: String(row.$updatedAt || row.updatedAt || '')
   };
 }
 
@@ -709,7 +725,7 @@ function canonicalDate(value) {
 function assertRevisionMatches(row, expected) {
   const wanted = canonicalDate(expected);
   if (!wanted) throw statusError(428, 'A revisão do projeto é obrigatória. Reabra o projeto antes de salvar.', { code: 'PROJECT_REVISION_REQUIRED', field: 'updatedAt' });
-  const current = canonicalDate(row?.updatedAt || row?.$updatedAt || '');
+  const current = canonicalDate(row?.$updatedAt || row?.updatedAt || '');
   if (current && current !== wanted) {
     throw statusError(409, 'Este projeto foi alterado em outra sessão. Recarregue antes de salvar novamente.', { code: 'EDIT_CONFLICT', field: 'updatedAt' });
   }
@@ -937,13 +953,15 @@ async function updateProject(user, projectIdValue, transport) {
   const ownerId = resourceOwnerId(user);
   const actorId = actorUserId(user);
   if (!ownerId || !actorId) throw statusError(401, 'Identidade incompleta para salvar projeto.');
-  const row = await getRow('projects', projectIdValue).catch(() => null);
+  const detected = await getRowWithMode('projects', projectIdValue).catch(() => null);
+  const row = detected?.row;
   if (!row || String(row.userId || '') !== ownerId || String(row.status || '').toLowerCase() === 'deleted') {
     throw statusError(404, 'Projeto não encontrado.');
   }
   const body = transport.payload || {};
   const rawInput = body.project && typeof body.project === 'object' ? body.project : {};
-  assertRevisionMatches(row, transport.expectedRevision || rawInput.expectedUpdatedAt || rawInput.expectedRevision || rawInput.revision || rawInput.updatedAt || '');
+  const expectedRevision = transport.expectedRevision || rawInput.expectedUpdatedAt || rawInput.expectedRevision || rawInput.revision || rawInput.updatedAt || '';
+  assertRevisionMatches(row, expectedRevision);
   const input = sanitizeProjectClientInput(rawInput, row.status || 'draft');
 
   const currentPayload = await readProjectPayload(row);
@@ -954,39 +972,53 @@ async function updateProject(user, projectIdValue, transport) {
 
   const now = new Date().toISOString();
   const features = normalizeFeatures(Array.isArray(body.features) ? body.features : currentPayload.features, now);
-  const version = await stageVersion(row, currentPayload, actorId);
-  const oldVersions = Array.isArray(currentMetadata.versions) ? currentMetadata.versions : [];
-  const combined = [...oldVersions, version];
-  const retention = projectVersionRetention();
-  const expired = combined.slice(0, Math.max(0, combined.length - retention));
-  const kept = combined.slice(-retention);
-  const metadata = {
-    ...currentMetadata,
-    ...(currentPayload.project?.metadata && typeof currentPayload.project.metadata === 'object' ? currentPayload.project.metadata : {}),
-    ...(input.metadata && typeof input.metadata === 'object' ? input.metadata : {}),
-    createdByUserId: currentMetadata.createdByUserId || actorId,
-    storageOwnerUserId: currentMetadata.storageOwnerUserId || actorId,
-    workspaceOwnerUserId: ownerId,
-    versions: kept,
-    lastSavedByUserId: actorId,
-    lastSavedByName: String(user.name || '').slice(0, 240),
-    lastSavedAt: now,
-    clientRequestId: transport.idempotencyKey || transport.clientRequestId || ''
-  };
-  const mergedProject = { ...(currentPayload.project || {}), ...input, metadata };
-  const nextPayload = { ...currentPayload, project: mergedProject, metadata, features, updatedAt: now };
-  const nextContent = encryptJsonText(nextPayload, { aad: 'project-payload' });
   const previousStoredContent = row.geojsonFileId
     ? await readFileText(bucketId('project_files'), row.geojsonFileId).catch(() => '')
     : '';
-  await assertStorageCapacity(user, ownerId, actorId, Buffer.byteLength(nextContent, 'utf8'), Buffer.byteLength(previousStoredContent, 'utf8'));
 
   let nextFileId = '';
+  let version = null;
+  let expired = [];
+  let mergedProject;
+  let nextPayload;
+  let nextContent;
   try {
+    version = await stageVersion(row, currentPayload, actorId);
+    const oldVersions = Array.isArray(currentMetadata.versions) ? currentMetadata.versions : [];
+    const combined = [...oldVersions, version];
+    const retention = projectVersionRetention();
+    expired = combined.slice(0, Math.max(0, combined.length - retention));
+    const kept = combined.slice(-retention);
+    const metadata = {
+      ...currentMetadata,
+      ...(currentPayload.project?.metadata && typeof currentPayload.project.metadata === 'object' ? currentPayload.project.metadata : {}),
+      ...(input.metadata && typeof input.metadata === 'object' ? input.metadata : {}),
+      createdByUserId: currentMetadata.createdByUserId || actorId,
+      storageOwnerUserId: currentMetadata.storageOwnerUserId || actorId,
+      workspaceOwnerUserId: ownerId,
+      versions: kept,
+      lastSavedByUserId: actorId,
+      lastSavedByName: String(user.name || '').slice(0, 240),
+      lastSavedAt: now,
+      clientRequestId: transport.idempotencyKey || transport.clientRequestId || ''
+    };
+    mergedProject = { ...(currentPayload.project || {}), ...input, metadata };
+    nextPayload = { ...currentPayload, project: mergedProject, metadata, features, updatedAt: now };
+    nextContent = encryptJsonText(nextPayload, { aad: 'project-payload' });
+    await assertStorageCapacity(user, ownerId, actorId, Buffer.byteLength(nextContent, 'utf8'), Buffer.byteLength(previousStoredContent, 'utf8'));
+
     nextFileId = await createVerifiedFile(`${projectIdValue}-${appwriteId()}.json`, nextContent);
     const patch = projectData(mergedProject, ownerId, now, nextFileId, row);
     delete patch.createdAt;
-    const saved = await updateRow('projects', projectIdValue, patch);
+    const saved = await compareAndSwapProjectRow({
+      rowId: projectIdValue,
+      observedRow: row,
+      data: patch,
+      mode: detected.mode,
+      updateRows: (queries, data, mode) => updateRows('projects', queries, data, mode),
+      getRow: (id, mode) => getRow('projects', id, { mode }),
+      queryEqual: (attribute, values) => Query.equal(attribute, values)
+    });
     if (row.geojsonFileId && row.geojsonFileId !== nextFileId) await deleteFile(bucketId('project_files'), row.geojsonFileId).catch(() => null);
     await cleanupVersionFiles(expired);
     await updateUserActivityPrefs(actorId, {
@@ -998,8 +1030,10 @@ async function updateProject(user, projectIdValue, transport) {
     });
     return { status: 200, project: mapProject(saved, nextPayload), features: features.map((f) => mapFeature(f, projectIdValue, ownerId)) };
   } catch (error) {
-    if (nextFileId) await deleteFile(bucketId('project_files'), nextFileId).catch(() => null);
-    await deleteFile(bucketId('project_files'), version.fileId).catch(() => null);
+    if (shouldCleanupStagedFiles(error)) {
+      if (nextFileId) await deleteFile(bucketId('project_files'), nextFileId).catch(() => null);
+      if (version?.fileId) await deleteFile(bucketId('project_files'), version.fileId).catch(() => null);
+    }
     throw error;
   }
 }

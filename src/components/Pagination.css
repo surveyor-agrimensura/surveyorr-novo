@@ -1,0 +1,15 @@
+.surveyor-pagination{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 20px;border-top:1px solid #d7d7d7;background:#fff;color:#151515;font-size:15px}
+.surveyor-pagination-summary{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.surveyor-pagination-summary label{display:flex;align-items:center;gap:12px}
+.surveyor-pagination-summary select{min-width:72px;min-height:42px;padding:5px 28px 5px 10px;border:0;border-right:2px solid #d2d2d2;border-radius:0;background:#fff;color:#151515;font:inherit;font-size:16px}
+.surveyor-pagination-summary span{padding-left:16px;border-left:1px solid #d2d2d2;font-size:14px}
+.surveyor-pagination-controls{display:flex;align-items:center;gap:6px}
+.surveyor-pagination-controls button{display:grid;place-items:center;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:#fff;color:#1559b7;font:inherit;font-size:17px;cursor:pointer}
+.surveyor-pagination-controls button:hover:not(:disabled){background:#e7effb}
+.surveyor-pagination-controls button.is-current{background:#154b8f;color:#fff;font-weight:700}
+.surveyor-pagination-controls button:disabled{color:#aeb9c8;cursor:not-allowed}
+.surveyor-pagination-controls .surveyor-page-prev,.surveyor-pagination-controls .surveyor-page-next{background:transparent;border-radius:5px}
+.surveyor-page-number-wrap{display:flex;align-items:center;gap:5px}
+.surveyor-page-ellipsis{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#fff;color:#1559b7}
+.surveyor-pagination button:focus-visible,.surveyor-pagination select:focus-visible{outline:3px solid #9bc0f4;outline-offset:2px}
+@media(max-width:640px){.surveyor-pagination{align-items:flex-start;padding:12px}.surveyor-pagination-summary{width:100%;justify-content:space-between}.surveyor-pagination-controls{width:100%;justify-content:center;gap:2px}.surveyor-pagination-controls button,.surveyor-page-ellipsis{width:36px;height:36px}.surveyor-pagination-summary span{padding-left:8px;font-size:12px}}

@@ -1,0 +1,28 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      react:
+        patterns: ["react", "react-dom", "react-router-dom", "react-konva", "konva", "@types/react*"]
+      tooling:
+        patterns: ["vite", "vitest", "typescript", "@vitejs/*"]
+  - package-ecosystem: npm
+    directory: /functions/surveyor-api
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /functions/surveyor-save
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /functions/surveyor-support
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -1,0 +1,336 @@
+.cq-page.workspace-main{padding:20px 18px 15px;background:#f5f7fb;min-height:calc(100dvh - 76px)}
+.cq-container.workspace-container{max-width:1640px;width:100%;margin:0 auto}
+.cq-heading{display:flex;align-items:center;gap:12px;color:#0f2749;padding:0 8px}
+.cq-heading h1{font-size:21px;font-weight:800;margin:0}.cq-heading>span{margin-left:auto;color:#7b8ca3;font-size:11px}
+.cq-message{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:7px;border:1px solid #bad5fb;background:#f0f6ff;color:#174d8d;font-size:12px;margin:5px 0}.cq-message button{border:0;background:none;color:inherit;cursor:pointer}
+.cq-grid{height:calc(100dvh - 224px);min-height:500px;display:grid;grid-template-columns:360px minmax(0,1fr);border:1px solid #d5e1ef;border-radius:10px;overflow:hidden;background:#fff}
+.cq-side{overflow:auto;border-right:1px solid #d8e2ee;background:#fff;min-height:0;display:flex;flex-direction:column}.cq-panel{padding:15px;display:flex;flex-direction:column;gap:13px;min-height:100%;position:relative}.cq-panel h2{font-size:12px;color:#142b4b;padding-bottom:10px;border-bottom:1px solid #dde8f4;margin:0 0 3px}
+.cq-field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#2a4363}.cq-field>span{font-weight:650;font-size:11px}
+.cq-field>input:not([type=range]):not([type=color]):not([type=file]),.cq-field>select,.cq-neighbor-row input{border:1px solid #c9d9ed;border-radius:7px;min-height:40px;padding:9px;width:100%;font:inherit;color:#14365d;background:white}
+.cq-field input[type=range]{width:100%;accent-color:#165fd1}.cq-field input[type=color]{width:100%;height:38px;border-radius:7px;border:1px solid #cbd7e9;background:white;padding:5px}
+.cq-field input[type=file]{max-width:100%;font-size:11px}
+.cq-primary,.cq-outline{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #bcd2ef;background:#fff;border-radius:7px;padding:10px 12px;min-height:38px;color:#1555ae;font-size:12px;font-weight:750;cursor:pointer}
+.cq-primary{background:#175fd1;color:#fff;border-color:#175fd1}.cq-primary:disabled,.cq-outline:disabled{opacity:.5;cursor:not-allowed}
+.cq-next{margin-top:auto;justify-content:space-between}
+.cq-subtabs{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #dae6f1;background:#f3f7fc}
+.cq-subtabs button{border:0;border-bottom:2px solid transparent;border-right:1px solid #dce5f1;background:transparent;font-size:11px;color:#587391;font-weight:700;padding:11px 6px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}.cq-subtabs .active{background:#fff;color:#165ed1;border-bottom-color:#1761d3}
+.cq-config{min-height:auto;gap:12px}.cq-config h2{margin-top:9px}.cq-config .cq-field{margin-bottom:3px}
+.cq-elements{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.cq-element{border:1px solid #d7e2f1;border-radius:9px;padding:8px;display:flex;flex-direction:column;gap:8px}
+.cq-element-toggle{width:100%;font-size:11px;text-align:left;font-weight:800;border:1px solid #dce5f1;border-radius:5px;padding:10px 7px;background:#f4f7fb;color:#708096;cursor:pointer}.cq-element-toggle.on{color:#fff;background:#1264db;border-color:#1264db}
+.cq-element>div{display:grid;grid-template-columns:minmax(0,1fr) 60px;gap:6px}.cq-element .cq-field>span{font-size:9px}.cq-element .cq-field input[type=color]{height:30px}
+.cq-hint{color:#7186a2;line-height:1.55;font-size:11px;margin:0}.cq-neighbor-row{display:grid;grid-template-columns:1fr 1.6fr 30px;gap:5px;align-items:center}.cq-neighbor-row label{font-size:10px;font-weight:650}.cq-neighbor-row input{min-width:0;font-size:11px;min-height:34px;padding:6px}.cq-neighbor-row details{position:relative}.cq-neighbor-row summary{border:1px solid #bccde1;cursor:pointer;border-radius:7px;padding:7px;text-align:center;list-style:none}.cq-neighbor-row details[open] .cq-field{position:absolute;top:32px;right:0;width:205px;background:#fff;padding:12px;border:1px solid #c4d6e9;border-radius:8px;box-shadow:0 8px 24px #12284b20;z-index:8}
+.cq-toolrow{display:flex;gap:7px;flex-wrap:wrap}.cq-toolrow button{padding:8px 10px;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #c8d8e9;border-radius:7px;color:#20518a;cursor:pointer;font-size:11px}.cq-toolrow .on{background:#125ed1;color:#fff}.cq-toolrow button:disabled{opacity:.4}
+.cq-toggle{display:flex;gap:9px;align-items:center;color:#173c6b;font-size:12px}.cq-toggle input{accent-color:#1565cc}
+.cq-signature-preview{max-width:100%;max-height:100px;object-fit:contain;border:1px dashed #c4d6e8;padding:8px;border-radius:8px}
+.cq-workspace{display:flex;flex-direction:column;overflow:hidden;min-width:0;min-height:0;background:#eef3f9}.cq-viewer{flex:1;min-height:0;overflow:auto;display:block;padding:15px 14px 25px;scrollbar-gutter:stable}
+.cq-paper{flex:0 0 auto;width:min(100%,950px);max-width:none;margin-inline:auto;background:white;box-shadow:0 4px 18px #0b2d4a14;position:relative;touch-action:pan-x pan-y;user-select:none}.cq-paper.cq-interaction-mode{touch-action:none}.cq-paper-a3{width:min(100%,1200px)}
+.cq-svg svg{display:block;width:100%;height:auto}.cq-empty{align-self:center;text-align:center;color:#7087a5;font-size:12px;padding:50px}
+.cq-signature-out{text-align:center;margin:0 auto 18px;font-size:12px;font-weight:650}.cq-signature-out img{display:block;height:50px;object-fit:contain;margin:auto}.cq-bottom{background:#fff;border-top:1px solid #d8e3ee;justify-content:space-between;position:relative}
+.cq-actions{display:flex;gap:6px;align-items:center}.cq-actions button{min-height:35px;padding:7px 9px}.cq-zoom{display:flex;align-items:center;gap:12px;font-size:11px}.cq-zoom button{border:1px solid #ccdced;border-radius:5px;background:#fff;height:32px;min-width:32px;cursor:pointer}.cq-export{position:relative}.cq-export>.cq-outline{min-height:35px}.cq-menu{position:absolute;right:0;bottom:45px;min-width:190px;z-index:10;background:#fff;border:1px solid #cbd9eb;border-radius:9px;padding:5px;box-shadow:0 10px 30px #0c244b28}.cq-menu button{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;padding:10px;color:#174275;text-align:left;font-size:12px;cursor:pointer}.cq-menu button:hover{background:#eff6ff}
+@media(max-width:900px){.cq-grid{grid-template-columns:310px minmax(0,1fr)}.cq-elements{grid-template-columns:1fr 1fr}.cq-neighbor-row{grid-template-columns:1fr 1.3fr 28px}}
+@media(max-width:650px){.cq-page.workspace-main{padding:12px 8px}.cq-grid{display:flex;flex-direction:column;}.cq-side{max-height:425px;border-right:none;border-bottom:1px solid #d8e3ee}.cq-viewer{min-height:440px}.cq-paper{width:100%}.cq-bottom{height:auto}}
+/* Edição direta sobre o SVG sem alterar a aparência final de impressão */
+.cq-svg [data-croqui-label]{cursor:grab;pointer-events:all;user-select:none;touch-action:none}
+.cq-svg [data-croqui-handle],.cq-svg [data-croqui-line-body]{cursor:move;touch-action:none}
+.cq-paper:active .cq-svg [data-croqui-label]{cursor:grabbing}
+.cq-more{border:1px solid #c7d6e8;background:white;color:#174c88;min-height:34px;border-radius:6px;cursor:pointer;font-size:16px}
+.cq-label-editor,.cq-share{border:1px solid #d1e1f4;background:#f5f9ff;border-radius:9px;padding:11px;display:flex;flex-direction:column;gap:10px;font-size:11px}
+.cq-share a{color:#165dc5;overflow-wrap:anywhere;font-size:11px}
+.cq-dialog-backdrop{position:fixed;inset:0;background:#0b1b34a8;z-index:1200;display:grid;place-items:center;padding:20px}
+.cq-dialog{width:min(590px,100%);max-height:90dvh;overflow:auto;border-radius:13px;padding:23px;background:#fff;box-shadow:0 22px 80px #091e3b48;color:#122c4f}
+.cq-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:13px;border-bottom:1px solid #dfebf5}
+.cq-dialog-head h2{font-size:19px;margin:0}.cq-dialog>p{font-size:12px;line-height:1.5;color:#657b97}
+.cq-dialog-head>button{min-width:44px;min-height:44px}
+.cq-dialog-field{display:grid;grid-template-columns:minmax(0,1fr) 125px;gap:12px;align-items:end;margin:11px 0}
+.cq-dialog-field .cq-toggle{padding-bottom:12px;font-size:11px}
+.cq-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:15px;border-top:1px solid #e5edf6}
+@media(max-width:520px){.cq-dialog-field{grid-template-columns:1fr}.cq-dialog-field .cq-toggle{padding-bottom:4px}}
+.cq-svg [data-croqui-road-handle]{cursor:crosshair;touch-action:none}
+/* Edição contextual sem ocupar permanentemente o painel esquerdo. */
+.cq-vertex-context{position:fixed;z-index:1400;width:230px;background:#fff;border:1px solid #bed3ed;border-radius:10px;box-shadow:0 16px 45px #112e5540;padding:12px;display:flex;flex-direction:column;gap:10px}
+.cq-context-head{display:flex;align-items:center;justify-content:space-between;color:#16355a;font-size:12px}
+.cq-context-head button{border:0;background:transparent;cursor:pointer;color:#16355a}
+.cq-vertex-context input[type=range]{width:100%}
+.cq-road-row{border:1px solid #d5e3f3;padding:10px;border-radius:9px;display:flex;flex-direction:column;gap:7px}.cq-road-row.selected{border-color:#1666df;background:#f5f9ff}
+.cq-road-row .cq-outline{min-height:30px}
+.cq-svg [data-croqui-road-body]{cursor:move;touch-action:none}
+.cq-svg [data-croqui-vertex]{cursor:context-menu}
+
+/* O relatório não altera nem mascara medidas da geometria. */
+.cq-label-info{border:1px solid #bed5f5;border-radius:8px;background:#f4f8ff;color:#31547d;padding:11px;font-size:11px;line-height:1.6}
+
+
+/* Etapa 28: upload de assinatura no padrão visual do Surveyor. */
+.cq-signature-upload{display:flex;flex-direction:column;gap:8px;min-width:0}
+.cq-signature-upload-title{color:#2a4363;font-size:11px;font-weight:650}
+.cq-signature-upload-row{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
+.cq-signature-upload-button{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:0 0 auto;min-height:39px;padding:9px 14px;border:1px solid #bcd2ef;border-radius:7px;background:#edf5ff;color:#1557b8;font-size:12px;font-weight:750;cursor:pointer;transition:background .15s ease,border-color .15s ease}
+.cq-signature-upload-button:hover{background:#e2efff;border-color:#86b4ed}
+.cq-signature-upload-button:focus-within{outline:2px solid #1b63d4;outline-offset:3px}
+.cq-signature-file-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.cq-signature-upload-filename{flex:1 1 135px;min-width:0;color:#66809e;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cq-signature-remove{width:100%;justify-content:center;border-color:#ebd2d2;color:#ab3c3c;background:#fff}
+.cq-signature-remove:not(:disabled):hover{background:#fff5f5;border-color:#daa8a8}
+.cq-signature-remove:disabled{opacity:.45}
+
+/* Mesma ocupação útil depois do zoom visual do SURVEYOR. */
+.cq-page.workspace-main {min-height:calc(100dvh - 76px);}
+.cq-grid {height:calc(100dvh - 224px);}
+
+@media screen {
+.cq-page.workspace-main{height:calc(100dvh - 64px);min-height:0!important;padding:0 8px 0 0!important;overflow:hidden;}
+.cq-container.workspace-container{height:100%;max-width:none!important;display:flex;flex-direction:column;}
+.cq-heading{display:flex!important;flex:0 0 52px;min-height:52px;padding:0 14px!important;border-bottom:1px solid #cbd5e1;background:#fff;}
+.cq-heading h1{font-size:18px!important;font-weight:750}
+.cq-heading>span{font-size:12px}
+.cq-grid{flex:1 1 auto;height:auto!important;min-height:0!important;border-radius:0!important;border-inline:none!important;border-bottom:0!important;}
+}
+.cq-vertex-visibility{margin:12px 0;border-top:1px solid #e2eaf4;padding-top:12px}
+.cq-vertex-visibility summary{font-size:12px;font-weight:750;color:#18365f;cursor:pointer}
+.cq-vertex-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:12px}
+.cq-vertex-checks label{display:flex;align-items:center;gap:7px;font-size:11px;color:#264362;border:1px solid #d7e4f2;background:#fff;border-radius:8px;padding:7px}
+.cq-vertex-checks input{accent-color:#0d62d7}
+.cq-edit-context{min-width:242px;z-index:3000}
+.cq-edit-context input[type=color]{width:100%;height:35px;cursor:pointer}
+
+/* Etapa 52 — Numeração automática, compacta e confinada ao painel técnico. */
+.cq-numbering{border:1px solid #d0dfed;border-radius:8px;background:#fbfdff;margin:3px 0;overflow:visible}
+.cq-numbering>summary{cursor:pointer;padding:11px 12px;color:#1e426f;font-size:12px;font-weight:750;list-style-position:inside}
+.cq-numbering[open]>summary{border-bottom:1px solid #e2eaf4}
+.cq-numbering-fields{padding:12px;display:flex;flex-direction:column;gap:10px}
+.cq-numbering-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cq-numbering-preview{background:#f3f7fc;border:1px solid #d9e5f4;border-radius:7px;padding:9px;display:flex;flex-direction:column;gap:4px}
+.cq-numbering-preview>strong{font-size:11px;color:#244568;margin-bottom:3px}
+.cq-numbering-preview>div{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#607794}
+.cq-numbering-preview b{font-size:11px;color:#174577;overflow-wrap:anywhere;text-align:right}
+.cq-numbering-preview small{color:#647a97}
+.cq-numbering-actions{display:flex;gap:7px;flex-wrap:wrap}
+.cq-numbering-actions button{flex:1;min-width:100px}
+.cq-numbering-note{font-size:11px;color:#667b94;line-height:1.55}
+.cq-numbering-warning{color:#a12626;background:#fff4f4;border:1px solid #f4c9c9;border-radius:6px;padding:8px;margin:0;font-size:11px}
+.cq-names-manual .cq-numbering-fields{max-height:350px;overflow-y:auto}
+
+
+/* Etapa 53 — quadro dinâmico de rumos, azimutes e distâncias. */
+.cq-segment-panel{flex:0 0 auto;max-height:min(280px,43%);min-height:0;background:#fff;border-top:1px solid #d3dfed;display:flex;flex-direction:column;color:#193654}
+.cq-segment-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;background:#f6f9fd}
+.cq-segment-head>div:first-child{display:flex;flex-direction:column;gap:3px}
+.cq-segment-head strong{font-size:12px;color:#193757}
+.cq-segment-head small{font-size:11px;color:#536d89}
+.cq-segment-tools{display:flex;gap:7px;align-items:center}
+.cq-segment-tools button{border:1px solid #c6d5e7;border-radius:5px;background:#fff;padding:5px 9px;color:#1e527e;display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;font-weight:650}
+.cq-segment-scroll{min-height:0;overflow:auto;overscroll-behavior:contain}
+.cq-segment-table{width:100%;border-collapse:collapse;font-size:11px;text-align:left;white-space:nowrap}
+.cq-segment-table th{position:sticky;top:0;background:#edf3fb;color:#234365;font-weight:750;z-index:1}
+.cq-segment-table td,.cq-segment-table th{border-bottom:1px solid #e0e8f2;padding:7px 10px}
+.cq-segment-table td:last-child{max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.cq-segment-table tbody tr:nth-child(even){background:#f8fafd}
+.cq-segment-table tbody tr.cq-segment-selected{background:#dcecff}
+.cq-segment-table td button{border:0;background:none;color:#165eb2;cursor:pointer;text-align:left;font:inherit;font-weight:700;padding:0}
+.cq-segment-table td button:focus-visible{outline:2px solid #165eb2;outline-offset:3px}
+.cq-segment-number{font-variant-numeric:tabular-nums;text-align:right}
+.cq-segment-disclaimer{flex:0 0 auto;font-size:10px;color:#667b94;margin:0;padding:6px 12px;background:#fafcfe;border-top:1px solid #e4ebf4;line-height:1.4}
+@media(max-width:650px){.cq-segment-panel{max-height:240px}.cq-segment-table td,.cq-segment-table th{padding:7px 8px}}
+
+/* Controles técnicos compactos e adaptáveis no croqui. */
+.cq-config .cq-neighbor-row{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:7px;align-items:end;padding:9px 10px;border:1px solid #dbe5f1;border-radius:9px;min-width:0;}
+.cq-config .cq-neighbor-row>label{grid-column:1/-1;overflow-wrap:anywhere;white-space:normal;font-size:11px;line-height:1.45;color:#1b3b60;}
+.cq-config .cq-neighbor-row>input{grid-column:1;min-width:0;width:100%;box-sizing:border-box;}
+.cq-config .cq-neighbor-row>.cq-more{grid-column:2;min-width:34px;}
+.cq-project-card{display:flex;flex-direction:column;gap:10px;padding:0 0 12px;border-bottom:1px solid #d9e2ed}
+.cq-project-card h2{font-size:13px;color:#163557;margin:0;padding:0 0 3px;border:0}
+.cq-project-card .cq-field{margin:0}
+.cq-config>.cq-subtabs{position:sticky;top:-11px;z-index:5;margin:0 -12px 2px;padding:0 12px;box-shadow:0 2px 5px #12284b12}
+.cq-zoom-control{display:flex;align-items:center;gap:10px;width:100%;min-width:0;}
+.cq-zoom-control input[type=range]{min-width:0;flex:1;margin:0;}
+.cq-zoom-control output{min-width:39px;text-align:right;font-size:12px;font-weight:750;color:#1257ae;font-variant-numeric:tabular-nums;}
+.cq-zoom-hint{font-size:10px;color:#637d9c;}
+
+/* Editor individual por gleba, visível no modo "Imóvel completo". */
+.cq-multi-area-list{display:grid;gap:9px;margin:12px 0 16px;min-width:0}
+.cq-multi-area-list>.cq-hint{margin:0 0 4px;line-height:1.55}
+.cq-multi-area-card{border:1px solid #d7e2f0;background:#fff;border-radius:9px;min-width:0;overflow:hidden}
+.cq-multi-area-card>summary{cursor:pointer;display:flex;align-items:center;gap:8px;min-height:48px;padding:10px 12px;list-style:none;font-size:12px;font-weight:750;color:#183453;min-width:0}
+.cq-multi-area-card>summary::-webkit-details-marker{display:none}
+.cq-multi-area-card>summary:after{content:'▾';font-size:12px;color:#607b9c;margin-left:auto;transition:transform .15s}
+.cq-multi-area-card[open]>summary:after{transform:rotate(180deg)}
+.cq-multi-area-card>summary>span:nth-child(2){min-width:0;flex:1;overflow-wrap:anywhere}
+.cq-multi-area-card>summary>small{color:#607b9c;font-size:10px;white-space:nowrap;font-weight:500}
+.cq-multi-area-dot{height:14px;width:14px;flex:0 0 14px;border:1px solid #8597b0;border-radius:4px}
+.cq-multi-area-body{border-top:1px solid #e5ecf5;display:grid;gap:10px;padding:12px;min-width:0}
+.cq-multi-area-body .cq-field{min-width:0;margin:0;overflow-wrap:anywhere}
+.cq-multi-area-body input:not([type=checkbox]){max-width:100%;min-width:0}
+.cq-multi-colors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cq-multi-colors input[type=color]{height:34px;width:100%;padding:3px;box-sizing:border-box}
+.cq-multi-area-subheading{font-size:11px;color:#183453;margin-top:6px}
+.cq-multi-vertices{display:grid;gap:7px}
+.cq-multi-vertex{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.cq-multi-visibility{display:flex;gap:5px;align-items:center;white-space:nowrap;font-size:11px;color:#35516e;padding-bottom:11px}
+.cq-svg [data-croqui-division]{cursor:context-menu}
+@media(max-width:470px){.cq-multi-area-card>summary{flex-wrap:wrap}.cq-multi-area-card>summary>small{white-space:normal}.cq-multi-colors{grid-template-columns:1fr}}
+
+.cq-svg [data-croqui-division]{transition:stroke-width .13s ease,filter .13s ease;}
+.cq-svg [data-croqui-division]:hover,.cq-svg [data-croqui-division][data-active-gleba="true"]{stroke-width:5!important;filter:drop-shadow(0 0 4px #0c4a6e88);}
+
+/* Mesma navegação por grupos recolhíveis da Prancha Técnica. */
+.cq-config details.cq-accordion{display:block;border:1px solid #d6e2f1;border-radius:9px;background:#fff;overflow:visible;margin:0 0 4px;flex-shrink:0}
+.cq-config details.cq-accordion>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;user-select:none;padding:12px 13px;color:#12335a;background:#f3f7fd;border-radius:8px;font-size:12px;font-weight:750;min-height:22px}
+.cq-config details.cq-accordion>summary::-webkit-details-marker{display:none}
+.cq-config details.cq-accordion>summary::before{content:'▸';font-size:16px;line-height:1;color:#1666d3;transition:transform .14s ease}
+.cq-config details.cq-accordion[open]>summary::before{transform:rotate(90deg)}
+.cq-config details.cq-accordion[open]>summary{background:#eaf3ff;border-bottom:1px solid #d6e2f1;border-radius:8px 8px 0 0}
+.cq-config details.cq-accordion>.cq-accordion-body{display:flex;flex-direction:column;gap:10px;padding:12px;min-width:0}
+.cq-config details.cq-accordion .cq-field{min-width:0}
+
+/* Painel Konva isolado: transforma o texto de prévia e sincroniza a edição SVG. */
+.cq-edit-context{width:282px;max-width:calc(100vw - 22px);max-height:calc(100dvh - 24px);overflow-y:auto}
+.cq-konva-label-editor{padding:7px;border:1px solid #d3e0f0;border-radius:9px;background:#f8fafc;width:100%;box-sizing:border-box}
+.cq-konva-label-editor canvas{max-width:100%;touch-action:none}
+.cq-konva-label-editor small{display:block;margin-top:4px;font-size:10px;line-height:1.4;color:#47617d}
+
+/* Controles de visibilidade e edição da foto sobreposta: sempre independentes das coordenadas do mapa. */
+.cq-road-actions{display:flex;flex-wrap:wrap;gap:7px}.cq-road-actions>button{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.cq-road-row.cq-road-hidden{opacity:.72;border-style:dashed;background:#f3f4f6}
+.cq-svg [data-croqui-photo-body]{cursor:move;touch-action:none}
+.cq-svg [data-croqui-photo-corner]{cursor:nwse-resize;touch-action:none}
+.cq-note{font-size:12px;line-height:1.5;color:#36516b;margin:2px 0 8px}
+
+/* Toolbar compartilhando a organização espacial da Prancha Técnica:
+   [ações] [zoom] [salvar/exportar]. Os menus conservam todas as ações. */
+.cq-bottom{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;min-height:55px;height:auto;padding:6px 13px}
+.cq-toolbar-left,.cq-toolbar-right{display:flex;align-items:center;gap:7px;min-width:0}
+.cq-toolbar-right{justify-content:flex-end}
+.cq-toolbar-left>button,.cq-toolbar-right>button,.cq-toolbar-right .cq-export>.cq-outline{min-height:35px;padding:7px 10px;white-space:nowrap}
+.cq-toolbar-middle{justify-self:center;color:#254664;font-weight:650}
+.cq-toolbar-right>.cq-primary{background:#0964d8;color:#fff;border-color:#0964d8}
+.cq-bottom button:focus-visible,.cq-side button:focus-visible,.cq-side summary:focus-visible{outline:2px solid #0c63dc;outline-offset:2px}
+@media (max-width:1180px){.cq-bottom{grid-template-columns:minmax(0,1fr) auto;}.cq-toolbar-middle{grid-row:2;grid-column:1 / -1;justify-self:center}.cq-toolbar-left{grid-column:1}.cq-toolbar-right{grid-column:2}.cq-toolbar-right .cq-secondary{font-size:0;padding-inline:9px}.cq-toolbar-right .cq-secondary::before{content:'Rumos';font-size:11px}}
+@media (max-width:650px){.cq-bottom{display:flex;flex-wrap:wrap;justify-content:space-between}.cq-toolbar-middle{order:3;flex:1 1 100%;justify-content:center}.cq-toolbar-left,.cq-toolbar-right{flex-wrap:wrap}.cq-grid{height:auto}.cq-side{max-height:min(38dvh,330px)}}
+/* Reduzir a poluição visual sem suprimir os controles, com área útil maior. */
+@media screen and (min-width:1050px){.cq-grid{grid-template-columns:minmax(280px,310px) minmax(0,1fr)}.cq-panel{padding:11px 12px;gap:9px}.cq-accordion-body{gap:9px}.cq-viewer{padding:9px}}
+.cq-accordion:not([open])>summary{background:#f5f8fc}
+.cq-accordion>summary{font-size:12px;min-height:39px}
+.cq-accordion-body .cq-hint{font-size:10px;line-height:1.4}
+
+/* SURVEYOR: controles completos sem colunas comprimidas. */
+@media screen and (min-width:1050px){.cq-grid{grid-template-columns:clamp(400px,32vw,540px) minmax(0,1fr)}}
+@media screen and (min-width:900px) and (max-width:1049px){.cq-grid{grid-template-columns:360px minmax(0,1fr)}}
+
+.sv-vertex-auto-actions{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.sv-auto-cotas-toggle{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;padding:11px 9px;margin:8px 0;border:1px solid #d5e2f2;border-radius:8px;color:#1a3d67;font-size:11px;font-weight:700}
+.sv-auto-cotas-toggle input{width:auto!important;accent-color:#1264db}
+
+/* Cotas externas: opção de cor compacta ao lado da ativação. */
+.sv-auto-cotas-toggle{justify-content:space-between}
+.sv-auto-cotas-toggle > label{display:flex;align-items:center;gap:7px;min-width:0;cursor:pointer}
+.sv-auto-cotas-toggle > input[type="color"]{width:36px!important;height:27px;flex:none;padding:2px;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer}
+
+/* Em celulares baixos, a prévia cede altura para manter a barra de ações visível. */
+@media screen and (max-width:650px){
+ .cq-side{flex:0 1 auto;min-height:0;max-height:min(38dvh,330px)}
+ .cq-workspace{flex:1 1 0;min-height:0}
+ .cq-viewer{flex:1 1 0;min-height:0}
+ .cq-bottom{flex:0 0 auto}
+ .cq-bottom button{min-height:44px}
+}
+@media screen and (max-width:650px){.cq-accordion>summary{min-height:44px;box-sizing:border-box}.cq-more{min-width:44px;min-height:44px}.cq-dialog button{min-height:44px}}
+@media screen and (max-width:650px){.cq-field>input:not([type=range]):not([type=file]),.cq-field>select,.cq-neighbor-row input,.cq-neighbor-row details summary{min-height:44px;box-sizing:border-box}}
+@media screen and (max-width:650px){.cq-toolrow button,.cq-actions button,.cq-zoom button,.cq-export>.cq-outline,.cq-menu button,.cq-message button,.cq-context-head button,.cq-segment-tools button,.cq-numbering-actions button,.cq-road-actions>button,.cq-signature-upload-button{min-height:44px;box-sizing:border-box}.cq-zoom button,.cq-message button,.cq-context-head button{min-width:44px}.cq-menu{max-height:calc(100dvh - 140px);overflow-y:auto}}
+
+/* Editor de croqui no mesmo formato imersivo do Memorial: barra de fluxo,
+   painel de ajustes e prévia ocupando toda a área de trabalho. */
+.workspace-shell.croqui-workspace{height:111.12dvh;min-height:0;overflow:hidden;grid-template-rows:minmax(0,1fr);background:#f4f6f8}
+.workspace-shell.croqui-workspace>.workspace-header{display:none!important}
+.workspace-shell.croqui-workspace>.workspace-main.cq-page{height:100%!important;min-height:0!important;display:flex;flex-direction:column;overflow:hidden!important;padding:0!important;background:#f4f6f8}
+.cq-workflow-bar{position:relative;z-index:12;flex:0 0 64px;min-width:0;display:grid;grid-template-columns:minmax(220px,1fr) auto minmax(220px,1fr);align-items:center;gap:12px;padding:0 16px;background:#fff;border-bottom:1px solid #cbd5e1;color:#102a43}
+.cq-workflow-start,.cq-workflow-actions{display:flex;align-items:center;gap:10px;min-width:0}
+.cq-workflow-actions{justify-content:flex-end}
+.cq-back{width:40px;height:40px;display:grid;place-items:center;flex:none;border:1px solid #aeb8c4;border-radius:4px;background:#fff;color:#1351b4;text-decoration:none}
+.cq-back:hover{background:#f1f6fc;border-color:#1351b4}
+.cq-workflow-download>.cq-outline,.cq-save-action{height:40px;min-height:40px;padding:0 14px;border:1px solid #1351b4;border-radius:4px;background:#fff;color:#1351b4;font-size:14px;font-weight:650;white-space:nowrap}
+.cq-workflow-download>.cq-outline{display:flex;align-items:center;gap:8px}
+.cq-workflow-download>.cq-outline:disabled,.cq-save-action:disabled{border-color:#cbd5e1;color:#8492a3;background:#f7f8fa;cursor:not-allowed}
+.cq-save-action{display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.cq-save-action:hover:not(:disabled){background:#f1f6fc}
+.cq-workflow-steps{display:flex;align-items:center;align-self:stretch;justify-content:center;gap:0;margin:0;padding:0;list-style:none;white-space:nowrap}
+.cq-workflow-step{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;padding:0 17px;border:0;background:transparent;color:#586779;font-size:14px;font-weight:600;white-space:nowrap}
+.cq-workflow-step+.cq-workflow-step:before{content:"";position:absolute;right:100%;top:50%;width:26px;height:1px;background:#aeb8c4}
+.cq-step-number{width:26px;height:26px;flex:0 0 26px;display:grid;place-items:center;border:1px solid #8795a5;border-radius:50%;background:#fff;color:#34495e;font-size:13px;font-weight:700}
+.cq-workflow-step.is-current,.cq-workflow-step.is-complete{color:#1351b4;font-weight:700}
+.cq-workflow-step.is-current .cq-step-number,.cq-workflow-step.is-complete .cq-step-number{border-color:#1351b4;background:#1351b4;color:#fff}
+.workspace-shell.croqui-workspace .cq-container.workspace-container{width:100%;max-width:none;height:auto;min-height:0;flex:1;margin:0;overflow:hidden;display:flex;flex-direction:column}
+.workspace-shell.croqui-workspace .cq-grid{display:grid;grid-template-columns:minmax(340px,clamp(380px,32vw,620px)) minmax(0,1fr);flex:1 1 auto;width:100%;height:auto!important;min-height:0!important;margin:0;padding:0;gap:0;overflow:hidden;border:0;border-radius:0;background:#f4f6f8}
+.workspace-shell.croqui-workspace .cq-side{width:auto;max-height:none;min-height:0;display:flex;flex-direction:column;overflow:hidden;border:0;border-right:1px solid #cbd5e1;border-radius:0;background:#fff}
+.workspace-shell.croqui-workspace .cq-panel{padding:18px 20px;gap:12px}
+.workspace-shell.croqui-workspace .cq-project-card{padding-bottom:14px;border-bottom:0}
+.workspace-shell.croqui-workspace .cq-project-identification{display:flex;flex-direction:column;gap:5px;margin:4px 0 0;padding:12px;border:1px solid #cbd5e1;background:#f7f9fc;color:#263746}
+.workspace-shell.croqui-workspace .cq-project-identification>span{font-size:11px;font-weight:650;color:#617287}
+.workspace-shell.croqui-workspace .cq-project-identification>strong{font-size:14px;overflow-wrap:anywhere}
+.workspace-shell.croqui-workspace .cq-project-identification>small,.workspace-shell.croqui-workspace .cq-project-empty{font-size:12px;color:#586779;line-height:1.45}
+.workspace-shell.croqui-workspace .cq-project-empty{margin-top:12px;padding:12px;border-left:3px solid #1351b4;background:#f1f6fc}
+.workspace-shell.croqui-workspace .cq-panel-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.cq-panel-footer{position:relative;z-index:2;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;border-top:1px solid #cbd5e1;background:#fff;box-shadow:0 -3px 10px #102a4308}
+.cq-panel-footer>span{color:#64748b;font-size:12px;white-space:nowrap}
+.cq-panel-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0;margin-left:auto}
+.cq-panel-footer .cq-outline,.cq-next-button{min-height:38px;padding:8px 12px;border:1px solid #aeb8c4;border-radius:4px;background:#fff;color:#1351b4;font-size:13px;font-weight:650;white-space:nowrap;cursor:pointer}
+.cq-next-button{display:flex;align-items:center;gap:10px;border-color:#1351b4;background:#1351b4;color:#fff}
+.cq-next-button:hover:not(:disabled){background:#0c3f91}
+.cq-next-button:disabled{border-color:#cbd5e1;background:#f7f8fa;color:#8492a3;cursor:not-allowed}
+.cq-panel-footer button:focus-visible{outline:2px solid #1266d5;outline-offset:2px}
+.workspace-shell.croqui-workspace .cq-stage-toolbar{flex:0 0 46px;height:46px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px;border-bottom:1px solid #cbd5e1;background:#fff;color:#102a43}
+.workspace-shell.croqui-workspace .cq-stage-toolbar strong{font-size:14px;font-weight:700}
+.workspace-shell.croqui-workspace .cq-stage-toolbar span{color:#64748b;font-size:12px}
+.workspace-shell.croqui-workspace .cq-workspace{flex:1;min-height:0;background:#e9eef3}
+.workspace-shell.croqui-workspace .cq-viewer{padding:22px 18px 28px;background:#e9eef3}
+.workspace-shell.croqui-workspace .cq-bottom{flex:0 0 48px;min-height:48px;height:48px;padding:0 16px;border-top:1px solid #cbd5e1;background:#fff}
+.workspace-shell.croqui-workspace .cq-bottom-hidden{display:none}
+.workspace-shell.croqui-workspace .cq-bottom .cq-outline{min-height:34px;padding:6px 10px;border:1px solid #aeb8c4;border-radius:4px;background:#fff;color:#1351b4;font-size:12px;font-weight:600}
+.workspace-shell.croqui-workspace .cq-bottom .cq-outline:disabled{color:#8492a3}
+.workspace-shell.croqui-workspace .cq-export{position:relative}
+.workspace-shell.croqui-workspace .cq-workflow-download .cq-menu{top:calc(100% + 6px);right:auto;bottom:auto;left:0;width:240px;max-height:min(70vh,420px);overflow:auto;border:1px solid #cbd5e1;border-radius:4px;box-shadow:0 5px 18px #102a4326}
+.workspace-shell.croqui-workspace .cq-workflow-download .cq-menu button{padding:10px 12px;font-size:13px}
+.workspace-shell.croqui-workspace .cq-workflow-download .cq-menu button:hover{background:#eef4fb;color:#102a43}
+@media(max-width:1000px){
+ .cq-workflow-bar{grid-template-columns:minmax(150px,1fr) auto minmax(180px,1fr);gap:8px;padding:0 10px}
+ .cq-workflow-step{gap:6px;padding:0 10px;font-size:12px}
+ .cq-workflow-step+.cq-workflow-step:before{width:16px}
+ .cq-workflow-download>.cq-outline,.cq-save-action{padding:0 9px;font-size:12px}
+ .workspace-shell.croqui-workspace .cq-grid{grid-template-columns:minmax(300px,clamp(340px,34vw,520px)) minmax(0,1fr)}
+}
+@media(max-width:720px){
+ .cq-workflow-bar{flex:0 0 auto;min-height:62px;grid-template-columns:1fr auto;gap:6px;padding:7px 8px}
+ .cq-workflow-start{grid-column:1;grid-row:1}
+ .cq-workflow-actions{grid-column:2;grid-row:1}
+ .cq-workflow-steps{grid-column:1/-1;grid-row:2;justify-content:flex-start;order:3;width:100%;min-height:34px}
+ .cq-workflow-step{flex:1;min-width:0;gap:5px;padding:0 4px;font-size:11px;white-space:nowrap}
+ .cq-step-number{width:24px;height:24px;flex-basis:24px;font-size:12px}
+ .cq-workflow-step+.cq-workflow-step:before{width:8px}
+ .cq-back{width:36px;height:36px}
+ .cq-workflow-download>.cq-outline,.cq-save-action{height:36px;min-height:36px;padding:0 8px;font-size:11px}
+ .workspace-shell.croqui-workspace .cq-grid{grid-template-columns:1fr;grid-template-rows:minmax(220px,42%) minmax(0,1fr)}
+ .workspace-shell.croqui-workspace .cq-side{border-right:0;border-bottom:1px solid #cbd5e1}
+ .workspace-shell.croqui-workspace .cq-panel{padding:12px}
+ .cq-panel-footer{padding:9px 12px;gap:6px}
+ .cq-panel-footer .cq-outline,.cq-next-button{min-height:34px;padding:6px 8px;font-size:11px}
+ .cq-panel-actions{gap:5px}
+ .workspace-shell.croqui-workspace .cq-viewer{padding:12px 8px 18px}
+ .workspace-shell.croqui-workspace .cq-bottom{flex-basis:44px;height:44px;min-height:44px;padding:0 8px}
+ .workspace-shell.croqui-workspace .cq-bottom .cq-toolbar-left>button,.workspace-shell.croqui-workspace .cq-bottom .cq-toolbar-right>button{min-height:34px;padding:5px 7px;font-size:10px}
+}
+
+/* As etapas de personalização ficam montadas para preservar o estado dos controles. */
+.cq-workflow-panels{display:flex;flex-direction:column;gap:12px;min-width:0}
+.cq-workflow-panels[hidden],.cq-step-panel[hidden]{display:none!important}
+.cq-step-panel{display:flex;flex-direction:column;align-items:stretch;gap:12px;min-width:0}
+.cq-config .cq-step-heading{margin:0;padding:0 0 9px;border-bottom:1px solid #d9e2ed;color:#163557;font-size:15px;font-weight:750}
+.cq-step-note{margin:0;color:#61758d;font-size:11px;line-height:1.5}
+.cq-mobile-edit-hint{position:sticky;top:0;display:none;z-index:2;margin:0;padding:8px 10px;border:1px solid #cbdcf2;border-radius:8px;background:#eff6ff;color:#164b8e;font-size:12px;line-height:1.4}
+.cq-step-panel>.cq-field{margin:0}
+.cq-step-panel>.cq-outline{align-self:flex-start;min-height:38px;padding:8px 12px}
+.cq-step-panel-signature .cq-signature-upload{margin-top:2px}
+.cq-step-panel-signature .cq-signature-preview{align-self:flex-start;max-height:130px}
+ .cq-bottom button{min-height:44px}
+
+@media(max-width:650px){.cq-mobile-edit-hint{display:block}}
+@media(max-width:420px){.cq-workflow-step>span:last-child{display:none}.cq-panel-footer{padding-right:9px;padding-left:9px}}

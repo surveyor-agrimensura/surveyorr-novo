@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {extractManualGleba} from '../src/features/map/extractManualGleba.ts';
+const f=(id,ring)=>({type:'Feature',id,properties:{name:id},geometry:{type:'Polygon',coordinates:[ring]}});
+const outer=f('base',[[0,0],[10,0],[10,10],[0,10],[0,0]]);
+const inside=f('g1',[[2,2],[3,2],[3,3],[2,3],[2,2]]);
+const result=extractManualGleba(outer,inside);
+assert.equal(result.remainder.geometry.coordinates.length,2);
+assert.equal(result.gleba.properties.extractedFromParent,true);
+assert.deepEqual(outer.geometry.coordinates,[[[0,0],[10,0],[10,10],[0,10],[0,0]]]);
+assert.throws(()=>extractManualGleba(outer,f('cross',[[9,3],[12,3],[12,4],[9,4],[9,3]])),/Linha de corte/);
+assert.throws(()=>extractManualGleba(outer,f('touching',[[5,5],[3,5],[3,7],[5,5],[7,5],[7,7],[5,5]])),/autointerseção/);
+const tinyOuter=f('tiny-base',[[-0.001,-0.001],[0.001,-0.001],[0.001,0.001],[-0.001,0.001],[-0.001,-0.001]]);
+const tinySelfCross=f('tiny-self-cross',[[0,0],[0.00001,0.000000005],[0.000004,-0.00000005],[0.000005,0.00000005],[0,0]]);
+assert.throws(()=>extractManualGleba(tinyOuter,tinySelfCross),/autointerseção/);
+console.log('OK extração: 6 verificações');

@@ -79,14 +79,18 @@ export function createAppwriteClient({ env, statusError, appwriteId, normalizeEm
 
   async function awFetch(path, options = {}) {
     const method = String(options.method || 'GET').toUpperCase();
-    const maxAttempts = ['GET', 'HEAD'].includes(method) ? 2 : 1;
+    const { timeoutMs: requestedTimeout, retryTransient = true, ...requestOptions } = options;
+    const timeoutMs = Number.isFinite(Number(requestedTimeout)) && Number(requestedTimeout) > 0
+      ? Math.max(100, Math.min(appwriteTimeoutMs(), Number(requestedTimeout)))
+      : appwriteTimeoutMs();
+    const maxAttempts = retryTransient && ['GET', 'HEAD'].includes(method) ? 2 : 1;
     let lastError = null;
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
       try {
         const response = await fetchWithAbortTimeout(`${endpoint()}${path}`, {
-          ...options,
-          headers: { ...jsonHeaders(), ...(options.headers || {}) }
-        });
+          ...requestOptions,
+          headers: { ...jsonHeaders(), ...(requestOptions.headers || {}) }
+        }, timeoutMs);
         const payload = await parseAppwriteResponse(response).catch(() => null);
         if (!response.ok) {
           const message = payload?.message || payload?.error || (typeof payload === 'string' ? payload.slice(0, 300) : '') || `Erro Appwrite HTTP ${response.status}`;
@@ -172,8 +176,36 @@ export function createAppwriteClient({ env, statusError, appwriteId, normalizeEm
     return Date.parse(iso);
   }
 
+  /** Appwrite customization.options: atributo STRING (ate 65535 bytes UTF-8).
+   * Um objeto pode vir de rotas legadas; serializamos sem descartar campos.
+   * Valores maiores precisam passar por stageCustomizationOptions antes do banco.
+   * Esta barreira impede o envio de tipos invalidos e evita regravacoes destrutivas.
+   */
+  function validateCustomizationRowData(collectionName, data) {
+    if (collectionName !== 'customization' || !Object.prototype.hasOwnProperty.call(data, 'options')) return data;
+    let options = data.options;
+    if (options && typeof options === 'object' && !Array.isArray(options)) {
+      try { options = JSON.stringify(options); }
+      catch { throw statusError(400, 'A personalizacao contem estruturas que nao podem ser serializadas.', {code:'CUSTOMIZATION_OPTIONS_SERIALIZATION'}); }
+    }
+    if (typeof options !== 'string') {
+      throw statusError(400, 'customization.options deve ser uma string JSON valida.', {code:'CUSTOMIZATION_OPTIONS_TYPE'});
+    }
+    const bytes = Buffer.byteLength(options, 'utf8');
+    if (bytes > 65535) {
+      throw statusError(413, 'As configuracoes excedem 65535 bytes: grave o conteudo completo no Storage antes de atualizar customization.options.', {code:'CUSTOMIZATION_OPTIONS_TOO_LARGE',bytes});
+    }
+    try {
+      const parsed = JSON.parse(options);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Nao e objeto');
+    } catch {
+      throw statusError(400, 'customization.options deve conter um objeto JSON valido.', {code:'CUSTOMIZATION_OPTIONS_INVALID_JSON'});
+    }
+    return {...data, options};
+  }
+
   async function awFetchRowWithDateRetry(path, method, basePayload, data, collectionName = '') {
-    const normalizedData = normalizeAppwriteDateFields(data);
+    const normalizedData = normalizeAppwriteDateFields(validateCustomizationRowData(collectionName, data));
     try {
       return await awFetch(path, { method, body: JSON.stringify({ ...basePayload, data: normalizedData }) });
     } catch (error) {
@@ -203,11 +235,23 @@ export function createAppwriteClient({ env, statusError, appwriteId, normalizeEm
     return all;
   }
 
-  async function getRow(name, rowId) {
+  async function getRowWithMode(name, rowId) {
     const id = collectionId(name);
     const legacyPath = `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents/${encodeURIComponent(rowId)}`;
+    try { return { row: rowData(await awFetch(legacyPath)), mode: 'documents' }; }
+    catch (error) { if (!isPathUnsupported(error)) throw error; }
+    const tablePath = `/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(rowId)}`;
+    return { row: rowData(await awFetch(tablePath)), mode: 'tables' };
+  }
+
+  async function getRow(name, rowId, options = {}) {
+    const id = collectionId(name);
+    const legacyPath = `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents/${encodeURIComponent(rowId)}`;
+    const tablePath = `/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(rowId)}`;
+    if (options.mode === 'documents') return rowData(await awFetch(legacyPath));
+    if (options.mode === 'tables') return rowData(await awFetch(tablePath));
     try { return rowData(await awFetch(legacyPath)); } catch (error) { if (!isPathUnsupported(error)) throw error; }
-    return rowData(await awFetch(`/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(rowId)}`));
+    return rowData(await awFetch(tablePath));
   }
 
   async function createRow(name, data, rowId = appwriteId()) {
@@ -219,13 +263,76 @@ export function createAppwriteClient({ env, statusError, appwriteId, normalizeEm
     return created;
   }
 
-  async function updateRow(name, rowId, data) {
-    const id = collectionId(name); const legacyPath = `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents/${encodeURIComponent(rowId)}`;
+  async function updateRow(name, rowId, data, options = {}) {
+    const id = collectionId(name);
+    const legacyPath = `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents/${encodeURIComponent(rowId)}`;
+    const tablePath = `/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(rowId)}`;
+    if (options.mode === 'documents') return rowData(await awFetchRowWithDateRetry(legacyPath, 'PATCH', {}, data, name));
+    if (options.mode === 'tables') return rowData(await awFetchRowWithDateRetry(tablePath, 'PATCH', {}, data, name));
     let updated;
     try { updated = rowData(await awFetchRowWithDateRetry(legacyPath, 'PATCH', {}, data, name)); } catch (error) { if (!isPathUnsupported(error)) throw error; }
-    if (!updated) updated = rowData(await awFetchRowWithDateRetry(`/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows/${encodeURIComponent(rowId)}`, 'PATCH', {}, data, name));
+    if (!updated) updated = rowData(await awFetchRowWithDateRetry(tablePath, 'PATCH', {}, data, name));
     if (name === 'layers' || name === 'layer_groups') invalidateLayerCatalogCache();
     return updated;
+  }
+
+  function nextSystemUpdatedAt(currentValue, now = Date.now()) {
+    const current = Date.parse(String(currentValue || ''));
+    if (!Number.isFinite(current)) {
+      throw statusError(503, 'O Appwrite não retornou a revisão do projeto. Reabra o projeto antes de salvar.', { code: 'PROJECT_REVISION_UNAVAILABLE' });
+    }
+    const value = new Date(Math.max(Number(now) || Date.now(), current + 1));
+    if (!Number.isFinite(value.getTime())) {
+      throw statusError(503, 'Não foi possível gerar a próxima revisão do projeto.', { code: 'PROJECT_REVISION_UNAVAILABLE' });
+    }
+    return value.toISOString();
+  }
+
+  function isPatchPresent(row, patch) {
+    return Object.entries(patch).every(([key, value]) => JSON.stringify(row?.[key]) === JSON.stringify(value));
+  }
+
+  function editConflict() {
+    return statusError(409, 'Este projeto foi alterado em outra sessão. Recarregue antes de salvar novamente.', { code: 'EDIT_CONFLICT' });
+  }
+
+  async function updateRows(name, queries, data, mode) {
+    const id = collectionId(name);
+    const legacyPath = `/databases/${encodeURIComponent(databaseId())}/collections/${encodeURIComponent(id)}/documents`;
+    const tablePath = `/tablesdb/${encodeURIComponent(databaseId())}/tables/${encodeURIComponent(id)}/rows`;
+    const path = mode === 'tables' ? tablePath : legacyPath;
+    return awFetchRowWithDateRetry(path, 'PATCH', { queries }, data, name);
+  }
+
+  async function compareAndSwapRow(name, rowId, observedRow, data, options = {}) {
+    const mode = options.mode === 'tables' ? 'tables' : 'documents';
+    const expectedSystemRevision = String(observedRow?.$updatedAt || '').trim();
+    const nextRevision = nextSystemUpdatedAt(expectedSystemRevision);
+    const patch = { ...data, $updatedAt: nextRevision };
+    const queries = [
+      Query.equal('$id', [String(rowId)]),
+      Query.equal('$updatedAt', [expectedSystemRevision])
+    ];
+
+    try {
+      const result = await updateRows(name, queries, patch, mode);
+      const rows = normalizeListPayload(result).map(rowData);
+      const total = Number(result?.total);
+      if (total === 0) throw editConflict();
+      if (rows.length !== 1 || (Number.isFinite(total) && total !== 1)) {
+        throw statusError(503, 'O Appwrite não confirmou de forma inequívoca a atualização do projeto.', { code: 'SAVE_COMMIT_STATUS_UNKNOWN', total, returned: rows.length });
+      }
+      return rows[0];
+    } catch (error) {
+      if (error?.details?.code === 'EDIT_CONFLICT') throw error;
+      const status = Number(error?.appwriteStatus || error?.status || 0);
+      if (status === 409) throw editConflict();
+      if (status > 0 && status < 500) throw error;
+
+      const latest = await getRow(name, rowId, { mode }).catch(() => null);
+      if (String(latest?.$updatedAt || '') === nextRevision && isPatchPresent(latest, patch)) return latest;
+      throw statusError(503, 'Não foi possível confirmar o salvamento. Reabra o projeto antes de tentar novamente.', { code: 'SAVE_COMMIT_STATUS_UNKNOWN', cause: String(error?.message || error) });
+    }
   }
 
   async function deleteRow(name, rowId) {
@@ -246,7 +353,7 @@ export function createAppwriteClient({ env, statusError, appwriteId, normalizeEm
 
   async function readFileText(bucket, fileId) {
     if (!fileId) return '';
-    const response = await fetchWithAbortTimeout(`${endpoint()}/storage/buckets/${encodeURIComponent(bucket)}/files/${encodeURIComponent(fileId)}/view`, { headers: { 'X-Appwrite-Project': projectId(), ...(apiKey() ? { 'X-Appwrite-Key': apiKey() } : {}) } });
+    const response = await fetchWithAbortTimeout(`${endpoint()}/storage/buckets/${encodeURIComponent(bucket)}/files/${encodeURIComponent(fileId)}/download`, { headers: { 'X-Appwrite-Project': projectId(), ...(apiKey() ? { 'X-Appwrite-Key': apiKey() } : {}) } });
     if (!response.ok) return ''; return response.text();
   }
 
@@ -294,7 +401,7 @@ export function createAppwriteClient({ env, statusError, appwriteId, normalizeEm
     isPathUnsupported, normalizeListPayload, rowData, queryParam, qs, appwriteQuery, Query,
     errorText, invalidDateAttributeFromError, toStrictIsoUtc, normalizeAppwriteDateFields,
     legacyIntegerDateSchemaEnabled, toEpochMillis, awFetchRowWithDateRetry,
-    listRows, listAllRows, getRow, createRow, updateRow, deleteRow,
+    listRows, listAllRows, getRow, getRowWithMode, createRow, updateRow, updateRows, compareAndSwapRow, deleteRow,
     createFile, readFileText, deleteFile, createAppwriteUser, awPublicAccountFetch,
     createEmailSession, deletePublicEmailSession, listAppwriteUsersByEmail,
     getAppwriteUserByEmail, getAppwriteUserById

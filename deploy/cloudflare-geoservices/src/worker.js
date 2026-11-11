@@ -48,6 +48,7 @@ const CORS_HEADERS = {
 const DEFAULT_ALLOWED_ORIGINS = new Set([
   'https://surveyorr.com.br',
   'https://www.surveyorr.com.br',
+  'https://surveyor-agrimensura.pages.dev',
   'http://localhost:5500',
   'http://127.0.0.1:5500'
 ]);

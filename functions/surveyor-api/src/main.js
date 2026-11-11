@@ -10,10 +10,17 @@ import { parsePermissions, sanitizeCommercialPermissions, createAuthorization } 
 import { createProjectModel } from './projects/model.js';
 import { createGoogleDriveService } from './integrations/google-drive.js';
 import { createAppwriteClient } from './appwrite/client.js';
+import { createGeoserviceProxy } from './geoservices/proxy.js';
+import { createPublicShortCodes } from './projects/public-short.js';
+import { createPlanDocumentValidator } from './documents/plan-attachment.js';
+import { makeScopedDraftPatch, validateScopedDraftInput, compactMirroredDocumentOptions } from './documents/scoped-draft.js';
+import { escapeHtml, googleDriveConnectErrorPage } from './security/html.js';
+import { attemptPasswordResetDelivery, passwordResetRequestMessage, passwordResetSubject, transientAuthBodyPayload } from './security/auth-messages.js';
+import { publicCustomizationView } from './projects/public-share.js';
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
-const APP_VERSION = '1.0.0-rc.185.74';
+const APP_VERSION = '1.0.0-rc.185.77-privacy-preferences';
 
 function env(name, fallback = '') {
   return process.env[name] || fallback;
@@ -42,7 +49,7 @@ const authorization = createAuthorization({ statusError, permissionCandidates })
 const { isGlobalAdminAccess, requireAdminAccess, effectivePermissionSet, hasPermission, requirePermission, documentCategoryPermission, canAccessDocumentCategory, requireDocumentCategoryPermission } = authorization;
 
 const projectModel = createProjectModel({ safeJson, headerValue, statusError, appwriteId });
-const { sanitizeProjectStatus, sanitizeProjectClientMetadata, sanitizeProjectClientInput, projectData, canonicalUpdatedAt, expectedUpdatedAt, assertRevisionMatches, mapFeature } = projectModel;
+const { sanitizeProjectStatus, sanitizeProjectClientMetadata, sanitizeProjectClientInput, projectData, canonicalUpdatedAt, projectRevision, expectedUpdatedAt, assertRevisionMatches, mapFeature } = projectModel;
 
 
 const appwrite = createAppwriteClient({
@@ -58,7 +65,7 @@ const {
   isPathUnsupported, normalizeListPayload, rowData, queryParam, qs, appwriteQuery, Query,
   errorText, invalidDateAttributeFromError, toStrictIsoUtc, normalizeAppwriteDateFields,
   legacyIntegerDateSchemaEnabled, toEpochMillis, awFetchRowWithDateRetry,
-  listRows, listAllRows, getRow, createRow, updateRow, deleteRow,
+  listRows, listAllRows, getRow, getRowWithMode, createRow, updateRow, compareAndSwapRow, deleteRow,
   createFile, readFileText, deleteFile, createAppwriteUser, awPublicAccountFetch,
   createEmailSession, deletePublicEmailSession, listAppwriteUsersByEmail,
   getAppwriteUserByEmail, getAppwriteUserById
@@ -80,123 +87,9 @@ const {
 
 
 
-const PUBLIC_SHORT_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-const PUBLIC_SHORT_LENGTH = 10;
-
-function encodePublicShortDigest(digest) {
-  let value = 0n;
-  for (let index = 0; index < 7; index += 1) value = (value << 8n) | BigInt(digest[index]);
-  value >>= 6n;
-  let code = '';
-  for (let index = 0; index < PUBLIC_SHORT_LENGTH; index += 1) {
-    code = PUBLIC_SHORT_ALPHABET[Number(value & 31n)] + code;
-    value >>= 5n;
-  }
-  return code;
-}
-
-function projectShortCode(projectId = '') {
-  const normalized = String(projectId || '').trim();
-  if (!normalized) return '';
-  // O código público é um localizador, não um segredo. Não depende do JWT_SECRET,
-  // portanto uma rotação de credenciais não invalida QR Codes impressos.
-  return encodePublicShortDigest(crypto.createHash('sha256').update(`surveyor-public-project:v3:${normalized}`).digest());
-}
-
-function legacyProjectShortCode(projectId = '') {
-  const normalized = String(projectId || '').trim();
-  if (!normalized) return '';
-  return encodePublicShortDigest(crypto.createHmac('sha256', jwtSecret()).update(`project-short:v2:${normalized}`).digest());
-}
-
-function normalizePublicShortCode(value = '') {
-  return String(value || '')
-    .toUpperCase()
-    .replace(/[O]/g, '0')
-    .replace(/[IL]/g, '1')
-    .replace(/[^0-9A-HJKMNP-TV-Z]/g, '');
-}
-
-function displayPublicShortCode(value = '') {
-  const code = normalizePublicShortCode(value);
-  return code.length === PUBLIC_SHORT_LENGTH ? `${code.slice(0, 5)}-${code.slice(5)}` : code;
-}
-
-function publicShortPath(projectId = '') {
-  const code = projectShortCode(projectId);
-  return code ? `/p/?c=${encodeURIComponent(displayPublicShortCode(code))}` : '';
-}
-
-const shortProjectLookupCache = new Map();
-const SHORT_PROJECT_CACHE_TTL_MS = 5 * 60 * 1000;
-
-function publicShortIndexFileId(code = '') {
-  const normalized = normalizePublicShortCode(code);
-  return normalized.length === PUBLIC_SHORT_LENGTH ? `public_${normalized}` : '';
-}
-
-async function writePublicShortIndex(projectIdValue, code = projectShortCode(projectIdValue)) {
-  const normalized = normalizePublicShortCode(code);
-  const projectId = String(projectIdValue || '').trim();
-  const fileId = publicShortIndexFileId(normalized);
-  if (!projectId || !fileId) return false;
-  const content = JSON.stringify({ version: 1, code: normalized, projectId, updatedAt: new Date().toISOString() });
-  const bucket = bucketId('project_files');
-  try {
-    await deleteFile(bucket, fileId).catch(() => null);
-    await createFile(bucket, `public-short-${normalized}.json`, content, 'application/json', fileId);
-    return true;
-  } catch (error) {
-    console.warn('[public-short] índice direto no Storage indisponível:', error?.message || error);
-    return false;
-  }
-}
-
-async function readPublicShortIndex(code = '') {
-  const fileId = publicShortIndexFileId(code);
-  if (!fileId) return '';
-  try {
-    const text = await readFileText(bucketId('project_files'), fileId);
-    const parsed = text ? JSON.parse(text) : null;
-    return String(parsed?.projectId || '').trim();
-  } catch { return ''; }
-}
-
-async function findProjectRowByShortCode(code = '') {
-  const normalized = normalizePublicShortCode(code);
-  if (normalized.length !== PUBLIC_SHORT_LENGTH) return null;
-  const cached = shortProjectLookupCache.get(normalized);
-  if (cached && cached.expiresAt > Date.now()) {
-    const row = await getRow('projects', cached.projectId).catch(() => null);
-    if (row && String(row.status || '').toLowerCase() !== 'deleted') return row;
-    shortProjectLookupCache.delete(normalized);
-  }
-
-  const indexedProjectId = await readPublicShortIndex(normalized);
-  if (indexedProjectId) {
-    const row = await getRow('projects', indexedProjectId).catch(() => null);
-    if (row && String(row.status || '').toLowerCase() !== 'deleted') {
-      shortProjectLookupCache.set(normalized, { projectId: indexedProjectId, expiresAt: Date.now() + SHORT_PROJECT_CACHE_TTL_MS });
-      return row;
-    }
-  }
-
-  // Migração compatível: códigos HMAC impressos em releases anteriores ainda podem
-  // ser resolvidos uma única vez e são imediatamente indexados para acessos futuros.
-  const rows = await listAllRows('projects');
-  const matches = rows.filter((row) => {
-    if (String(row.status || '').toLowerCase() === 'deleted') return false;
-    const id = row.$id || row.id;
-    return projectShortCode(id) === normalized || legacyProjectShortCode(id) === normalized;
-  });
-  if (matches.length !== 1) return null;
-  const row = matches[0];
-  const projectId = row.$id || row.id;
-  shortProjectLookupCache.set(normalized, { projectId, expiresAt: Date.now() + SHORT_PROJECT_CACHE_TTL_MS });
-  await writePublicShortIndex(projectId, normalized);
-  await writePublicShortIndex(projectId, projectShortCode(projectId));
-  return row;
-}
+const { projectShortCode, legacyProjectShortCode, normalizePublicShortCode, displayPublicShortCode, publicShortPath, findProjectRowByShortCode, writePublicShortIndex } = createPublicShortCodes({
+  crypto, jwtSecret, bucketId, deleteFile, createFile, readFileText, getRow, listAllRows
+});
 
 function normalizeProjectShare(input = {}, auth = {}) {
   const now = new Date().toISOString();
@@ -273,19 +166,86 @@ async function assertShareUsable(share = {}, request) {
 }
 
 
-async function sendPublicProjectShare(response, request, row, projectPayload, share) {
-  const { metadata, shares } = projectPayloadShares(projectPayload);
-  await assertShareUsable(share, request);
-  share.accessCount = Number(share.accessCount || 0) + 1;
-  share.lastAccessAt = new Date().toISOString();
-  share.updatedAt = share.lastAccessAt;
-  await commitProjectPayload(row, { ...projectPayload, metadata: { ...metadata, secureShares: shares }, updatedAt: share.updatedAt }, null, { updatedAt: share.updatedAt })
-    .catch((error) => console.warn('[share] não foi possível registrar acesso:', error?.message || error));
-  const project = mapProject(row);
-  const features = Array.isArray(projectPayload.features) ? projectPayload.features.map((item) => mapFeature(item, project.id, row.userId)) : [];
-  const customRows = await listRows('customization', [Query.equal('userId', row.userId), Query.limit(1)]).catch(() => []);
-  const customization = await serializeDocumentCustomization(customRows[0] || {});
-  return send(response, request, 200, { ok: true, project, features, customization, share: publicShareView(share, '', project.id) }, { 'Cache-Control': 'no-store' });
+async function sendPublicProjectShare(response, request, row, _projectPayload, requestedShare, databaseMode = '') {
+  const rowId = String(row?.$id || row?.id || '');
+  const requestedShareId = String(requestedShare?.id || '');
+  if (!rowId || !requestedShareId) throw statusError(404, 'Projeto público não encontrado.');
+  const detected = databaseMode ? { row, mode: databaseMode } : await getRowWithMode('projects', rowId);
+  if (!detected.row || detected.row.status === 'deleted' || String(detected.row.userId || '') !== String(row.userId || '')) {
+    throw statusError(404, 'Projeto público não encontrado.');
+  }
+
+  let committed = null;
+  for (let attempt = 0; attempt < 3 && !committed; attempt += 1) {
+    let currentRow = null;
+    let currentPayload = null;
+    let currentShare = null;
+    let nextPayload = null;
+    let staged = null;
+
+    try {
+      currentRow = await getRow('projects', rowId, { mode: detected.mode });
+      if (!currentRow || currentRow.status === 'deleted' || String(currentRow.userId || '') !== String(row.userId || '')) {
+        throw statusError(404, 'Projeto público não encontrado.');
+      }
+      currentPayload = await readProjectPayload(currentRow);
+      const { metadata, shares } = projectPayloadShares(currentPayload);
+      if (requestedShareId === `public-short:${rowId}`) {
+        currentShare = shares
+          .filter((item) => !item.revokedAt && (!item.expiresAt || Date.parse(item.expiresAt) > Date.now()))
+          .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')))[0] || null;
+        if (!currentShare && metadata.publicShortEnabled) {
+          currentShare = {
+            id: requestedShareId,
+            createdAt: metadata.publicShortCreatedAt || currentRow.createdAt || new Date().toISOString(),
+            updatedAt: metadata.publicShortUpdatedAt || metadata.publicShortCreatedAt || currentRow.updatedAt || new Date().toISOString(),
+            expiresAt: null,
+            permissionMode: 'readonly',
+            passwordProtected: false,
+            passwordSalt: '',
+            passwordHash: '',
+            maxAccessCount: 0,
+            accessCount: 0,
+            lastAccessAt: null,
+            revokedAt: null
+          };
+        }
+      } else {
+        currentShare = shares.find((item) => String(item.id || '') === requestedShareId);
+      }
+      if (!currentShare) throw statusError(403, 'Este compartilhamento foi revogado ou não existe mais.', { code: 'SHARE_NOT_FOUND_OR_REVOKED' });
+
+      await assertShareUsable(currentShare, request);
+      const now = new Date().toISOString();
+      currentShare.accessCount = Number(currentShare.accessCount || 0) + 1;
+      currentShare.lastAccessAt = now;
+      currentShare.updatedAt = now;
+      nextPayload = { ...currentPayload, metadata: { ...metadata, secureShares: shares }, updatedAt: now };
+
+      staged = await stageProjectPayload(currentRow, nextPayload, null);
+      const saved = await compareAndSwapRow('projects', rowId, currentRow, { updatedAt: now, geojsonFileId: staged.fileId }, { mode: detected.mode });
+      committed = { row: saved, payload: nextPayload, share: currentShare, staged };
+    } catch (error) {
+      if (staged && error?.details?.code !== 'SAVE_COMMIT_STATUS_UNKNOWN') {
+        await deleteFile(staged.bucket, staged.fileId).catch((cleanupError) => console.warn('[share] arquivo temporário pendente de limpeza:', cleanupError?.message || cleanupError));
+      } else if (staged) {
+        console.warn('[share] resultado inconclusivo; arquivo temporário preservado para evitar perda do projeto.');
+      }
+      if (error?.details?.code === 'EDIT_CONFLICT' && attempt < 2) continue;
+      throw error;
+    }
+  }
+
+  if (!committed) throw statusError(409, 'O compartilhamento foi alterado simultaneamente. Tente novamente.');
+  if (committed.staged.previousFileId && committed.staged.previousFileId !== committed.staged.fileId) {
+    await deleteFile(committed.staged.bucket, committed.staged.previousFileId)
+      .catch((error) => console.warn('[storage] arquivo anterior do projeto pendente de limpeza:', error?.message || error));
+  }
+  const project = mapProject(committed.row);
+  const features = Array.isArray(committed.payload.features) ? committed.payload.features.map((item) => mapFeature(item, project.id, committed.row.userId)) : [];
+  const customRows = await listRows('customization', [Query.equal('userId', committed.row.userId), Query.limit(1)]).catch(() => []);
+  const customization = publicCustomizationView(await serializeDocumentCustomization(customRows[0] || {}));
+  return send(response, request, 200, { ok: true, project, features, customization, share: publicShareView(committed.share, '', project.id) }, { 'Cache-Control': 'no-store' });
 }
 
 function normalizeEmail(value) {
@@ -303,6 +263,32 @@ function userPrefs(user = {}) {
   const prefs = user?.prefs && typeof user.prefs === 'object' ? user.prefs : {};
   const surveyor = prefs.surveyor && typeof prefs.surveyor === 'object' ? prefs.surveyor : {};
   return { prefs, surveyor };
+}
+
+function sanitizePrivacyPreferences(input = {}) {
+  const source = input && typeof input === 'object' ? input : {};
+  const updatedAt = String(source.updatedAt || '').trim();
+  const parsedAt = Date.parse(updatedAt);
+  return {
+    version: 1,
+    necessary: true,
+    analytics: source.analytics === true,
+    personalization: source.personalization === true,
+    marketing: source.marketing === true,
+    updatedAt: Number.isFinite(parsedAt) ? new Date(parsedAt).toISOString() : new Date().toISOString()
+  };
+}
+
+function canReadDocumentCustomization(auth = {}) {
+  if (hasPermission(auth, 'company:settings')) return true;
+  // Document generators must read the account defaults that are applied to
+  // their output, even when the account can use those defaults but cannot edit
+  // company-wide identity settings.
+  return [
+    'documents:memorial', 'documents:ods', 'documents:confrontacao',
+    'documents:mapas', 'documents:pranchas', 'documents:perimetros',
+    'documents:planialtimetria'
+  ].some((permission) => hasPermission(auth, permission));
 }
 
 const RESTRICTED_MEMORIAL_TEMPLATE_IDS = new Set(['agro-mais']);
@@ -537,7 +523,7 @@ async function rotateRefreshSession({ payload, appwriteUser = null }) {
   const sessionIndex = sessions.findIndex((item) => String(item.jti) === String(payload.jti || ''));
   if (sessionIndex < 0) {
     const revokedAt = new Date().toISOString();
-    await updateAppwriteUserSurveyorPrefs(payload.sub, {
+    await updateAppwriteUserSurveyorPrefs(userId, {
       authSessions: [],
       remoteLogoutAt: revokedAt,
       sessionVersion: appwriteId(),
@@ -1824,7 +1810,7 @@ function transientAuthTokenFromRequest(request, input = {}, cookieName, inputKey
   return '';
 }
 
-function transientAuthDelivery(request, token, { cookieName, cookieFlag, payloadKey, path, maxAge = 600 } = {}) {
+function transientAuthDelivery(request, token, { cookieName, cookieFlag, payloadKey, path, maxAge = 600, allowBodyTokenWithoutOrigin = true } = {}) {
   const origin = String(headerValue(request, 'origin') || '').trim();
   if (isOfficialWebOrigin(origin)) {
     return {
@@ -1833,7 +1819,7 @@ function transientAuthDelivery(request, token, { cookieName, cookieFlag, payload
     };
   }
   return {
-    payload: { [payloadKey]: token, [cookieFlag]: false },
+    payload: transientAuthBodyPayload(token, { cookieFlag, payloadKey, origin, allowBodyTokenWithoutOrigin }),
     headers: {}
   };
 }
@@ -2019,6 +2005,9 @@ function sendText(res, request, status, text, contentType = 'text/plain; charset
     'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
     'Access-Control-Max-Age': '86400',
     'Content-Type': contentType,
+    ...(String(contentType).toLowerCase().startsWith('text/html') ? {
+      'Content-Security-Policy': "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'"
+    } : {}),
     ...baseSecurityHeaders(request),
     ...extraHeaders
   };
@@ -2235,8 +2224,8 @@ function mapProject(row = {}) {
       geojsonFileId: row.geojsonFileId || metadata.geojsonFileId || ''
     },
     createdAt: row.createdAt || row.$createdAt || null,
-    updatedAt: row.updatedAt || row.$updatedAt || null,
-    revision: String(row.updatedAt || row.$updatedAt || '')
+    updatedAt: projectRevision(row) || null,
+    revision: projectRevision(row)
   };
 }
 
@@ -2286,7 +2275,7 @@ function safeJson(value, fallback) {
 
 
 async function serializeDocumentCustomization(row = {}) {
-  const opts = customizationOptions(row || {});
+  const opts = await readHydratedCustomizationOptions(row || {});
   const nestedDocumentOptions = opts.documentOptions && typeof opts.documentOptions === 'object' ? opts.documentOptions : (opts.options && typeof opts.options === 'object' ? opts.options : {});
   const documentOptions = { ...opts, ...nestedDocumentOptions };
   delete documentOptions.documentIdentity;
@@ -2343,7 +2332,7 @@ async function saveDocumentCustomizationForUser(userId, input = {}) {
   const now = new Date().toISOString();
   const rows = await findCustomizationRowsForUser(userId);
   const current = rows[0] || null;
-  const currentOptions = customizationOptions(current || {});
+  const currentOptions = await readHydratedCustomizationOptions(current || {});
   const identity = normalizeDocumentIdentity(input, currentOptions);
   const stagedAssetFiles = [];
   const previousAssetFiles = [];
@@ -2419,7 +2408,7 @@ async function saveDocumentCustomizationForUser(userId, input = {}) {
   mergedDocumentOptions.memorialTemplateId = savedMemorialTemplateId;
   mergedDocumentOptions.memorialTemplateMode = savedMemorialTemplateId === 'standard' ? 'standard' : 'custom';
   mergedDocumentOptions.memorialTemplateUpdatedAt = String(mergedDocumentOptions.memorialTemplateUpdatedAt || new Date().toISOString());
-  const options = {
+  const options = compactMirroredDocumentOptions({
     ...currentOptions,
     memorialTemplateId: savedMemorialTemplateId,
     memorialTemplateMode: mergedDocumentOptions.memorialTemplateMode,
@@ -2434,7 +2423,15 @@ async function saveDocumentCustomizationForUser(userId, input = {}) {
     planDocumentSignatureFileId,
     planDocumentSignatureDataUrl: planDocumentSignatureDataUrlForOptions,
     documentCustomizationUpdatedAt: now
-  };
+  });
+  let optionsStorage;
+  try { optionsStorage = await stageCustomizationOptions(userId, options); }
+  catch (error) {
+    // Uma falha ao gravar as opções não pode deixar ativos arquivos de logo/
+    // assinatura criados apenas para esta tentativa de salvamento.
+    for (const fileId of stagedAssetFiles) await deleteFile(bucketId('user_assets'), fileId).catch(() => null);
+    throw error;
+  }
   const data = {
     userId,
     companyName: identity.companyName,
@@ -2445,7 +2442,7 @@ async function saveDocumentCustomizationForUser(userId, input = {}) {
     crea: identity.professionalRegistry,
     site: identity.websiteUrl,
     footerText: identity.footerText,
-    options: JSON.stringify(options),
+    options: optionsStorage.rowValue,
     createdAt: current?.createdAt || now,
     updatedAt: now
   };
@@ -2454,8 +2451,22 @@ async function saveDocumentCustomizationForUser(userId, input = {}) {
     saved = await saveCustomizationRow(current, data);
   } catch (error) {
     for (const fileId of stagedAssetFiles) await deleteFile(bucketId('user_assets'), fileId).catch(() => null);
+    if (optionsStorage.stagedFileId) await deleteFile(bucketId('user_assets'), optionsStorage.stagedFileId).catch(() => null);
     throw error;
   }
+  // Leitura real apos o PATCH: sem isso, um HTTP 200 intermediario poderia
+  // confirmar dados incompletos ou uma referencia que nao foi persistida.
+  // Em caso de falha, o documento e o arquivo recem-salvos permanecem intactos;
+  // o frontend conserva seu rascunho ate a releitura ser confirmada.
+  const savedId = String(saved?.$id || saved?.id || current?.$id || current?.id || '');
+  if (!savedId) throw statusError(502, 'O Appwrite nao devolveu o identificador da personalizacao salva.', {code:'CUSTOMIZATION_SAVE_UNCONFIRMED'});
+  const reloaded = await getRow('customization', savedId);
+  const hydrated = await readHydratedCustomizationOptions(reloaded || {});
+  if (sha256Hex(JSON.stringify(hydrated)) !== sha256Hex(JSON.stringify(options))) {
+    throw statusError(502, 'A leitura de confirmacao difere dos dados enviados. O rascunho local foi preservado.', {code:'CUSTOMIZATION_SAVE_MISMATCH'});
+  }
+  const previousOptionsFileId = String(customizationOptions(current || {}).__surveyorOptionsBlob?.fileId || '');
+  if (previousOptionsFileId && previousOptionsFileId !== optionsStorage.stagedFileId) previousAssetFiles.push(previousOptionsFileId);
   const keepId = saved?.$id || saved?.id || current?.$id || current?.id || '';
   const cleanupTask = Promise.allSettled([
     ...[...new Set(previousAssetFiles)].map((fileId) => deleteFile(bucketId('user_assets'), fileId)),
@@ -2784,15 +2795,22 @@ async function commitProjectPayload(row, payload, auth = null, patch = {}) {
   const staged = await stageProjectPayload(row, payload, auth);
   let saved;
   try {
-    saved = await updateRow('projects', rowId, { ...patch, geojsonFileId: staged.fileId });
+    const detected = await getRowWithMode('projects', rowId);
+    saved = await compareAndSwapRow('projects', rowId, row, { ...patch, geojsonFileId: staged.fileId }, { mode: detected.mode });
   } catch (error) {
-    await deleteFile(staged.bucket, staged.fileId).catch(() => null);
+    if (error?.details?.code !== 'SAVE_COMMIT_STATUS_UNKNOWN') {
+      await deleteFile(staged.bucket, staged.fileId).catch(() => null);
+    }
     throw error;
   }
   if (staged.previousFileId && staged.previousFileId !== staged.fileId) {
     await deleteFile(staged.bucket, staged.previousFileId).catch((error) => console.warn('[storage] arquivo anterior do projeto pendente de limpeza:', error?.message || error));
   }
   return { fileId: staged.fileId, saved };
+}
+
+function shouldCleanupStagedProjectFile(error) {
+  return error?.details?.code !== 'SAVE_COMMIT_STATUS_UNKNOWN';
 }
 
 function assertValidProjectFeatures(features = []) {
@@ -4922,6 +4940,9 @@ async function deleteUserCustomizations(userIds = []) {
   const rows = await rowsForAnyUserId('customization', userIds);
   const fileFields = ['logoFileId', 'baseTemplateFileId', 'planDocumentSignatureFileId'];
   for (const row of rows) {
+    const stored = customizationOptions(row);
+    const customizationBlobId = String(stored.__surveyorOptionsBlob?.fileId || '');
+    if (customizationBlobId) await deleteFile(bucketId('user_assets'), customizationBlobId).catch(() => null);
     for (const field of fileFields) {
       const fileId = String(row?.[field] || '').trim();
       if (fileId) await deleteFile(bucketId('user_assets'), fileId).catch(() => null);
@@ -5394,6 +5415,53 @@ function customizationOptions(row = {}) {
   return parsed && typeof parsed === 'object' ? parsed : {};
 }
 
+/** O campo Appwrite customization.options é string com limite de 65535 BYTES.
+ * Croquis extensos são armazenados por inteiro, cifrados e verificados no Storage.
+ * O documento conserva um ponteiro pequeno; documentos anteriores com JSON inline
+ * continuam sendo lidos sem migração destrutiva. Não descartar nenhuma propriedade. */
+const CUSTOMIZATION_OPTIONS_INLINE_LIMIT = 60000;
+async function readHydratedCustomizationOptions(row = {}) {
+  const inline = customizationOptions(row);
+  const ref = inline.__surveyorOptionsBlob;
+  if (!ref) return inline;
+  if (ref.version !== 1 || typeof ref.fileId !== 'string' || !/^[a-f0-9-]{8,80}$/i.test(ref.fileId)
+    || typeof ref.sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(ref.sha256)) {
+    throw statusError(502, 'Referência de personalização inválida: os dados na nuvem não foram alterados.', {code:'CUSTOMIZATION_REF_INVALID'});
+  }
+  const contents = await readFileText(bucketId('user_assets'), ref.fileId);
+  if (!contents || sha256Hex(contents) !== ref.sha256) {
+    throw statusError(502, 'A integridade das configurações salvas não pôde ser confirmada. Nenhuma informação será sobrescrita.', {code:'CUSTOMIZATION_BLOB_INTEGRITY'});
+  }
+  const value = decryptJsonText(contents, {aad:`customization-options:${row.userId}`});
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw statusError(502, 'Arquivo de personalização não contém um objeto válido.', {code:'CUSTOMIZATION_BLOB_INVALID'});
+  }
+  return value;
+}
+async function stageCustomizationOptions(userId, options) {
+  const serialized = JSON.stringify(options);
+  if (typeof serialized !== 'string') throw statusError(400, 'Opções de personalização inválidas.');
+  if (Buffer.byteLength(serialized, 'utf8') <= CUSTOMIZATION_OPTIONS_INLINE_LIMIT) {
+    return {rowValue:serialized, stagedFileId:''};
+  }
+  const encrypted = encryptJsonText(options, {aad:`customization-options:${userId}`});
+  const sha256 = sha256Hex(encrypted);
+  const fileId = appwriteId();
+  await createFile(bucketId('user_assets'), `customization-${userId}-${fileId}.json`, encrypted, 'application/json', fileId);
+  try {
+    const check = await readFileText(bucketId('user_assets'), fileId);
+    if (!check || sha256Hex(check) !== sha256) {
+      throw statusError(502, 'Não foi possível confirmar a cópia das configurações no Storage. Salvamento cancelado.', {code:'CUSTOMIZATION_BLOB_VERIFY_FAILED'});
+    }
+    const rowValue = JSON.stringify({__surveyorOptionsBlob:{version:1,fileId,sha256,bytes:Buffer.byteLength(encrypted,'utf8')}});
+    if (Buffer.byteLength(rowValue,'utf8') > 65535) throw statusError(500, 'Referência de opções excedeu o limite do Appwrite.');
+    return {rowValue,stagedFileId:fileId};
+  } catch (error) {
+    await deleteFile(bucketId('user_assets'),fileId).catch(()=>null);
+    throw error;
+  }
+}
+
 function hasUsefulCustomization(value = {}) {
   const options = value?.options && typeof value.options === 'object' ? value.options : {};
   return Boolean(
@@ -5474,7 +5542,7 @@ function normalizeLayerCatalogState(value = 'BA') {
 async function getLayerPreferencesForUser(userId, auth = {}) {
   if (!userId) return [];
   const row = await findCustomizationForUser(userId).catch(() => null);
-  const options = customizationOptions(row || {});
+  const options = await readHydratedCustomizationOptions(row || {});
   const saved = Array.isArray(options.layerPreferences) ? options.layerPreferences : [];
   const catalog = await publicLayerCatalog(auth).catch(() => ({ layers: [] }));
   return mergeDefaultLayerPreferences(saved, catalog.layers || []);
@@ -5483,7 +5551,7 @@ async function getLayerPreferencesForUser(userId, auth = {}) {
 async function getLayerCatalogStateForUser(userId) {
   if (!userId) return { state: 'BA', configured: false };
   const row = await findCustomizationForUser(userId).catch(() => null);
-  const options = customizationOptions(row || {});
+  const options = await readHydratedCustomizationOptions(row || {});
   return { state: normalizeLayerCatalogState(options.layerCatalogState || 'BA'), configured: Object.prototype.hasOwnProperty.call(options, 'layerCatalogState') };
 }
 
@@ -5513,9 +5581,10 @@ async function saveLayerPreferencesForUser(userId, preferences = [], auth = {}, 
     });
 
   const now = new Date().toISOString();
-  const current = await findCustomizationForUser(userId).catch(() => null);
-  const currentOptions = customizationOptions(current || {});
+  const current = await findCustomizationForUser(userId);
+  const currentOptions = await readHydratedCustomizationOptions(current || {});
   const options = { ...currentOptions, layerPreferences: clean, layerCatalogState: normalizeLayerCatalogState(catalogState || currentOptions.layerCatalogState || 'BA'), layerPreferencesUpdatedAt: now };
+  const staged = await stageCustomizationOptions(userId, options);
   const data = {
     userId,
     companyName: current?.companyName || '',
@@ -5529,11 +5598,18 @@ async function saveLayerPreferencesForUser(userId, preferences = [], auth = {}, 
     crea: current?.crea || '',
     site: current?.site || '',
     footerText: current?.footerText || '',
-    options: JSON.stringify(options),
+    options: staged.rowValue,
     createdAt: current?.createdAt || now,
     updatedAt: now
   };
-  const saved = current?.$id ? await updateRow('customization', current.$id, data) : await createRow('customization', data);
+  let saved;
+  try { saved = await saveCustomizationRow(current, data); }
+  catch (error) {
+    if (staged.stagedFileId) await deleteFile(bucketId('user_assets'), staged.stagedFileId).catch(() => null);
+    throw error;
+  }
+  const previousId = String(customizationOptions(current || {}).__surveyorOptionsBlob?.fileId || '');
+  if (previousId && previousId !== staged.stagedFileId) await deleteFile(bucketId('user_assets'), previousId).catch(() => null);
   return { preferences: clean, customization: saved };
 }
 
@@ -5549,32 +5625,41 @@ function noticeDateValue(value) {
   return Number.isFinite(date.getTime()) ? date.toISOString() : null;
 }
 
-function normalizeNotice(input = {}, current = {}) {
+export function normalizeNotice(input = {}, current = {}) {
   const now = new Date().toISOString();
   const id = String(input.id || input.$id || current.id || current.$id || appwriteId()).trim();
-  const audience = ['all', 'users', 'admins', 'plan', 'user'].includes(String(input.audience || current.audience || 'all'))
-    ? String(input.audience || current.audience || 'all')
-    : 'all';
-  const deliveryMode = ['notification', 'popup', 'banner', 'release', 'login-expiration'].includes(String(input.deliveryMode || input.delivery || current.deliveryMode || current.delivery || 'notification'))
-    ? String(input.deliveryMode || input.delivery || current.deliveryMode || current.delivery || 'notification')
-    : 'notification';
+  const requestedAudience = String(input.audience ?? current.audience ?? 'all').toLowerCase();
+  const audienceValue = requestedAudience === 'active' ? 'users' : requestedAudience;
+  const audience = ['all', 'users', 'admins', 'plan', 'user'].includes(audienceValue) ? audienceValue : 'all';
+  const requestedDelivery = String(input.deliveryMode ?? input.displayMode ?? input.delivery ?? current.deliveryMode ?? current.displayMode ?? current.delivery ?? 'notification').toLowerCase();
+  const legacyDelivery = requestedDelivery === 'login' ? 'login-expiration' : requestedDelivery === 'maintenance' ? 'banner' : requestedDelivery;
+  const deliveryMode = ['notification', 'popup', 'banner', 'release', 'login-expiration'].includes(legacyDelivery) ? legacyDelivery : 'notification';
   const type = ['info', 'warning', 'danger', 'maintenance', 'success'].includes(String(input.type || current.type || 'info'))
     ? String(input.type || current.type || 'info')
     : 'info';
+  const requestedStatus = input.status ?? current.status;
+  const isActive = input.isActive !== undefined
+    ? Boolean(input.isActive)
+    : requestedStatus !== undefined
+      ? String(requestedStatus).toLowerCase() === 'active'
+      : current.isActive !== undefined ? Boolean(current.isActive) : true;
+  const blocksApp = Boolean(input.blocksApp ?? current.blocksApp ?? false);
   return {
     id,
     title: String(input.title ?? current.title ?? '').trim().slice(0, 160),
     message: String(input.message ?? current.message ?? '').trim().slice(0, 4000),
     type,
-    deliveryMode: input.blocksApp === true || current.blocksApp === true ? 'banner' : deliveryMode,
+    deliveryMode: blocksApp ? 'banner' : deliveryMode,
+    displayMode: blocksApp ? 'banner' : deliveryMode,
     audience,
     targetPlanSlug: audience === 'plan' ? String(input.targetPlanSlug ?? current.targetPlanSlug ?? '').trim().toLowerCase() : null,
     targetUserId: audience === 'user' ? String(input.targetUserId ?? current.targetUserId ?? '').trim() : null,
     requiresAck: Boolean(input.requiresAck ?? current.requiresAck ?? false),
-    blocksApp: Boolean(input.blocksApp ?? current.blocksApp ?? false),
-    isActive: input.isActive === undefined && current.isActive === undefined ? true : Boolean(input.isActive ?? current.isActive),
-    startsAt: noticeDateValue(input.startsAt ?? current.startsAt),
-    endsAt: noticeDateValue(input.endsAt ?? current.endsAt),
+    blocksApp,
+    isActive,
+    status: isActive ? 'active' : 'inactive',
+    startsAt: noticeDateValue(Object.prototype.hasOwnProperty.call(input, 'startsAt') ? input.startsAt : current.startsAt),
+    endsAt: noticeDateValue(Object.prototype.hasOwnProperty.call(input, 'endsAt') ? input.endsAt : current.endsAt),
     createdBy: String(input.createdBy ?? current.createdBy ?? '').trim() || null,
     createdAt: noticeDateValue(input.createdAt ?? current.createdAt) || now,
     updatedAt: now,
@@ -6059,447 +6144,12 @@ async function seedGeobahiaOfficialLayers() {
   };
 }
 
-function remoteLayerDetection(input = {}) {
-  const serviceUrl = String(input.serviceUrl || input.sourceUrl || '').trim();
-  const lower = serviceUrl.toLowerCase();
-  let serviceType = String(input.serviceType || input.type || '').toLowerCase();
-  if (!serviceType) {
-    if (lower.includes('service=wms') || lower.includes('/wms')) serviceType = 'wms';
-    else if (lower.includes('/featureserver') || lower.includes('/mapserver')) serviceType = 'arcgis';
-    else serviceType = 'geojson';
-  }
-  return { serviceType, serviceUrl, ok: Boolean(serviceUrl), message: serviceUrl ? 'URL reconhecida para cadastro no Appwrite.' : 'Informe uma URL para testar.' };
-}
-
-function isInemaProxyTarget(url) {
-  try {
-    const parsed = new URL(String(url || ''));
-    return parsed.hostname === 'geoserver.inema.ba.gov.br'
-      || parsed.hostname === 'inema.ba.gov.br'
-      || parsed.hostname.endsWith('.inema.ba.gov.br');
-  } catch {
-    return /(?:^|\.)inema\.ba\.gov\.br(?:[/:?#]|$)/i.test(String(url || ''));
-  }
-}
-
-const DEFAULT_WMS_PROXY_ALLOWED_HOSTS = new Set([
-  'geoserver.inema.ba.gov.br',
-  'geoserver.car.gov.br',
-  'geoservicos.ibge.gov.br',
-  'geoservicos.inde.gov.br',
-  'www.geoservicos.inde.gov.br',
-  'geoinfo.dados.embrapa.br',
-  'geo.infrasa.gov.br',
-  'sig.valec.gov.br',
-  'acervofundiario.incra.gov.br'
-]);
-
-const WMS_PROXY_TIMEOUT_MS = 45_000;
-const WMS_PROXY_MAX_RESPONSE_BYTES = 20 * 1024 * 1024;
-const WMS_PROXY_MAX_REDIRECTS = 4;
-
-function allowedWmsProxyHosts() {
-  const configured = String(env('WMS_PROXY_ALLOWED_HOSTS', ''))
-    .split(',')
-    .map((item) => item.trim().toLowerCase())
-    .filter(Boolean);
-  return new Set([...DEFAULT_WMS_PROXY_ALLOWED_HOSTS, ...configured]);
-}
-
-function isInemaHostname(hostname) {
-  const value = String(hostname || '').trim().toLowerCase();
-  return value === 'inema.ba.gov.br' || value.endsWith('.inema.ba.gov.br');
-}
-
-function assertAllowedProxyUrl(url) {
-  if (!['http:', 'https:'].includes(url.protocol)) {
-    throw statusError(400, 'O upstream WMS deve usar HTTP ou HTTPS.');
-  }
-  const hostname = String(url.hostname || '').toLowerCase();
-  if (!allowedWmsProxyHosts().has(hostname)) {
-    throw statusError(403, `Domínio WMS não autorizado no proxy: ${hostname}`);
-  }
-}
-
-function geoserviceProxyTarget(request) {
-  return queryValue(request, 'target')
-    || queryValue(request, 'targetUrl')
-    || queryValue(request, 'url')
-    || queryValue(request, 'serviceUrl')
-    || queryValue(request, 'baseUrl');
-}
+const { remoteLayerDetection, proxyGeoService } = createGeoserviceProxy({
+  env, statusError, queryValue, parsePath, queryStringSources, corsOrigin, appVersion: APP_VERSION
+});
 
 
-function decodeBase64UrlText(value) {
-  const raw = String(value || '').trim();
-  if (!raw) return '';
-  const normalized = raw.replace(/-/g, '+').replace(/_/g, '/');
-  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
-  return Buffer.from(padded, 'base64').toString('utf8');
-}
-
-function geoserviceEncodedUpstreamFromPath(request) {
-  const path = parsePath(request);
-  const match = path.match(/^\/(?:api\/(?:geoservices\/)?)?(?:wms|wfs|wms-info|info)-url\/([^/?#]+)$/i);
-  if (!match) return null;
-  let decoded = '';
-  try {
-    decoded = decodeBase64UrlText(decodeURIComponent(match[1]));
-  } catch {
-    throw statusError(400, 'Payload do proxy geográfico inválido.');
-  }
-  if (!/^https?:\/\//i.test(decoded)) {
-    throw statusError(400, 'Payload do proxy geográfico sem URL HTTP(S).');
-  }
-  const targetUrl = new URL(decoded);
-  targetUrl.username = '';
-  targetUrl.password = '';
-  targetUrl.hash = '';
-  assertAllowedProxyUrl(targetUrl);
-  return targetUrl;
-}
-
-function geoserviceDefaultTargetForRequest(request) {
-  const path = parsePath(request);
-  const hasLayer = Boolean(
-    queryValue(request, 'LAYERS')
-    || queryValue(request, 'layers')
-    || queryValue(request, 'TYPENAME')
-    || queryValue(request, 'typeName')
-    || queryValue(request, 'typenames')
-  );
-  const service = String(queryValue(request, 'SERVICE') || queryValue(request, 'service') || '').toUpperCase();
-  const operation = String(queryValue(request, 'REQUEST') || queryValue(request, 'request') || '').toUpperCase();
-  const looksLikeGeoRequest = hasLayer
-    || ['GETMAP', 'GETFEATURE', 'GETFEATUREINFO', 'GETCAPABILITIES', 'GETLEGENDGRAPHIC'].includes(operation)
-    || ['WMS', 'WFS'].includes(service);
-
-  if ((path.startsWith('/api/geoservices/') || /^\/(?:api\/(?:geoservices\/)?)?(?:wms|wfs|wms-info|info)(?:$|-url\/|\/)/i.test(path)) && looksLikeGeoRequest) {
-    // Contingência segura: se algum runtime/proxy perder o parâmetro target,
-    // o catálogo oficial GeoBahia/INEMA ainda consegue funcionar sem abrir
-    // proxy genérico para outros domínios. O domínio continua preso à allowlist.
-    return 'https://geoserver.inema.ba.gov.br/geoserver/ows';
-  }
-  return '';
-}
-
-function normalizeProxyBaseTarget(rawTarget) {
-  if (!rawTarget || !/^https?:\/\//i.test(String(rawTarget))) {
-    throw statusError(400, 'Informe target/url/serviceUrl HTTP(S) para o proxy geográfico.');
-  }
-  const targetUrl = new URL(String(rawTarget));
-  assertAllowedProxyUrl(targetUrl);
-
-  targetUrl.username = '';
-  targetUrl.password = '';
-  targetUrl.hash = '';
-
-  if (isInemaHostname(targetUrl.hostname)) {
-    // /geoserver/ows atende WMS e WFS no GeoServer. Não forçamos /wms aqui,
-    // porque o fallback WFS por URL também passa por esta normalização.
-    if (/^\/(?:wms|ows|geoserver\/wms|geoserver\/ows)\/?$/i.test(targetUrl.pathname)) {
-      targetUrl.pathname = '/geoserver/ows';
-    }
-  }
-
-  const dynamicParams = new Set([
-    'bbox', 'width', 'height', 'request', 'service', 'layers', 'layer',
-    'styles', 'format', 'transparent', 'srs', 'crs', 'version', 'tiled',
-    'exceptions', 'dpi', 'map_resolution', 'format_options', 'bgcolor',
-    'query_layers', 'info_format', 'feature_count', 'x', 'y', 'i', 'j'
-  ]);
-  for (const key of [...targetUrl.searchParams.keys()]) {
-    if (dynamicParams.has(String(key).toLowerCase())) targetUrl.searchParams.delete(key);
-  }
-  return targetUrl;
-}
-
-function requestQueryEntries(request) {
-  const entries = [];
-  const seen = new Set();
-  const addEntry = (key, value) => {
-    if (value === undefined || value === null) return;
-    if (Array.isArray(value)) {
-      value.forEach((item) => addEntry(key, item));
-      return;
-    }
-    const k = String(key || '');
-    const v = String(value);
-    const fingerprint = `${k.toLowerCase()}=${v}`;
-    if (seen.has(fingerprint)) return;
-    seen.add(fingerprint);
-    entries.push([k, v]);
-  };
-
-  for (const query of [request?.query, request?.params]) {
-    if (!query) continue;
-    if (query instanceof URLSearchParams) {
-      for (const [key, value] of query.entries()) addEntry(key, value);
-    } else if (typeof query === 'object') {
-      for (const [key, value] of Object.entries(query)) addEntry(key, value);
-    }
-  }
-
-  for (const raw of queryStringSources(request)) {
-    try {
-      const params = new URLSearchParams(raw);
-      for (const [key, value] of params.entries()) addEntry(key, value);
-    } catch {}
-  }
-
-  for (const source of [request?.url, request?.path, request?.originalUrl, request?.href]) {
-    try {
-      const url = new URL(String(source || '/'), 'https://surveyor.local');
-      for (const [key, value] of url.searchParams.entries()) addEntry(key, value);
-    } catch {}
-  }
-
-  return entries;
-}
-
-function buildGeoserviceUpstreamUrl(request, rawTarget) {
-  const targetUrl = normalizeProxyBaseTarget(rawTarget);
-  const reserved = new Set([
-    'target', 'targeturl', 'url', 'serviceurl', 'baseurl',
-    'accesstoken', 'token', 'apibaseurl', 'api'
-  ]);
-
-  for (const [key, value] of requestQueryEntries(request)) {
-    const normalizedKey = String(key || '').toLowerCase();
-    if (reserved.has(normalizedKey)) continue;
-    if (!/^[a-z0-9_.:-]{1,80}$/i.test(key)) continue;
-    if (value === undefined || value === null || value === '') continue;
-    targetUrl.searchParams.set(key.toUpperCase(), String(value));
-  }
-
-  const operation = String(targetUrl.searchParams.get('REQUEST') || '').toUpperCase();
-  if (!targetUrl.searchParams.has('SERVICE')) {
-    targetUrl.searchParams.set('SERVICE', operation === 'GETFEATURE' ? 'WFS' : 'WMS');
-  }
-  if (!targetUrl.searchParams.has('VERSION')) {
-    targetUrl.searchParams.set('VERSION', operation === 'GETFEATURE' ? '1.0.0' : '1.1.1');
-  }
-  if (String(targetUrl.searchParams.get('SERVICE') || '').toUpperCase() === 'WMS' && !targetUrl.searchParams.has('STYLES')) {
-    targetUrl.searchParams.set('STYLES', '');
-  }
-  assertAllowedProxyUrl(targetUrl);
-  return targetUrl;
-}
-
-function geoserviceUpstreamCandidates(targetUrl) {
-  const candidates = [];
-  const add = (value) => {
-    const text = value instanceof URL ? value.toString() : String(value || '');
-    if (text && !candidates.some((url) => url.toString() === text)) candidates.push(new URL(text));
-  };
-
-  if (isInemaHostname(targetUrl.hostname)) {
-    const query = targetUrl.search || '';
-    // Commercial readiness: o proxy legado da API não faz downgrade para HTTP
-    // nem ignora certificado TLS. Fontes com TLS problemático devem passar pelo
-    // GeoServices dedicado/Cloudflare, que possui política explícita e isolada.
-    add(`https://geoserver.inema.ba.gov.br/geoserver/ows${query}`);
-    add(`https://geoserver.inema.ba.gov.br/geoserver/wms${query}`);
-    return candidates;
-  }
-
-  add(targetUrl);
-
-  if (targetUrl.protocol === 'http:') {
-    const httpsFallback = new URL(targetUrl.toString());
-    httpsFallback.protocol = 'https:';
-    candidates.unshift(httpsFallback);
-  }
-
-  return candidates;
-}
-
-async function requestBinaryViaNode(url, { redirectsLeft = WMS_PROXY_MAX_REDIRECTS, expectImage = false } = {}) {
-  assertAllowedProxyUrl(url);
-  const transport = url.protocol === 'https:' ? await import('node:https') : await import('node:http');
-
-  return new Promise((resolve, reject) => {
-    const req = transport.request(url, {
-      method: 'GET',
-      headers: {
-        Accept: 'image/png,image/jpeg,image/*,application/json,text/plain,application/xml,*/*;q=0.2',
-        'Accept-Encoding': 'identity',
-        'User-Agent': `Surveyor-Appwrite-WMS-Proxy/${APP_VERSION}`,
-        Connection: 'close'
-      },
-      ...(isInemaHostname(url.hostname) ? { family: 4 } : {}),
-      ...(url.protocol === 'https:' ? {
-        rejectUnauthorized: true,
-        servername: url.hostname
-      } : {})
-    }, (upstream) => {
-      const statusCode = Number(upstream.statusCode || 0);
-      const location = upstream.headers.location;
-
-      if (statusCode >= 300 && statusCode < 400 && location) {
-        upstream.resume();
-        if (redirectsLeft <= 0) {
-          reject(new Error('O WMS excedeu o limite de redirecionamentos.'));
-          return;
-        }
-        let redirectUrl;
-        try {
-          redirectUrl = new URL(location, url);
-          assertAllowedProxyUrl(redirectUrl);
-        } catch (error) {
-          reject(error);
-          return;
-        }
-        requestBinaryViaNode(redirectUrl, { redirectsLeft: redirectsLeft - 1, expectImage }).then(resolve, reject);
-        return;
-      }
-
-      const chunks = [];
-      let totalBytes = 0;
-      upstream.on('data', (chunk) => {
-        totalBytes += chunk.length;
-        if (totalBytes > WMS_PROXY_MAX_RESPONSE_BYTES) {
-          upstream.destroy(new Error('A resposta WMS excedeu o limite de 20 MB.'));
-          return;
-        }
-        chunks.push(chunk);
-      });
-      upstream.once('error', reject);
-      upstream.once('end', () => {
-        const buffer = Buffer.concat(chunks);
-        const contentType = String(upstream.headers['content-type'] || 'application/octet-stream');
-        const normalizedType = contentType.split(';')[0].trim().toLowerCase();
-        const isPng = buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
-        const isJpeg = buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
-
-        if (statusCode < 200 || statusCode >= 300) {
-          const detail = buffer.toString('utf8', 0, Math.min(buffer.length, 700)).replace(/\s+/g, ' ').trim();
-          reject(new Error(`WMS respondeu HTTP ${statusCode}${detail ? `: ${detail}` : ''}`));
-          return;
-        }
-        if (!buffer.length) {
-          reject(new Error('O WMS retornou uma resposta vazia.'));
-          return;
-        }
-
-        const isImage = normalizedType.startsWith('image/') || isPng || isJpeg;
-        if (expectImage && !isImage) {
-          const detail = buffer.toString('utf8', 0, Math.min(buffer.length, 900)).replace(/\s+/g, ' ').trim();
-          reject(new Error(detail || `O WMS respondeu com Content-Type ${contentType}, sem imagem.`));
-          return;
-        }
-
-        const finalContentType = normalizedType.startsWith('image/')
-          ? contentType
-          : (isPng ? 'image/png' : (isJpeg ? 'image/jpeg' : contentType));
-
-        resolve({
-          upstream: { status: statusCode, headers: upstream.headers },
-          contentType: finalContentType,
-          buffer,
-          targetUrl: url.toString(),
-          isImage
-        });
-      });
-    });
-
-    req.setTimeout(WMS_PROXY_TIMEOUT_MS, () => {
-      req.destroy(new Error(`O WMS excedeu o tempo limite de ${Math.round(WMS_PROXY_TIMEOUT_MS / 1000)} segundos.`));
-    });
-    req.once('error', reject);
-    req.end();
-  });
-}
-
-async function fetchFirstAvailableGeoservice(candidates, { expectImage = false } = {}) {
-  const errors = [];
-  for (const candidate of candidates) {
-    try {
-      return await requestBinaryViaNode(candidate, { expectImage });
-    } catch (error) {
-      errors.push(`${candidate.protocol}//${candidate.host}${candidate.pathname}: ${error?.message || String(error)}`);
-    }
-  }
-  throw statusError(502, `O proxy geográfico não conseguiu receber uma imagem válida do serviço externo. ${errors.slice(0, 3).join(' | ')}`.trim());
-}
-
-function binaryResponse(response, buffer, status, headers) {
-  if (typeof response.binary === 'function') {
-    return response.binary(buffer, status, headers);
-  }
-  if (typeof response.send === 'function') {
-    return response.send(buffer, status, headers);
-  }
-  throw statusError(500, 'Runtime Appwrite sem suporte a resposta binária.');
-}
-
-async function proxyGeoService(request, response) {
-  const encodedTargetUrl = geoserviceEncodedUpstreamFromPath(request);
-  const target = geoserviceProxyTarget(request) || geoserviceDefaultTargetForRequest(request);
-  const targetUrl = encodedTargetUrl || buildGeoserviceUpstreamUrl(request, target);
-  const requestedOperation = String(targetUrl.searchParams.get('REQUEST') || queryValue(request, 'request') || '').toUpperCase();
-  const path = parsePath(request);
-  const requestedService = String(targetUrl.searchParams.get('SERVICE') || queryValue(request, 'service') || '').toUpperCase();
-  const expectImage = requestedService === 'WMS'
-    && requestedOperation !== 'GETFEATUREINFO'
-    && requestedOperation !== 'GETCAPABILITIES'
-    && requestedOperation !== 'GETLEGENDGRAPHIC'
-    && !path.includes('wms-info');
-  const result = await fetchFirstAvailableGeoservice(geoserviceUpstreamCandidates(targetUrl), { expectImage });
-
-  const headers = {
-    'Access-Control-Allow-Origin': corsOrigin(request),
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
-    'Vary': 'Origin',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    'Access-Control-Expose-Headers': 'Content-Type, Content-Length, X-Surveyor-Upstream-Url',
-    'Content-Type': result.contentType,
-    'Content-Length': String(result.buffer.length),
-    'Cache-Control': result.isImage ? 'public, max-age=900, stale-while-revalidate=86400' : 'no-store',
-    'X-Surveyor-Upstream-Url': result.targetUrl
-  };
-
-  // WFS/GetCapabilities/GetFeatureInfo são consumidos por fetch() no navegador.
-  // Em alguns runtimes do Appwrite, respostas textuais por res.binary() não
-  // preservam CORS corretamente. Para JSON/XML/texto usamos res.send().
-  if (!result.isImage) {
-    const text = result.buffer.toString('utf8');
-    if (typeof response.send === 'function') return response.send(text, result.upstream.status, headers);
-  }
-
-  return binaryResponse(response, result.buffer, result.upstream.status, headers);
-}
-
-
-function normalizePlanDocumentAttachment(input = {}) {
-  const to = normalizeEmail(input.to || input.email);
-  const name = String(input.name || '').trim().slice(0, 180);
-  const planName = String(input.planName || '').trim().slice(0, 180);
-  const documentType = String(input.documentType || 'receipt') === 'receipt' ? 'receipt' : 'term';
-  const filename = String(input.filename || '').trim().replace(/[\\/:*?"<>|]/g, '_').slice(0, 240);
-  const contentBase64 = String(input.contentBase64 || '').replace(/^data:application\/pdf;base64,/, '').trim();
-  const maxBytes = Number(env('PLAN_DOCUMENT_MAX_ATTACHMENT_BYTES', String(8 * 1024 * 1024))) || 8 * 1024 * 1024;
-  if (!to || !/^\S+@\S+\.\S+$/.test(to)) throw statusError(400, 'E-mail de destino inválido.');
-  if (!name) throw statusError(400, 'Nome do cliente não informado.');
-  if (!planName) throw statusError(400, 'Plano não informado.');
-  if (!filename.toLowerCase().endsWith('.pdf')) throw statusError(400, 'Nome do arquivo PDF inválido.');
-  if (!contentBase64) throw statusError(400, 'Conteúdo do PDF não informado.');
-  let pdfBuffer;
-  try { pdfBuffer = Buffer.from(contentBase64, 'base64'); } catch { throw statusError(400, 'PDF em Base64 inválido.'); }
-  if (!pdfBuffer.length || pdfBuffer.slice(0, 4).toString() !== '%PDF') throw statusError(400, 'O anexo não é um PDF válido.');
-  if (pdfBuffer.length > maxBytes) throw statusError(413, `O PDF excede o limite de ${Math.round(maxBytes / 1024 / 1024)} MB.`);
-  return {
-    to, name, planName, documentType, filename, contentBase64, pdfBuffer,
-    startDate: String(input.startDate || '').slice(0, 40),
-    endDate: String(input.endDate || '').slice(0, 40),
-    accessEmail: normalizeEmail(input.accessEmail || to),
-    amountCents: Number(input.amountCents || 0),
-    documentCode: String(input.documentCode || '').slice(0, 100),
-    welcomeEmail: input.welcomeEmail === true,
-    firstAccessUrl: String(input.firstAccessUrl || '').trim().slice(0, 2500),
-    loginUrl: String(input.loginUrl || env('SURVEYOR_LOGIN_URL', 'https://surveyorr.com.br/login/')).slice(0, 500)
-  };
-}
+const normalizePlanDocumentAttachment = createPlanDocumentValidator({ normalizeEmail, env, statusError });
 
 async function dispatchPlanDocumentEmail(input = {}) {
   const data = normalizePlanDocumentAttachment(input);
@@ -7060,7 +6710,7 @@ async function route(request, response) {
   if (httpMethod === 'OPTIONS') return send(response, request, 204, null);
 
   if (path === '/api/live') {
-    return send(response, request, 200, { ok: true, service: 'Surveyor API Appwrite Function', status: 'live', version: APP_VERSION });
+    return send(response, request, 200, { ok: true, service: 'Surveyor API Appwrite Function', status: 'live', version: APP_VERSION, capabilities: ['customization-options-storage-v2', 'customization-scoped-drafts-v1', 'privacy-preferences-v1'] });
   }
 
   if (path === '/api/ready') {
@@ -7079,7 +6729,10 @@ async function route(request, response) {
       service: 'Surveyor API Appwrite Function',
       status: 'ready',
       version: APP_VERSION,
-      readinessEndpoint: '/api/ready'
+      readinessEndpoint: '/api/ready',
+      customizationStorage: 'storage-v2',
+      documentDraftTransport: 'scoped-v1',
+      privacyPreferences: 'account-v1'
     }, { 'Cache-Control': 'no-store' });
   }
 
@@ -7159,30 +6812,31 @@ async function route(request, response) {
     const profile = appwriteUser
       ? await findProfileForLogin(appwriteUser.$id || appwriteUser.id, email).catch(() => null)
       : await findProfileByEmail(email).catch(() => null);
-    if (!appwriteUser || !profile) {
-      await appendSecurityEvent({ type: 'login', action: 'password_reset_unknown_email', email, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'failed', message: 'Recuperação solicitada para e-mail sem conta.' }).catch(() => null);
-      const fakeUserId = base64url(crypto.createHmac('sha256', jwtSecret()).update(`unknown:${email}`).digest()).slice(0, 36);
-      const fakeCode = generateVerificationCode();
-      const resetToken = signJwt({ type: 'password-reset', sub: fakeUserId, email, codeHash: verificationCodeHash({ code: fakeCode, userId: fakeUserId, email }), decoy: true }, 10 * 60);
-      const resetDelivery = transientAuthDelivery(request, resetToken, {
-        cookieName: PASSWORD_RESET_COOKIE_NAME, cookieFlag: 'resetCookie', payloadKey: 'resetToken', path: '/api/auth/password-reset', maxAge: 600
-      });
-      return send(response, request, 200, { ok: true, ...resetDelivery.payload, maskedEmail: maskEmail(email), expiresIn: 600, message: `Se existir uma conta para ${maskEmail(email)}, um código será enviado.` }, { 'Cache-Control': 'no-store', 'Pragma': 'no-cache', ...resetDelivery.headers });
-    }
-    const userId = appwriteUser.$id || appwriteUser.id;
+    const resetSubject = passwordResetSubject(email, jwtSecret());
     const code = generateVerificationCode();
     const resetToken = signJwt({
       type: 'password-reset',
-      sub: userId,
+      sub: resetSubject,
       email,
-      codeHash: verificationCodeHash({ code, userId, email })
+      codeHash: verificationCodeHash({ code, userId: resetSubject, email })
     }, 10 * 60);
-    await sendPasswordResetEmail({ email, name: profile.name || appwriteUser.name || email, code });
-    await appendSecurityEvent({ type: 'login', action: 'password_reset_code_sent', actorUserId: userId, actorEmail: email, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok', message: 'Código de recuperação de senha enviado.' }).catch(() => null);
+    if (!appwriteUser || !profile) {
+      await appendSecurityEvent({ type: 'login', action: 'password_reset_unknown_email', email, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'failed', message: 'Recuperação solicitada para e-mail sem conta.' }).catch(() => null);
+    } else {
+      const userId = appwriteUser.$id || appwriteUser.id;
+      const delivered = await attemptPasswordResetDelivery(
+        () => sendPasswordResetEmail({ email, name: profile.name || appwriteUser.name || email, code }),
+        async () => {
+          console.warn('[security] não foi possível concluir a entrega de um código de recuperação.');
+          await appendSecurityEvent({ type: 'login', action: 'password_reset_delivery_failed', actorUserId: userId, actorEmail: email, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'failed', message: 'Falha na entrega do código de recuperação.' }).catch(() => null);
+        }
+      );
+      if (delivered) await appendSecurityEvent({ type: 'login', action: 'password_reset_code_sent', actorUserId: userId, actorEmail: email, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok', message: 'Código de recuperação de senha enviado.' }).catch(() => null);
+    }
     const resetDelivery = transientAuthDelivery(request, resetToken, {
-      cookieName: PASSWORD_RESET_COOKIE_NAME, cookieFlag: 'resetCookie', payloadKey: 'resetToken', path: '/api/auth/password-reset', maxAge: 600
+      cookieName: PASSWORD_RESET_COOKIE_NAME, cookieFlag: 'resetCookie', payloadKey: 'resetToken', path: '/api/auth/password-reset', maxAge: 600, allowBodyTokenWithoutOrigin: false
     });
-    return send(response, request, 200, { ok: true, ...resetDelivery.payload, maskedEmail: maskEmail(email), expiresIn: 600, message: `Enviamos um código para ${maskEmail(email)}.` }, { 'Cache-Control': 'no-store', 'Pragma': 'no-cache', ...resetDelivery.headers });
+    return send(response, request, 200, { ok: true, ...resetDelivery.payload, maskedEmail: maskEmail(email), expiresIn: 600, message: passwordResetRequestMessage(maskEmail(email)) }, { 'Cache-Control': 'no-store', 'Pragma': 'no-cache', ...resetDelivery.headers });
   }
 
   if (path === '/api/auth/password-reset/verify' && httpMethod === 'POST') {
@@ -7200,7 +6854,7 @@ async function route(request, response) {
     } catch (error) {
       throw statusError(401, /expirada/i.test(String(error?.message || '')) ? 'O código expirou. Solicite um novo código.' : 'Código inválido ou expirado.', { code: 'RESET_CODE_EXPIRED' });
     }
-    if (payload.type !== 'password-reset' || normalizeEmail(payload.email) !== email) {
+    if (payload.type !== 'password-reset' || normalizeEmail(payload.email) !== email || payload.sub !== passwordResetSubject(email, jwtSecret())) {
       throw statusError(401, 'Código inválido ou expirado.', { code: 'RESET_CODE_INVALID' });
     }
     if (payload.codeHash !== verificationCodeHash({ code, userId: payload.sub, email })) {
@@ -7215,7 +6869,7 @@ async function route(request, response) {
     }, 10 * 60);
     await appendSecurityEvent({ type: 'login', action: 'password_reset_code_verified', actorUserId: payload.sub, actorEmail: email, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok', message: 'Código de recuperação confirmado.' }).catch(() => null);
     const resetAuthDelivery = transientAuthDelivery(request, resetAuthorization, {
-      cookieName: PASSWORD_RESET_AUTH_COOKIE_NAME, cookieFlag: 'resetAuthorizationCookie', payloadKey: 'resetAuthorization', path: '/api/auth/password-reset', maxAge: 600
+      cookieName: PASSWORD_RESET_AUTH_COOKIE_NAME, cookieFlag: 'resetAuthorizationCookie', payloadKey: 'resetAuthorization', path: '/api/auth/password-reset', maxAge: 600, allowBodyTokenWithoutOrigin: false
     });
     return send(response, request, 200, { ok: true, ...resetAuthDelivery.payload, expiresIn: 600, message: 'Código confirmado. Agora crie uma nova senha.' }, { 'Cache-Control': 'no-store', 'Pragma': 'no-cache', ...resetAuthDelivery.headers });
   }
@@ -7236,21 +6890,22 @@ async function route(request, response) {
     } catch (error) {
       throw statusError(401, /expir/i.test(String(error?.message || '')) ? 'A confirmação do código expirou. Solicite um novo código.' : (error?.message || 'Confirmação inválida.'), { code: 'RESET_AUTHORIZATION_INVALID' });
     }
-    if (normalizeEmail(payload.email) !== email) throw statusError(401, 'Confirmação inválida.', { code: 'RESET_AUTHORIZATION_INVALID' });
-    const appwriteUser = await getAppwriteUserById(payload.sub).catch(() => null);
-    const profile = await findProfileForLogin(payload.sub, email).catch(() => null);
+    if (normalizeEmail(payload.email) !== email || payload.sub !== passwordResetSubject(email, jwtSecret())) throw statusError(401, 'Confirmação inválida.', { code: 'RESET_AUTHORIZATION_INVALID' });
+    const appwriteUser = await getAppwriteUserByEmail(email).catch(() => null);
+    const userId = String(appwriteUser?.$id || appwriteUser?.id || '');
+    const profile = userId ? await findProfileForLogin(userId, email).catch(() => null) : null;
     if (!appwriteUser || !profile) throw statusError(404, 'Conta não encontrada.');
     const previousResetJti = String(userPrefs(appwriteUser)?.surveyor?.lastPasswordResetAuthorizationJti || '');
     if (previousResetJti && previousResetJti === payload.jti) throw statusError(409, 'Este código já foi utilizado. Solicite um novo código.', { code: 'RESET_AUTHORIZATION_USED' });
-    await updateAppwriteUserPassword(payload.sub, password);
+    await updateAppwriteUserPassword(userId, password);
     const passwordResetCompletedAt = new Date().toISOString();
-    await updateAppwriteUserSurveyorPrefs(payload.sub, {
+    await updateAppwriteUserSurveyorPrefs(userId, {
       lastPasswordResetAuthorizationJti: payload.jti,
       passwordResetCompletedAt,
       remoteLogoutAt: passwordResetCompletedAt,
       sessionVersion: appwriteId()
     }).catch(() => null);
-    await appendSecurityEvent({ type: 'login', action: 'password_reset_completed', actorUserId: payload.sub, actorEmail: email, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok', message: 'Senha redefinida pelo usuário após confirmação do código.' }).catch(() => null);
+    await appendSecurityEvent({ type: 'login', action: 'password_reset_completed', actorUserId: userId, actorEmail: email, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok', message: 'Senha redefinida pelo usuário após confirmação do código.' }).catch(() => null);
     const resetCookieClear = isOfficialWebOrigin(String(headerValue(request, 'origin') || ''))
       ? { 'Set-Cookie': secureAuthCookieHeader(PASSWORD_RESET_AUTH_COOKIE_NAME, '', { clear: true, path: '/api/auth/password-reset' }) }
       : {};
@@ -7506,7 +7161,7 @@ async function route(request, response) {
     const code = String(queryValue(request, 'code') || '').trim();
     const errorCode = String(queryValue(request, 'error') || '').trim();
     const state = String(queryValue(request, 'state') || '').trim();
-    if (errorCode) return sendText(response, request, 400, `<html><body style="font-family:Arial;padding:28px"><h2>Google Drive não conectado</h2><p>${errorCode}</p><p>Você pode fechar esta janela e tentar novamente.</p></body></html>`, 'text/html; charset=utf-8');
+    if (errorCode) return sendText(response, request, 400, googleDriveConnectErrorPage(errorCode), 'text/html; charset=utf-8');
     if (!code || !state) throw statusError(400, 'Callback do Google Drive sem código ou state.');
     const payload = verifyJwt(state);
     if (payload.type !== 'google-drive-connect') throw statusError(401, 'State inválido para conexão Google Drive.');
@@ -7524,7 +7179,7 @@ async function route(request, response) {
       refreshTokenEncrypted: encryptSecret(token.refresh_token),
       connectedAt: new Date().toISOString()
     });
-    return sendText(response, request, 200, `<html><body style="font-family:Arial;padding:28px;color:#0f172a"><h2>Google Drive conectado ao Surveyor</h2><p>A pasta <strong>${googleDriveConfig().rootFolderName}</strong> foi preparada com sucesso.</p><p>Você pode fechar esta janela e voltar para a Minha Nuvem.</p><script>setTimeout(()=>{try{window.close()}catch(e){}},2500)</script></body></html>`, 'text/html; charset=utf-8');
+    return sendText(response, request, 200, `<html lang="pt-BR"><head><meta charset="utf-8"><title>Google Drive conectado ao Surveyor</title></head><body style="font-family:Arial;padding:28px;color:#0f172a"><h2>Google Drive conectado ao Surveyor</h2><p>A pasta <strong>${escapeHtml(googleDriveConfig().rootFolderName)}</strong> foi preparada com sucesso.</p><p>Você pode fechar esta janela e voltar para a Minha Nuvem.</p></body></html>`, 'text/html; charset=utf-8');
   }
 
   // Upload público assinado para ZIP pequeno. Evita preflight CORS com Authorization
@@ -7590,14 +7245,15 @@ async function route(request, response) {
     let payload;
     try { payload = verifyJwt(token); } catch { throw statusError(401, 'Link público inválido ou expirado.'); }
     if (payload.type !== 'project-share' || !payload.projectId || !payload.ownerUserId) throw statusError(401, 'Link público inválido.');
-    const row = await getRow('projects', payload.projectId).catch(() => null);
+    const detected = await getRowWithMode('projects', payload.projectId).catch(() => null);
+    const row = detected?.row || null;
     if (!row || row.status === 'deleted' || String(row.userId || '') !== String(payload.ownerUserId || '')) throw statusError(404, 'Projeto público não encontrado.');
     const projectPayload = await readProjectPayload(row);
     const { shares } = projectPayloadShares(projectPayload);
     if (!payload.shareId) throw statusError(401, 'Link público inválido. Identificador de compartilhamento ausente.');
     const share = shares.find((item) => String(item.id || '') === String(payload.shareId));
     if (!share) throw statusError(403, 'Este compartilhamento foi revogado ou não existe mais.', { code: 'SHARE_NOT_FOUND_OR_REVOKED' });
-    return sendPublicProjectShare(response, request, row, projectPayload, share);
+    return sendPublicProjectShare(response, request, row, projectPayload, share, detected.mode);
   }
 
   const publicShortMatch = path.match(/^\/api\/public\/short\/([^/]+)$/);
@@ -8199,22 +7855,12 @@ async function route(request, response) {
   if (path === '/api/admin/plan-documents/send-email' && httpMethod === 'POST') {
     requireAdminAccess(auth);
     const input = await bodyJson(request).catch(() => ({}));
-    const to = normalizeEmail(input.to || input.email);
-    const name = String(input.name || '').trim().slice(0, 180);
-    const planName = String(input.planName || '').trim().slice(0, 180);
-    const documentType = String(input.documentType || 'term') === 'receipt' ? 'receipt' : 'term';
-    const filename = String(input.filename || '').trim().replace(/[\\/:*?"<>|]/g, '_').slice(0, 240);
-    const contentBase64 = String(input.contentBase64 || '').replace(/^data:application\/pdf;base64,/, '').trim();
-    const maxBytes = Number(env('PLAN_DOCUMENT_MAX_ATTACHMENT_BYTES', String(8 * 1024 * 1024))) || 8 * 1024 * 1024;
-    if (!to || !/^\S+@\S+\.\S+$/.test(to)) throw statusError(400, 'E-mail de destino inválido.');
-    if (!name) throw statusError(400, 'Nome do cliente não informado.');
-    if (!planName) throw statusError(400, 'Plano não informado.');
-    if (!filename.toLowerCase().endsWith('.pdf')) throw statusError(400, 'Nome do arquivo PDF inválido.');
-    if (!contentBase64) throw statusError(400, 'Conteúdo do PDF não informado.');
-    let pdfBuffer;
-    try { pdfBuffer = Buffer.from(contentBase64, 'base64'); } catch { throw statusError(400, 'PDF em Base64 inválido.'); }
-    if (!pdfBuffer.length || pdfBuffer.slice(0, 4).toString() !== '%PDF') throw statusError(400, 'O anexo não é um PDF válido.');
-    if (pdfBuffer.length > maxBytes) throw statusError(413, `O PDF excede o limite de ${Math.round(maxBytes / 1024 / 1024)} MB.`);
+    // A rota administrativa mantém o padrão 'term'; o validador compartilhado
+    // também é usado em envios automáticos (que possuem outro padrão).
+    const {
+      to, name, planName, documentType, filename, contentBase64, pdfBuffer,
+      startDate, endDate, accessEmail, amountCents, documentCode
+    } = normalizePlanDocumentAttachment({ ...input, documentType: input.documentType || 'term' });
 
     const emailFunctionUrl = String(env('EMAIL_FUNCTION_URL', '') || '').replace(/\/+$/, '');
     const emailFunctionSecret = env('EMAIL_FUNCTION_SECRET');
@@ -8225,11 +7871,7 @@ async function route(request, response) {
       headers: { 'Content-Type': 'application/json', 'X-Surveyor-Internal-Secret': emailFunctionSecret },
       body: JSON.stringify({
         to, name, planName, documentType, filename, contentBase64,
-        startDate: String(input.startDate || '').slice(0, 40),
-        endDate: String(input.endDate || '').slice(0, 40),
-        accessEmail: normalizeEmail(input.accessEmail || to),
-        amountCents: Number(input.amountCents || 0),
-        documentCode: String(input.documentCode || '').slice(0, 100)
+        startDate, endDate, accessEmail, amountCents, documentCode
       })
     });
     const emailData = await emailResponse.json().catch(() => ({}));
@@ -9789,12 +9431,13 @@ async function route(request, response) {
     requirePermission(auth, 'projects:trash', 'Seu plano não permite restaurar projetos da lixeira.');
     assertWorkspaceActionAllowed(auth, 'project:edit');
     const projectIdValue = decodeURIComponent(restoreProjectMatch[1]);
-    const row = await getRow('projects', projectIdValue);
+    const detected = await getRowWithMode('projects', projectIdValue);
+    const row = detected.row;
     if (!row || row.userId !== resourceOwnerId(auth) || String(row.status || '').toLowerCase() !== 'deleted') {
       throw statusError(404, 'Projeto não encontrado na lixeira.');
     }
     const now = new Date().toISOString();
-    const restored = await updateRow('projects', projectIdValue, { status: 'draft', updatedAt: now });
+    const restored = await compareAndSwapRow('projects', projectIdValue, row, { status: 'draft', updatedAt: now }, { mode: detected.mode });
     let payload = {};
     try { payload = await readProjectPayload(restored); } catch {}
     await appendSecurityEvent({ type: 'project', action: 'project_restored', actorUserId: auth.sub, actorEmail: auth.user?.email, target: projectIdValue, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok', metadata: { projectId: projectIdValue, workspaceOwnerUserId: resourceOwnerId(auth) } }).catch(() => null);
@@ -9805,7 +9448,8 @@ async function route(request, response) {
   if (projectMatch) {
     const projectIdValue = decodeURIComponent(projectMatch[1]);
     const subRoute = projectMatch[2] || '';
-    const row = await getRow('projects', projectIdValue);
+    const detected = await getRowWithMode('projects', projectIdValue);
+    const row = detected.row;
     if (!row || row.userId !== resourceOwnerId(auth) || row.status === 'deleted') throw statusError(404, 'Projeto não encontrado.');
 
     if (!subRoute && httpMethod === 'GET') {
@@ -9861,11 +9505,11 @@ async function route(request, response) {
       try {
         ({ saved } = await commitProjectPayload(row, { ...currentPayload, project: mergedProject, metadata: mergedMetadata, features, updatedAt: now }, auth, update));
       } catch (error) {
-        await deleteFile(version.bucketId, version.fileId).catch(() => null);
+        if (shouldCleanupStagedProjectFile(error)) await deleteFile(version.bucketId, version.fileId).catch(() => null);
         throw error;
       }
       await cleanupProjectVersionFiles(expiredVersions);
-      await appendSecurityEvent({ type: 'project', action: 'project_bundle_saved', actorUserId: auth.sub, actorEmail: auth.user?.email, target: projectIdValue, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok', metadata: { featureCount: features.length, revision: saved.updatedAt || saved.$updatedAt || now, projectId: projectIdValue, projectName: mergedProject.propertyName || mergedProject.name || row.propertyName || row.name || 'Projeto', workspaceOwnerUserId: resourceOwnerId(auth) } }).catch(() => null);
+      await appendSecurityEvent({ type: 'project', action: 'project_bundle_saved', actorUserId: auth.sub, actorEmail: auth.user?.email, target: projectIdValue, ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok', metadata: { featureCount: features.length, revision: projectRevision(saved, now), projectId: projectIdValue, projectName: mergedProject.propertyName || mergedProject.name || row.propertyName || row.name || 'Projeto', workspaceOwnerUserId: resourceOwnerId(auth) } }).catch(() => null);
       const savedPayload = { ...currentPayload, project: mergedProject, metadata: mergedMetadata, features, updatedAt: now };
       return send(response, request, 200, { ok: true, project: mapStoredProject(saved, savedPayload), features: features.map((feature) => mapFeature(feature, projectIdValue, resourceOwnerId(auth))) });
     }
@@ -9904,7 +9548,7 @@ async function route(request, response) {
       try {
         ({ saved } = await commitProjectPayload(row, { ...payload, project: merged, metadata: mergedMetadata, updatedAt: now }, auth, update));
       } catch (error) {
-        await deleteFile(version.bucketId, version.fileId).catch(() => null);
+        if (shouldCleanupStagedProjectFile(error)) await deleteFile(version.bucketId, version.fileId).catch(() => null);
         throw error;
       }
       await cleanupProjectVersionFiles(expiredVersions);
@@ -9915,7 +9559,7 @@ async function route(request, response) {
     if (!subRoute && httpMethod === 'DELETE') {
       requirePermission(auth, 'projects:trash', 'Seu plano não permite enviar projetos para a lixeira.');
       assertWorkspaceActionAllowed(auth, 'project:delete');
-      await updateRow('projects', projectIdValue, { status: 'deleted', updatedAt: new Date().toISOString() });
+      await compareAndSwapRow('projects', projectIdValue, row, { status: 'deleted', updatedAt: new Date().toISOString() }, { mode: detected.mode });
       return send(response, request, 204, null);
     }
 
@@ -9937,14 +9581,15 @@ async function route(request, response) {
       const keptVersions = combinedVersions.slice(-retention);
       const features = featuresInput.map((feature, index) => ({ ...feature, id: feature.id || appwriteId(), sortOrder: feature.sortOrder ?? index, updatedAt: now, createdAt: feature.createdAt || now }));
       assertValidProjectFeatures(features);
+      let saved;
       try {
-        await commitProjectPayload(row, { ...payload, metadata: { ...metadata, versions: keptVersions, lastSavedByUserId: auth.sub, lastSavedAt: now }, features, updatedAt: now }, auth, { updatedAt: now });
+        ({ saved } = await commitProjectPayload(row, { ...payload, metadata: { ...metadata, versions: keptVersions, lastSavedByUserId: auth.sub, lastSavedAt: now }, features, updatedAt: now }, auth, { updatedAt: now }));
       } catch (error) {
-        await deleteFile(version.bucketId, version.fileId).catch(() => null);
+        if (shouldCleanupStagedProjectFile(error)) await deleteFile(version.bucketId, version.fileId).catch(() => null);
         throw error;
       }
       await cleanupProjectVersionFiles(expiredVersions);
-      return send(response, request, 200, { ok: true, count: features.length, revision: now, features: features.map((feature) => mapFeature(feature, projectIdValue, resourceOwnerId(auth))) });
+      return send(response, request, 200, { ok: true, count: features.length, revision: projectRevision(saved, now), features: features.map((feature) => mapFeature(feature, projectIdValue, resourceOwnerId(auth))) });
     }
 
     if (subRoute === 'features' && httpMethod === 'POST') {
@@ -9965,14 +9610,15 @@ async function route(request, response) {
       const feature = { ...input, id: appwriteId(), createdAt: now, updatedAt: now };
       const features = [...(Array.isArray(payload.features) ? payload.features : []), feature];
       assertValidProjectFeatures(features);
+      let saved;
       try {
-        await commitProjectPayload(row, { ...payload, metadata: { ...metadata, versions: keptVersions, lastSavedByUserId: auth.sub, lastSavedAt: now }, features, updatedAt: now }, auth, { updatedAt: now });
+        ({ saved } = await commitProjectPayload(row, { ...payload, metadata: { ...metadata, versions: keptVersions, lastSavedByUserId: auth.sub, lastSavedAt: now }, features, updatedAt: now }, auth, { updatedAt: now }));
       } catch (error) {
-        await deleteFile(version.bucketId, version.fileId).catch(() => null);
+        if (shouldCleanupStagedProjectFile(error)) await deleteFile(version.bucketId, version.fileId).catch(() => null);
         throw error;
       }
       await cleanupProjectVersionFiles(expiredVersions);
-      return send(response, request, 201, { ok: true, revision: now, feature: mapFeature(feature, projectIdValue, resourceOwnerId(auth)) });
+      return send(response, request, 201, { ok: true, revision: projectRevision(saved, now), feature: mapFeature(feature, projectIdValue, resourceOwnerId(auth)) });
     }
 
     if (subRoute === 'public-short') {
@@ -10091,7 +9737,7 @@ async function route(request, response) {
       try {
         ({ saved } = await commitProjectPayload(row, restored, auth, { updatedAt: now }));
       } catch (error) {
-        await deleteFile(beforeRestore.bucketId, beforeRestore.fileId).catch(() => null);
+        if (shouldCleanupStagedProjectFile(error)) await deleteFile(beforeRestore.bucketId, beforeRestore.fileId).catch(() => null);
         throw error;
       }
       await cleanupProjectVersionFiles(expiredVersions);
@@ -10305,9 +9951,43 @@ async function route(request, response) {
     });
   }
 
+  // A prancha envia SOMENTE a gleba alterada; o servidor mescla com a versao
+  // mais recente da nuvem. As demais personalizacoes nunca sao confiadas ao browser.
+  if (path === '/api/customization/document/draft' && httpMethod === 'POST') {
+    requirePermission(auth, 'company:settings', 'Seu plano não possui acesso à Personalização.');
+    assertWorkspaceActionAllowed(auth, 'customization:company');
+    const input = await bodyJson(request);
+    let draft;
+    try { draft = validateScopedDraftInput(input); }
+    catch (error) { throw statusError(400, error.message || 'Rascunho inválido.', {code:'DOCUMENT_DRAFT_INVALID'}); }
+    const userId = resourceOwnerId(auth);
+    const current = await findCustomizationForUser(userId);
+    const currentOptions = await readHydratedCustomizationOptions(current || {});
+    const updates = makeScopedDraftPatch(currentOptions, draft);
+    await saveDocumentCustomizationForUser(userId, {options:updates});
+    return send(response, request, 200, {ok:true,kind:draft.kind,projectId:draft.projectId,featureId:draft.featureId,revision:Number(draft.data.revision)||0});
+  }
+
+  if (path === '/api/privacy/preferences' && httpMethod === 'GET') {
+    const appwriteUser = await getAppwriteUserById(auth.sub);
+    if (!appwriteUser) throw statusError(404, 'Conta não encontrada para carregar as preferências de privacidade.');
+    const { surveyor } = userPrefs(appwriteUser || {});
+    const preferences = surveyor.privacyPreferences && typeof surveyor.privacyPreferences === 'object'
+      ? sanitizePrivacyPreferences(surveyor.privacyPreferences)
+      : null;
+    return send(response, request, 200, { ok: true, preferences }, { 'Cache-Control': 'no-store, max-age=0, must-revalidate', Pragma: 'no-cache' });
+  }
+
+  if (path === '/api/privacy/preferences' && ['PUT', 'POST'].includes(httpMethod)) {
+    const input = await bodyJson(request);
+    const preferences = sanitizePrivacyPreferences(input.preferences || input);
+    await updateAppwriteUserSurveyorPrefs(auth.sub, { privacyPreferences: preferences });
+    return send(response, request, 200, { ok: true, preferences }, { 'Cache-Control': 'no-store, max-age=0, must-revalidate', Pragma: 'no-cache' });
+  }
+
   const isCustomizationRoute = path === '/api/customization' || path === '/api/customization/document';
   if (isCustomizationRoute && httpMethod === 'GET') {
-    requirePermission(auth, 'company:settings', 'Seu plano não possui acesso à Personalização.');
+    if (!canReadDocumentCustomization(auth)) throw statusError(403, 'Seu plano não possui acesso às personalizações usadas nos documentos.', { code: 'DOCUMENT_CUSTOMIZATION_READ_REQUIRED' });
     const customizationOwnerUserId = resourceOwnerId(auth);
     const current = await findCustomizationForUser(customizationOwnerUserId);
     const customization = await serializeDocumentCustomization(current || {});
@@ -10346,7 +10026,7 @@ async function route(request, response) {
     // Não releia o catálogo inteiro aqui. O frontend já carrega /api/layers/catalog
     // e aplica defaults/sanitização localmente. Esta rota precisa de apenas 1 linha.
     const row = await findCustomizationForUser(auth.sub).catch(() => null);
-    const options = customizationOptions(row || {});
+    const options = await readHydratedCustomizationOptions(row || {});
     const preferences = Array.isArray(options.layerPreferences) ? options.layerPreferences : [];
     const catalogState = normalizeLayerCatalogState(options.layerCatalogState || 'BA');
     const catalogStateConfigured = Object.prototype.hasOwnProperty.call(options, 'layerCatalogState');

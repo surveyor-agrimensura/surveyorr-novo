@@ -1,18 +1,20 @@
 @echo off
-setlocal
 cd /d "%~dp0"
-title SURVEYOR - Servidor Local
-set "SURVEYOR_LOCAL_HOST=127.0.0.1"
-set "SURVEYOR_LOCAL_PORT=5500"
-
-where node.exe >nul 2>&1
+where npm >nul 2>&1
 if errorlevel 1 (
-  echo [SURVEYOR] ERRO: Node.js nao encontrado no PATH.
-  echo [SURVEYOR] Instale/ative o Node.js e tente novamente.
+  echo Node.js nao encontrado. Instale Node.js 22 ou superior.
+  pause
   exit /b 1
 )
-
-echo [SURVEYOR] Iniciando servidor local em http://localhost:5500/
-echo [SURVEYOR] O navegador nao sera aberto automaticamente.
-node scripts\dev.mjs
-endlocal
+if not exist "node_modules\leaflet\package.json" goto install
+if not exist "node_modules\shpjs\package.json" goto install
+if not exist "node_modules\read-excel-file\package.json" goto install
+goto start
+:install
+echo Instalando e atualizando dependencias do SURVEYOR...
+call npm install
+if errorlevel 1 (pause & exit /b 1)
+:start
+echo Abrir no navegador: http://localhost:5500/login/
+call npm run dev
+pause

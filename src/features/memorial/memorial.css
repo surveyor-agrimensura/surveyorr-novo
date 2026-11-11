@@ -1,0 +1,311 @@
+.memorial-main.workspace-main{padding:24px 20px 18px}
+.memorial-container{width:min(1600px,100%)}
+.mem-body{background:#f5f7fb;color:#102440;display:flex;flex-direction:column;min-height:calc(100dvh - 124px);font-family:Inter,'Segoe UI',sans-serif}
+.mem-heading{display:flex;align-items:center;gap:10px;margin:0 0 14px}.mem-heading h1{font-size:20px;margin:0;font-weight:800}.mem-heading>span{margin-left:auto;font-size:11px;color:#70849a}
+.mem-notification{display:flex;align-items:center;justify-content:space-between;background:#fff2ea;color:#ae4320;padding:12px;border:1px solid #ffd3b8;border-radius:8px;margin-bottom:9px}.mem-notification button{border:0;color:inherit;background:transparent}
+.mem-tabs{display:flex;gap:15px;border-bottom:1px solid #d5dfed;margin-bottom:6px}.mem-tabs button{border:0;border-bottom:2px solid transparent;background:transparent;color:#60748f;font-size:12px;padding:8px 12px;font-weight:700}.mem-tabs button.active{color:#145bc4;border-bottom-color:#145bc4}
+.mem-grid{display:grid;grid-template-columns:360px minmax(0,1fr);min-height:0;height:calc(100dvh - 210px);border:1px solid #d8e2ef;border-radius:12px;overflow:hidden;background:#fff}
+.mem-side{border-right:1px solid #d8e2ef;min-height:0;overflow:auto;background:#fff}.mem-form{padding:16px 13px}.mem-form .mem-section{border-bottom:1px solid #e9eef5;padding-bottom:11px;margin-bottom:12px}.mem-section strong{font-size:12px;display:block;margin:0 0 8px}.mem-section small{font-size:11px;color:#71849a;display:block;margin-top:6px}
+.mem-side select,.mem-field input,.mem-field textarea{background:#fff;border:1px solid #cbd9ea;width:100%;padding:9px 10px;color:#183750;border-radius:8px;font-size:12px;min-height:40px}.mem-fields{display:flex;flex-direction:column;gap:12px}.mem-field{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:700;color:#244366}.mem-field input[type=range]{padding:0}
+.mem-next{border:0;background:#165fd2;color:white;padding:12px 14px;font-weight:700;border-radius:8px;width:100%;margin-top:17px;display:flex;justify-content:center;gap:12px}.mem-next:disabled{background:#94add0}
+.mem-custom-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#f3f7fc;border-bottom:1px solid #d9e4f0}.mem-custom-tabs button{border:0;border-right:1px solid #d9e4f0;background:none;font-size:10px;font-weight:700;color:#4b6483;padding:12px 2px;display:flex;align-items:center;justify-content:center;gap:4px}.mem-custom-tabs button.active{background:white;color:#135ac1;border-bottom:2px solid #1260d7}
+.mem-custom .mem-fields{padding:16px}.mem-model-state{border:1px solid #d6e2f3;background:#f4f8ff;padding:11px;border-radius:8px;display:flex;flex-direction:column;gap:6px}.mem-model-state span,.mem-model-state small{font-size:11px;color:#667e99}.mem-model-state strong{font-size:13px}
+.mem-link{display:flex;align-items:center;gap:8px;color:#0e5cc6;font-size:12px;font-weight:700;padding:11px;border-radius:8px;border:1px solid #c5daf8}.mem-check{font-size:12px;display:flex;gap:9px;align-items:flex-start;color:#203d60}.mem-check input{accent-color:#1266d5;width:16px;height:16px;margin:0}
+.mem-upload{display:flex;flex-direction:column;gap:8px;font-size:11px;font-weight:700}.mem-upload-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.mem-file-button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border:1px solid #bdd1ea;border-radius:8px;background:#f5f9ff;color:#0e59c0;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 10px rgba(14,89,192,.06)}.mem-file-button:hover{background:#edf4ff}.mem-file-input{display:none}.mem-file-name{font-size:11px;color:#5f7898;line-height:1.35;overflow-wrap:anywhere}
+.mem-signature-thumb{border:1px dashed #c8d6e9;border-radius:7px;height:76px;padding:8px;display:grid;place-items:center}.mem-signature-thumb img{max-width:100%;max-height:100%;object-fit:contain}.mem-side-note{color:#8190a3;font-size:10px;line-height:1.5;margin:5px 14px 14px;padding:10px;border-top:1px solid #e1e9f3;display:flex;gap:5px}
+.mem-stage{background:#edf3f9;display:flex;flex-direction:column;min-height:0;min-width:0}.mem-stage-scroll{flex:1;min-height:0;overflow:auto;padding:18px 16px 28px;display:flex;align-items:center;flex-direction:column;gap:24px}.mem-document{width:100%;display:flex;flex-direction:column;align-items:center;gap:24px}.mem-paper{width:min(210mm,100%);min-height:297mm;flex:none;position:relative;background:#fff;border:1px solid #d5dfeb;padding:19mm 16mm 17mm;box-shadow:0 4px 18px #0b2e5314;font-family:Arial,'Helvetica Neue',sans-serif;font-size:11px;line-height:1.45;color:#17253a;--mem-tone:#155bc0}
+.mem-paper h2{font-size:17px;text-align:center;letter-spacing:1px;}.mem-stamp{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:2px solid var(--mem-tone);padding-bottom:13px}.mem-stamp-mark{width:130px;flex-shrink:0;display:flex;align-items:center;justify-content:center}.mem-stamp-mark img{width:128px;height:94px;object-fit:contain}.mem-stamp>div:last-child{display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:3px}.mem-stamp strong{font-size:14px}.mem-stamp small{font-size:9px}.mem-simple-header{font-size:13px;font-weight:800;text-align:right;border-bottom:2px solid var(--mem-tone);padding:15px}
+.mem-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-radius:8px;padding:14px;background:#f3f6fa;font-size:10px}.mem-meta div{display:flex;gap:5px}.mem-meta b{min-width:82px}.mem-meta span{overflow-wrap:anywhere}.mem-section-title{font-size:12px;font-weight:700;border-bottom:1px solid #c1ccda;padding-bottom:6px;margin:20px 0 10px}.mem-description{text-align:justify;line-height:1.8;white-space:normal;font-size:10.5px}.mem-description p{margin:0}.mem-codes{display:flex;flex-wrap:wrap;gap:8px;font-size:10px;margin-top:8px}.mem-notes{font-size:10px;white-space:pre-wrap;text-align:justify}
+.mem-paper table{width:100%;border-collapse:collapse;font-size:9px;margin:12px 0}.mem-paper th,.mem-paper td{padding:7px;border:1px solid #cbd6e4;text-align:left}.mem-paper th{background:#eef3fb}.mem-corners{break-inside:avoid}.mem-page-footer{position:absolute;bottom:12mm;left:16mm;right:16mm;padding-top:7px;border-top:1px solid #cdd8e5;display:flex;justify-content:space-between;font-size:8px;color:#688097}.mem-title-mark{position:absolute;top:0;left:0;right:0;height:16mm;overflow:hidden}.mem-title-mark svg,.mem-footer-brand svg{width:100%;height:100%}.mem-footer-brand{position:absolute;bottom:0;left:0;right:0;height:13mm;overflow:hidden;opacity:.34}
+.mem-signature{width:240px;display:flex;align-items:center;flex-direction:column;gap:3px;text-align:center}.mem-signature-draw{height:55px;width:100%;display:flex;align-items:end;justify-content:center}.mem-signature-draw img{max-height:53px;object-fit:contain}.mem-signature-line{border-top:1px solid #444;width:100%}.mem-signature small{font-size:9px}
+.mem-map-frame{}.mem-tile-map{position:relative;width:100%;overflow:hidden;}.mem-tile-map>img{position:absolute;height:auto;aspect-ratio:1/1;max-width:none}.mem-tile-map>svg{position:absolute;inset:0;width:100%;height:100%}.mem-north,.mem-map-scale,.mem-map-credit{position:absolute;background:#fffffff2;font-size:9px;padding:5px}.mem-north{right:5px;top:6px;border-radius:50%;font-weight:700}.mem-north span{font-size:14px;margin-left:5px}.mem-map-scale{left:6px;bottom:6px;display:flex;align-items:center;gap:6px}.mem-map-scale span{display:inline-block;border:2px solid #162f4b;border-top:0;height:7px}.mem-map-credit{bottom:6px;right:6px}.mem-caption{text-align:center;font-size:10px;color:#6a7e94}.mem-note{font-size:9px;color:#667b92;margin-top:14px}
+.mem-croqui-top{display:grid;grid-template-columns:minmax(0,1fr) 140px;gap:14px;align-items:start}.mem-croqui-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:13px;border-radius:8px;background:#f3f6fa;font-size:10px}.mem-croqui-meta div{display:flex;gap:5px}.mem-qr-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;border:1px solid #d2deed;border-radius:8px;background:#fff;text-align:center;color:inherit;text-decoration:none}.mem-qr-panel img{width:92px;height:92px;object-fit:contain}.mem-qr-panel b{font-size:10px;color:#173456}.mem-qr-panel small{font-size:8.5px;color:#6e8199;line-height:1.35}.mem-map-legal{font-size:9px;color:#667b92;line-height:1.55;margin-top:12px}.mem-map-legal p{margin:0 0 8px}
+.mem-bottom{flex:0 0 54px;background:#fff;border-top:1px solid #d7e2f0;display:flex;justify-content:space-between;align-items:center;padding:7px 10px;gap:10px}.mem-bottom-left{display:flex;gap:7px}.mem-outline,.mem-draft{border:1px solid #c8dbef;background:#fff;border-radius:8px;display:flex;gap:7px;align-items:center;padding:8px 10px;color:#14529d;font-weight:700;font-size:11px}.mem-draft{color:#088249;background:#edfff5;border-color:#beeaca}.mem-zoom-info{font-size:11px;font-weight:700}.mem-download{position:relative}.mem-download-menu{position:absolute;bottom:43px;right:0;width:220px;background:#fff;border:1px solid #d7e2ec;box-shadow:0 7px 25px #122c4c26;border-radius:8px;overflow:hidden;z-index:8}.mem-download-menu button{display:block;width:100%;padding:11px;background:#fff;color:#203c5c;border:0;text-align:left;font-size:12px}.mem-download-menu button:hover{background:#edf5ff}.mem-empty{margin:auto;text-align:center;color:#63809e;display:flex;align-items:center;gap:10px;font-size:12px}
+.mem-skin-agro-mais .mem-title-mark{background:#779824}.mem-skin-standard .mem-meta,.mem-skin-standard .mem-croqui-meta{background:#f4f7fa}.mem-skin-dourado .mem-meta,.mem-skin-dourado .mem-croqui-meta{background:#faf6ec}.mem-skin-ciano .mem-meta,.mem-skin-ciano .mem-croqui-meta{background:#eaf8fa}.mem-skin-verde .mem-meta,.mem-skin-verde .mem-croqui-meta{background:#edf8ed}.mem-skin-amarelo .mem-meta,.mem-skin-amarelo .mem-croqui-meta{background:#fff9e8}.mem-skin-agro-mais .mem-meta,.mem-skin-agro-mais .mem-croqui-meta{background:#f0f7e8}
+@media(max-width:1100px){.mem-grid{grid-template-columns:300px minmax(0,1fr)}.mem-paper{padding:14mm 12mm}.mem-stage-scroll{padding:14px 10px}}
+@media(max-width:850px){.mem-grid{grid-template-columns:270px minmax(0,1fr)}.mem-paper{font-size:9px}.mem-paper h2{font-size:14px}.mem-meta,.mem-croqui-meta{grid-template-columns:1fr}.mem-page-footer{left:12mm;right:12mm}}
+@media(max-width:640px){.memorial-main.workspace-main{padding:14px 10px 12px}.mem-grid{display:flex;flex-direction:column;height:auto;min-height:calc(100dvh - 205px)}.mem-side{max-height:340px;flex-shrink:0;border-right:none;border-bottom:1px solid #d8e2ef}.mem-stage{flex:1}.mem-paper{min-height:260mm}.mem-bottom{flex-wrap:wrap;height:auto}.mem-zoom-info{display:none}.mem-croqui-top{grid-template-columns:1fr}.mem-qr-panel{max-width:170px}}
+@media print{@page{size:A4;margin:0}html,body,#root{background:#fff!important;margin:0!important;height:auto!important;overflow:visible!important}.workspace-header,.mem-heading,.mem-notification,.mem-tabs,.mem-side,.mem-bottom{display:none!important}.workspace-main,.workspace-container,.mem-body,.mem-grid,.mem-stage,.mem-stage-scroll,.mem-document{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:#fff!important;width:auto!important;max-width:none!important}.mem-paper{box-shadow:none!important;border:0!important;margin:0!important;width:210mm!important;height:auto!important;min-height:297mm!important;padding:19mm 16mm 17mm!important;break-after:page!important;page-break-after:always!important;print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}.mem-tile-map{background:#e2e5e8!important}.mem-tile-map>img{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}.mem-paper:last-child{break-after:auto!important}}
+
+/* ETAPA 17 - croqui técnico alinhado ao modelo oficial */
+.mem-paper h2{margin:18px 0 14px}
+.mem-signature{margin:16px auto 0}
+.mem-map-frame{border:2px solid #2c3643;padding:8px;margin-top:8px;background:#fff}
+.mem-map-frame-technical{padding:6px}
+.mem-tile-map{aspect-ratio:900 / 470;background:#e9eef2}
+.mem-tile-map>img{width:28.444%}
+.mem-tile-map-technical{background:#e9eef2}
+.mem-compass{position:absolute;left:18px;top:18px;width:72px;height:72px;z-index:2}
+.mem-compass svg{width:100%;height:100%}
+.mem-compass text{font:700 13px Arial,sans-serif;fill:#101827}
+.mem-map-banner{position:absolute;left:16px;bottom:14px;padding:7px 12px;border-radius:5px;background:rgba(255,255,255,.92);font-size:10px;font-weight:700;color:#1b2531;z-index:2}
+.mem-technical-sheet{margin-top:10px;border:2px solid #2c3643;display:grid;grid-template-columns:1.02fr 1.15fr .83fr;background:#fff}
+.mem-technical-side{display:grid;grid-template-rows:auto auto;border-right:2px solid #2c3643}
+.mem-technical-side .mem-tech-box + .mem-tech-box{border-top:1px solid #2c3643}
+.mem-tech-box{padding:10px 12px}
+.mem-tech-box h3{margin:0 0 10px;font-size:11px;line-height:1.25;text-align:center}
+.mem-tech-grid{display:grid;gap:6px;font-size:10px}
+.mem-tech-grid div{display:flex;gap:5px}
+.mem-tech-grid b{min-width:48px}
+.mem-tech-legend-box{display:flex;gap:12px;align-items:center}
+.mem-technical-qr{width:110px;flex:0 0 110px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;color:#17253a;text-decoration:none}
+.mem-technical-qr img{width:96px;height:96px;object-fit:contain}
+.mem-technical-qr small{font-size:9px}
+.mem-tech-legend{flex:1}
+.mem-tech-legend-item{display:flex;align-items:center;gap:8px;font-size:10.5px;margin-top:7px}
+.legend-line{display:inline-block;width:20px;height:0;border-top:3px solid #e11d2f}
+.legend-measure{border-top-width:1px;border-top-color:#1f2937}
+.legend-vertex{width:11px;height:11px;border:2px solid #17212b;border-radius:50%;background:#fff}
+.legend-neighbor{width:22px;height:0;border-top:2px dashed #1b4d75}
+.mem-tech-data{display:flex;flex-direction:column;gap:10px;border-right:2px solid #2c3643}
+.mem-tech-data-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:10px}
+.mem-tech-data-grid div{display:flex;gap:5px}
+.mem-tech-data-grid b{min-width:68px}
+.mem-tech-data-wide{grid-column:1/-1}
+.mem-tech-divider{border-top:1px solid #2c3643}
+.mem-tech-person,.mem-tech-date{font-size:10px;display:flex;gap:5px;align-items:flex-start}
+.mem-tech-date{margin-top:auto}
+.mem-tech-brand{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px}
+.mem-tech-brand-mark img{width:52px;height:52px;object-fit:contain}
+.mem-tech-brand strong{font-size:12px}
+.mem-tech-brand span{font-size:10px}
+.mem-tech-link{width:100%;text-align:left;font-size:9px;line-height:1.3}
+.mem-tech-link span{display:block;overflow-wrap:anywhere}
+@media(max-width:850px){
+  .mem-technical-sheet{grid-template-columns:1fr}
+  .mem-technical-side,.mem-tech-data{border-right:none}
+  .mem-tech-data{border-top:1px solid #2c3643;border-bottom:1px solid #2c3643}
+}
+@media print{
+  .mem-map-frame{border-width:2px!important}
+  .mem-technical-sheet{display:grid!important;grid-template-columns:1.02fr 1.15fr .83fr!important}
+}
+
+
+/* ETAPA 18 - croqui oficial igual ao modelo anterior */
+.mem-paper-croqui-official{}
+.mem-paper-croqui-official .mem-stamp,
+.mem-paper-croqui-official .mem-simple-header,
+.mem-paper-croqui-official .mem-page-footer,
+.mem-paper-croqui-official .mem-title-mark,
+.mem-paper-croqui-official .mem-footer-brand{}
+.mem-official-sheet{background:#eef2f6;padding:7mm;min-height:calc(297mm - 20mm);box-sizing:border-box}
+.mem-official-sheet-inner{min-height:100%;border:2px solid #111827;background:#fff;padding:4mm 4mm 5mm;box-sizing:border-box}
+.mem-paper-croqui-official h2{margin:2mm 0 4mm;font-size:17px;letter-spacing:0}
+.mem-map-frame-official{border:2px solid #111827;padding:0;margin-top:0;background:#fff}
+.mem-map-frame-official .mem-tile-map{aspect-ratio:1112 / 590;background:#e5ebf0}
+.mem-map-frame-official .mem-map-banner{left:14px;bottom:10px;padding:6px 10px;border-radius:4px;font-size:9px}
+.mem-paper-croqui-official .mem-compass{left:16px;top:14px;width:68px;height:68px}
+.mem-technical-sheet-official{margin-top:4px;border:2px solid #111827;display:grid;grid-template-columns:35% 39% 26%;background:#fff}
+.mem-technical-sheet-official .mem-technical-side{border-right:2px solid #111827}
+.mem-technical-sheet-official .mem-tech-data{border-right:2px solid #111827}
+.mem-technical-sheet-official .mem-tech-box{padding:8px 10px}
+.mem-technical-sheet-official .mem-tech-box h3{font-size:10px;margin:0 0 8px}
+.mem-technical-sheet-official .mem-tech-grid,
+.mem-technical-sheet-official .mem-tech-data-grid,
+.mem-technical-sheet-official .mem-tech-person,
+.mem-technical-sheet-official .mem-tech-date,
+.mem-technical-sheet-official .mem-tech-link{font-size:9px}
+.mem-technical-sheet-official .mem-tech-legend-item{font-size:9.5px}
+.mem-technical-sheet-official .mem-technical-qr{width:105px;flex:0 0 105px}
+.mem-technical-sheet-official .mem-technical-qr img{width:92px;height:92px}
+.mem-technical-sheet-official .mem-tech-brand strong{font-size:11px}
+.mem-technical-sheet-official .mem-tech-brand span{font-size:9px}
+@media(max-width:850px){
+  .mem-official-sheet{padding:4mm}
+  .mem-technical-sheet-official{grid-template-columns:1fr}
+  .mem-technical-sheet-official .mem-technical-side,.mem-technical-sheet-official .mem-tech-data{border-right:none}
+  .mem-technical-sheet-official .mem-tech-data{border-top:1px solid #111827;border-bottom:1px solid #111827}
+}
+@media print{
+  .mem-paper-croqui-official{padding:10mm!important}
+  .mem-official-sheet{background:#eef2f6!important;padding:7mm!important;min-height:calc(297mm - 20mm)!important}
+  .mem-map-frame-official{border:2px solid #111827!important}
+  .mem-technical-sheet-official{grid-template-columns:35% 39% 26%!important;border:2px solid #111827!important}
+}
+
+
+/* ETAPA 19 - croqui oficial SVG + assinaturas */
+.mem-paper-croqui-official{padding:8mm 8mm 10mm;background:#fff;box-shadow:none}
+.mem-paper-croqui-official .mem-stamp,
+.mem-paper-croqui-official .mem-simple-header,
+.mem-paper-croqui-official .mem-page-footer,
+.mem-paper-croqui-official .mem-title-mark,
+.mem-paper-croqui-official .mem-footer-brand{display:none}
+.mem-official-sheet-svg{display:flex;flex-direction:column;gap:10px;background:#fff;padding:0}
+.mem-official-svg{width:100%;background:#fff}
+.mem-official-svg svg{display:block;width:100%;height:auto}
+.mem-croqui-signatures{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.mem-croqui-signatures .mem-signature,
+.mem-owner-signature{width:auto;min-height:120px;margin:0;border:none !important;border-radius:0 !important;box-shadow:none !important;outline:none !important;padding:8px 12px;background:transparent !important}
+.mem-croqui-signatures .mem-signature-draw,
+.mem-owner-signature-draw{height:55px;display:flex;align-items:end;justify-content:center}
+.mem-owner-signature-draw img{display:block;max-width:100%;max-height:52px;object-fit:contain}
+.mem-owner-signature{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;gap:4px}
+.mem-owner-signature small{font-size:9px}
+@media(max-width:850px){
+  .mem-croqui-signatures{grid-template-columns:1fr}
+}
+
+/* Mesma ocupação útil depois do zoom visual do SURVEYOR. */
+.mem-grid {height:calc(100dvh - 210px);}
+.mem-body {min-height:calc(100dvh - 124px);}
+
+/* Visor sem cabeçalho redundante, com ocupação máxima da viewport. */
+@media screen {
+.memorial-main.workspace-main{padding:0 8px 0 0!important;height:calc(100dvh - 64px);overflow:hidden;}
+.memorial-container.workspace-container{width:100%;max-width:none;height:100%;margin:0;}
+.mem-body{height:100%;min-height:0!important;display:flex;flex-direction:column;}
+.mem-heading{display:none!important;}
+.mem-tabs{flex:0 0 auto;margin-top:0!important;}
+.mem-grid{flex:1 1 auto;height:auto!important;min-height:0!important;border-radius:0!important;border-inline:none!important;border-bottom:none!important;}
+}
+
+.mem-side-note{display:none!important}
+
+@media print{.mem-stamp-mark{width:34mm!important;min-height:23mm}.mem-stamp-mark img{width:33mm!important;height:25mm!important;object-fit:contain}}
+
+/* Etapa 60 — Proprietários reunidos em uma única seção, um abaixo do outro.
+   Regras específicas para não afetar o restante da ficha ou os croquis. */
+.mem-meta .mem-meta-owners{display:flex;align-items:flex-start;gap:10px;break-inside:avoid}
+.mem-meta .mem-meta-owners>b{min-width:108px;flex-shrink:0}
+.mem-meta .mem-meta-owner-list{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.mem-meta .mem-meta-owner{display:flex;flex-direction:column;gap:1px;min-width:0}
+.mem-meta .mem-meta-owner span{overflow-wrap:anywhere}
+.mem-meta .mem-meta-document-values{display:flex;flex-direction:column;gap:5px;min-width:0}
+.mem-meta .mem-meta-document-values span{overflow-wrap:anywhere;line-height:1.45}
+.mem-meta .mem-meta-documents{align-items:flex-start;break-inside:avoid}
+.mem-meta .mem-meta-owners{grid-column:1/-1}
+
+.mem-area-breakdown{margin:14px 0 18px}.mem-area-breakdown table{width:100%;border-collapse:collapse;font-size:10px}.mem-area-breakdown th,.mem-area-breakdown td{padding:5px;border-bottom:1px solid #d7dfe9;text-align:left}.mem-area-breakdown small{display:block;margin-top:7px;color:#60718a;font-size:9px}
+
+/* Ferramentas complementares ficam acessíveis sob demanda, sem apagar campos. */
+.mem-advanced{border:1px solid #d8e3ef;border-radius:9px;background:#fff;overflow:hidden;width:100%;}
+.mem-advanced>summary{font-size:12px;font-weight:750;color:#19426b;background:#f3f7fc;padding:12px;cursor:pointer;list-style:revert;}
+.mem-advanced-body{padding:12px;display:flex;flex-direction:column;gap:10px}
+.mem-advanced[open]>summary{border-bottom:1px solid #dce7f1;background:#eaf3ff}
+@media screen and (min-width:1050px){.mem-grid{grid-template-columns:minmax(280px,310px) minmax(0,1fr)}.mem-form{padding:12px}.mem-fields{gap:9px}.mem-stage-scroll{padding:10px 12px 20px}}
+@media screen and (max-width:650px){.mem-side{max-height:min(38dvh,330px)}.mem-grid{min-height:unset}.mem-stage-scroll{padding:10px 8px 16px}}
+.mem-advanced>summary:focus-visible,.mem-side button:focus-visible{outline:2px solid #1266d5;outline-offset:-2px}
+
+/* Mesmo painel largo da Prancha e do Croqui, somente em telas grandes. */
+@media screen and (min-width:1050px){.mem-grid{grid-template-columns:clamp(400px,32vw,540px) minmax(0,1fr)}}
+@media screen and (min-width:900px) and (max-width:1049px){.mem-grid{grid-template-columns:360px minmax(0,1fr)}}
+
+/* Memorial em tela cheia: ações compactas, sem o cabeçalho global, e formulário ao lado da folha. */
+.workspace-shell.memorial-workspace{height:100dvh;min-height:0;overflow:hidden;grid-template-rows:minmax(0,1fr);background:#f4f6f8}
+.workspace-shell.memorial-workspace>.workspace-header{display:none!important}
+.workspace-shell.memorial-workspace>.workspace-main.memorial-main{height:100%!important;min-height:0!important;display:flex;flex-direction:column;overflow:hidden!important;padding:0!important;background:#f4f6f8}
+.memorial-workflow-bar{position:relative;z-index:12;flex:0 0 64px;min-width:0;display:grid;grid-template-columns:minmax(220px,1fr) auto minmax(280px,1fr);align-items:center;gap:12px;padding:0 16px;background:#fff;border-bottom:1px solid #cbd5e1;color:#102a43}
+.memorial-workflow-start,.memorial-workflow-actions{display:flex;align-items:center;gap:10px;min-width:0}
+.memorial-workflow-actions{justify-content:flex-end}
+.memorial-back{width:40px;height:40px;display:grid;place-items:center;flex:none;border:1px solid #aeb8c4;border-radius:4px;background:#fff;color:#1351b4;text-decoration:none}
+.memorial-back:hover{background:#f1f6fc;border-color:#1351b4}
+.memorial-workflow-download{position:relative}
+.memorial-workflow-download>.mem-outline,.memorial-workflow-actions>button{height:40px;min-height:40px;padding:0 14px;border:1px solid #1351b4;border-radius:4px;background:#fff;color:#1351b4;font-size:14px;font-weight:650;white-space:nowrap}
+.memorial-workflow-download>.mem-outline{display:flex;align-items:center;gap:8px}
+.memorial-workflow-download>.mem-outline:disabled{border-color:#cbd5e1;color:#8492a3;background:#f7f8fa}
+.memorial-workflow-download .mem-download-menu{top:calc(100% + 6px);right:auto;bottom:auto;left:0;width:220px;max-height:min(70vh,420px);overflow:auto;border:1px solid #cbd5e1;border-radius:4px;box-shadow:0 5px 18px #102a4326}
+.memorial-workflow-download .mem-download-menu button{padding:10px 12px;font-size:14px}
+.memorial-workflow-download .mem-download-menu button:hover{background:#eef4fb;color:#102a43}
+.memorial-workflow-actions .mem-draft{background:#fff;color:#1351b4}
+.memorial-workflow-actions .mem-draft:disabled{border-color:#cbd5e1;background:#f7f8fa;color:#8492a3}
+.memorial-workflow-steps{display:flex;align-items:center;justify-content:center;gap:0;margin:0;padding:0;list-style:none;white-space:nowrap}
+.memorial-workflow-steps li{position:relative;display:flex;align-items:center;gap:8px;padding:0 17px;color:#586779;font-size:14px;font-weight:600}
+.memorial-workflow-steps li+li:before{content:"";position:absolute;right:100%;top:50%;width:26px;height:1px;background:#aeb8c4}
+.memorial-step-number{width:26px;height:26px;display:grid;place-items:center;border:1px solid #8795a5;border-radius:50%;background:#fff;color:#34495e;font-size:13px;font-weight:700}
+.memorial-workflow-steps li.is-current{color:#1351b4;font-weight:700}
+.memorial-workflow-steps li.is-current .memorial-step-number,.memorial-workflow-steps li.is-complete .memorial-step-number{border-color:#1351b4;background:#1351b4;color:#fff}
+.workspace-shell.memorial-workspace .memorial-container.workspace-container{width:100%;max-width:none;height:auto;min-height:0;flex:1;margin:0;overflow:hidden}
+.workspace-shell.memorial-workspace .mem-body{height:100%;min-height:0!important;flex:1;display:flex;flex-direction:column;overflow:hidden;background:#f4f6f8}
+.workspace-shell.memorial-workspace .mem-tabs{display:none!important}
+.workspace-shell.memorial-workspace .mem-grid{display:grid!important;grid-template-columns:minmax(340px,clamp(380px,32vw,620px)) minmax(0,1fr);flex:1 1 auto;width:100%;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;gap:0;overflow:hidden;border:0;border-radius:0;background:#f4f6f8}
+.workspace-shell.memorial-workspace .mem-side{width:auto;max-height:none;min-height:0;overflow:auto;border:0;border-right:1px solid #cbd5e1;border-radius:0;background:#fff}
+.workspace-shell.memorial-workspace .mem-form{padding:18px 20px}
+.workspace-shell.memorial-workspace .mem-stage{width:auto;height:100%;min-height:0;overflow:hidden;border:0;border-radius:0;background:#e9eef3}
+.workspace-shell.memorial-workspace .mem-stage-toolbar{flex:0 0 46px;height:46px;padding:0 16px;border-bottom:1px solid #cbd5e1}
+.workspace-shell.memorial-workspace .mem-stage-scroll{flex:1 1 auto;height:auto;min-height:0;overflow:auto!important;padding:22px 18px 28px;align-items:center!important;justify-content:flex-start!important;background:#e9eef3}
+.workspace-shell.memorial-workspace .mem-document{width:100%;align-items:center;gap:20px}
+.workspace-shell.memorial-workspace .mem-stage-scroll.is-fit .mem-document{zoom:.62!important}
+.workspace-shell.memorial-workspace .mem-stage-scroll:not(.is-fit) .mem-document{zoom:1!important}
+.workspace-shell.memorial-workspace .mem-paper{width:min(210mm,100%);flex:none}
+.workspace-shell.memorial-workspace .mem-bottom{flex:0 0 48px;min-height:48px;height:48px;padding:0 16px;border-top:1px solid #cbd5e1;background:#fff}
+.workspace-shell.memorial-workspace .mem-bottom .mem-outline{min-height:34px;padding:6px 10px;border:1px solid #aeb8c4;border-radius:4px;background:#fff;color:#1351b4;font-size:12px;font-weight:600}
+.workspace-shell.memorial-workspace .mem-bottom .mem-outline:disabled{color:#8492a3}
+.workspace-shell.memorial-workspace .mem-custom-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.workspace-shell.memorial-workspace .mem-signature-group{display:flex;flex-direction:column;gap:13px;padding:14px;border:1px solid #cbd5e1;background:#fff}
+.workspace-shell.memorial-workspace .mem-signature-heading{display:flex;flex-direction:column;gap:5px}
+.workspace-shell.memorial-workspace .mem-signature-heading strong{color:#263746;font-size:15px}
+.workspace-shell.memorial-workspace .mem-signature-heading span{color:#535c68;font-size:13px;line-height:1.45}
+.workspace-shell.memorial-workspace .mem-signature-controls{display:flex;flex-direction:column;gap:12px}
+.workspace-shell.memorial-workspace .mem-signature-controls .mem-field{gap:7px}
+.workspace-shell.memorial-workspace .mem-signature-controls input[type=range]{accent-color:#1351b4}
+.workspace-shell.memorial-workspace .mem-owner-signature-note{background:#f7f8fa}
+.workspace-shell.memorial-workspace .mem-side{display:flex;flex-direction:column;overflow:hidden}
+.memorial-panel-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.memorial-panel-footer{position:relative;z-index:2;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;border-top:1px solid #cbd5e1;background:#fff;box-shadow:0 -3px 10px #102a4308}
+.memorial-panel-utility,.memorial-panel-actions{display:flex;align-items:center;gap:8px;min-width:0}
+.memorial-panel-actions{justify-content:flex-end;margin-left:auto}
+.memorial-panel-footer .mem-outline,.memorial-next-button{min-height:38px;padding:8px 12px;border:1px solid #aeb8c4;border-radius:4px;background:#fff;color:#1351b4;font-size:13px;font-weight:650;white-space:nowrap}
+.memorial-next-button{display:flex;align-items:center;gap:10px;border-color:#1351b4;background:#1351b4;color:#fff}
+.memorial-next-button:hover:not(:disabled){background:#0c3f91}
+.memorial-next-button:disabled{border-color:#cbd5e1;background:#f7f8fa;color:#8492a3;cursor:not-allowed}
+.memorial-panel-footer button:focus-visible{outline:2px solid #1266d5;outline-offset:2px}
+.mem-project-identification{display:flex;flex-direction:column;gap:5px;margin:14px 0;padding:14px;border:1px solid #cbd5e1;background:#f7f9fc;color:#263746}
+.mem-project-identification>span{font-size:11px;font-weight:650;color:#617287}
+.mem-project-identification>strong{font-size:15px;overflow-wrap:anywhere}
+.mem-project-identification>small{font-size:12px;color:#586779}
+.mem-form .mem-section>.mem-field{margin-top:9px}
+.mem-form .mem-section>.mem-field small{margin-top:2px}
+@media(max-width:1000px){
+ .memorial-workflow-bar{grid-template-columns:minmax(150px,1fr) auto minmax(220px,1fr);gap:8px;padding:0 10px}
+ .memorial-workflow-steps li{gap:5px;padding:0 10px;font-size:12px}
+ .memorial-workflow-steps li+li:before{width:14px}
+ .memorial-workflow-download>.mem-outline,.memorial-workflow-actions>button{padding:0 9px;font-size:12px}
+ .workspace-shell.memorial-workspace .mem-grid{grid-template-columns:minmax(300px,clamp(340px,34vw,520px)) minmax(0,1fr)}
+}
+@media(max-width:720px){
+ .memorial-workflow-bar{flex:0 0 auto;min-height:62px;grid-template-columns:1fr auto;gap:6px;padding:7px 8px}
+ .memorial-workflow-steps{grid-column:1/-1;grid-row:2;justify-content:flex-start;order:3}
+ .memorial-workflow-steps li{padding:0 10px 0 0}
+ .memorial-workflow-steps li+li:before{width:8px}
+ .memorial-workflow-start{grid-column:1;grid-row:1}
+ .memorial-workflow-actions{grid-column:2;grid-row:1}
+ .memorial-workflow-actions>button{height:36px;min-height:36px;padding:0 8px;font-size:11px}
+ .memorial-back{width:36px;height:36px}
+ .memorial-workflow-download>.mem-outline{height:36px;min-height:36px;padding:0 9px;font-size:12px}
+ .workspace-shell.memorial-workspace .mem-grid{grid-template-columns:1fr;grid-template-rows:minmax(220px,42%) minmax(0,1fr)}
+ .workspace-shell.memorial-workspace .mem-side{border-right:0;border-bottom:1px solid #cbd5e1}
+ .workspace-shell.memorial-workspace .mem-form{padding:12px}
+ .memorial-panel-footer{padding:9px 12px;gap:6px}
+ .memorial-panel-footer .mem-outline,.memorial-next-button{min-height:34px;padding:6px 8px;font-size:11px}
+ .memorial-panel-utility,.memorial-panel-actions{gap:5px}
+ .workspace-shell.memorial-workspace .mem-stage-toolbar{padding:0 10px}
+ .workspace-shell.memorial-workspace .mem-stage-scroll{padding:12px 8px 18px}
+ .workspace-shell.memorial-workspace .mem-bottom{flex-basis:44px;height:44px;min-height:44px;padding:0 8px}
+ .workspace-shell.memorial-workspace .mem-bottom-left .mem-outline{min-height:32px;padding:5px 7px;font-size:11px}
+}
+@media(max-width:420px){
+ .memorial-workflow-steps{width:100%;justify-content:space-between}
+ .memorial-workflow-steps li{padding-right:0}
+ .memorial-workflow-steps li>span:last-child{display:none}
+}
+@media print{
+ .workspace-shell.memorial-workspace{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important}
+ .workspace-shell.memorial-workspace>.workspace-main.memorial-main{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important}
+ .workspace-shell.memorial-workspace .memorial-workflow-bar,.workspace-shell.memorial-workspace .mem-stage-toolbar,.workspace-shell.memorial-workspace .mem-bottom{display:none!important}
+ .workspace-shell.memorial-workspace .memorial-container.workspace-container,.workspace-shell.memorial-workspace .mem-body,.workspace-shell.memorial-workspace .mem-grid,.workspace-shell.memorial-workspace .mem-stage,.workspace-shell.memorial-workspace .mem-stage-scroll{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:#fff!important;width:auto!important;max-width:none!important}
+ .workspace-shell.memorial-workspace .mem-side{display:none!important}
+}
+
+/* A assinatura pertence à caixa de prévia, não pode ampliar a lateral. */
+.mem-custom .mem-signature-thumb{box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:min(100%,260px);height:100px;min-height:0;overflow:hidden;padding:8px;}
+.mem-custom .mem-signature-thumb img{display:block;width:auto!important;height:auto!important;max-width:100%!important;max-height:82px!important;object-fit:contain!important;flex:none;}
+.mem-narrative-field{width:100%;min-width:0;gap:6px;}
+.mem-field textarea.mem-narrative-input{box-sizing:border-box;display:block;width:100%;min-width:0;min-height:220px;height:clamp(220px,32vh,360px);padding:12px 14px;font-family:Inter,'Segoe UI',sans-serif;font-size:13px;font-weight:400;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;resize:vertical;}
+.mem-map-editor-canvas{display:grid;gap:6px;border:1px solid #d7e1eb;border-radius:10px;background:#f5f8fc;padding:8px;touch-action:none;cursor:grab}
+.mem-map-editor-canvas:active{cursor:grabbing}
+.mem-map-editor-canvas .mem-official-svg{max-height:240px;overflow:hidden;border-radius:6px;background:#fff}
+.mem-map-editor-canvas .mem-official-svg svg{width:100%;height:auto;max-height:240px;object-fit:contain}
+.mem-map-editor-canvas small{font-size:10px;color:#596b7f;line-height:1.4}
+.mem-signature-consent-note{display:block;color:#647b94;font-size:10px;line-height:1.4}

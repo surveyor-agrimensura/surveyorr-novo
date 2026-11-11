@@ -1,0 +1,21 @@
+'use strict';
+const fs=require('fs'),assert=require('node:assert/strict'),path=require('path'),vm=require('vm');
+const ts=require('typescript'),root=path.join(__dirname,'../src/lib');
+function lib(name){const file=path.join(root,name+'.ts');const src=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;const module={exports:{}};vm.runInNewContext(src,{module,exports:module.exports,require,console,Math,Number,String,RegExp,Set,Array,Object}, {filename:file});return module.exports;}
+const geo=lib('cartographicAutomation'),con=lib('confrontantVisualOrganizer');
+const rectangle=[[-39.100,-12.100],[-39.0995,-12.100],[-39.099,-12.100],[-39.099,-12.099],[-39.100,-12.099]];
+const before=JSON.stringify(rectangle),sus=geo.suggestHiddenStraightVertices(rectangle);
+assert.deepEqual(Array.from(sus),[1]);assert.equal(JSON.stringify(rectangle),before);
+const dims=geo.visibleDimensionRuns(rectangle,[1]);assert.equal(dims.length,4);assert.equal(dims[0].points.length,3);assert.ok(dims[0].distanceM>100);
+const a=[[-39.1,-12.1],[-39.099,-12.1],[-39.099,-12.099],[-39.1,-12.099]];
+const b=[[-39.099,-12.1],[-39.098,-12.1],[-39.098,-12.099],[-39.099,-12.099]];
+const outer=geo.exteriorBoundaryRuns([{id:'A',points:a},{id:'B',points:b}]);
+assert.equal(outer.length,6,'união de quadrados adjacentes possui seis segmentos externos, não oito');
+const total=outer.reduce((s,x)=>s+x.distanceM,0);assert.ok(total>650&&total<680,'perímetro exterior de 2x1.000m aproximado');
+const svg=geo.exteriorDimensionSvg(outer,p=>({x:(p[0]+39.1)*300000,y:-(p[1]+12.1)*300000}),'#000000');assert.equal((svg.match(/data-exterior-cota="/g)||[]).length,6);assert.match(svg,/stroke-dasharray="5 4"/);
+const positions=con.readConfrontantLabelPositions('<text data-sheet-label="neighbor:2" x="150" y="30">TESTE</text>','sheet');assert.equal(positions.length,1);assert.equal(positions[0].source,2);
+const group=con.readConfrontantLabelPositions('<text data-sheet-label="division:A:0:neighbor:3" x="120" y="12">TESTE</text>','sheet','division:A:0:');assert.equal(group.length,1);assert.equal(group[0].source,3);
+const assignments=con.suggestConfrontantByPosition([{x:0,y:0},{x:200,y:0},{x:200,y:100},{x:0,y:100}],[{source:0,caption:'SUL',position:{x:100,y:135}},{source:1,caption:'NORTE',position:{x:100,y:-35}}]);
+assert.deepEqual(Array.from(assignments[0].targets),[2]);assert.deepEqual(Array.from(assignments[1].targets),[0]);
+const rebuilt=con.applyConfrontantSuggestions(['SUL','NORTE','',''],{'0':{cpf:'123'},'1':{cpf:'456'}},assignments,4);assert.equal(rebuilt.neighbors[2],'SUL');assert.equal(rebuilt.neighbors[0],'NORTE');assert.equal(rebuilt.details['2'].cpf,'123');
+console.log('12 verificações cartográficas e confrontantes aprovadas');

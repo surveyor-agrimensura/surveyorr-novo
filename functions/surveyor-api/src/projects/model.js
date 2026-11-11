@@ -75,6 +75,10 @@ export function createProjectModel({ safeJson, headerValue, statusError, appwrit
     return Number.isFinite(parsed) ? new Date(parsed).toISOString() : String(value);
   }
 
+  function projectRevision(row = {}, fallback = '') {
+    return String(row?.$updatedAt || row?.updatedAt || fallback || '');
+  }
+
   function expectedUpdatedAt(request, input = {}) {
     const ifMatch = String(headerValue(request, 'if-match') || '').trim().replace(/^W\//i, '').replace(/^"|"$/g, '');
     return canonicalUpdatedAt(ifMatch || headerValue(request, 'x-expected-updated-at') || input.expectedUpdatedAt || input.expectedRevision || input.revision || '');
@@ -86,7 +90,7 @@ export function createProjectModel({ safeJson, headerValue, statusError, appwrit
       if (requireExpected) throw statusError(428, 'A revisão do projeto é obrigatória. Reabra o projeto antes de salvar.', { code: 'PROJECT_REVISION_REQUIRED', field: 'updatedAt' });
       return;
     }
-    const current = canonicalUpdatedAt(row?.updatedAt || row?.$updatedAt || '');
+    const current = canonicalUpdatedAt(row?.$updatedAt || row?.updatedAt || '');
     if (current && expected !== current) {
       throw statusError(409, 'Este registro foi alterado em outra sessão. Recarregue a versão mais recente antes de salvar novamente.', {
         code: 'EDIT_CONFLICT',
@@ -124,6 +128,7 @@ export function createProjectModel({ safeJson, headerValue, statusError, appwrit
     sanitizeProjectClientInput,
     projectData,
     canonicalUpdatedAt,
+    projectRevision,
     expectedUpdatedAt,
     assertRevisionMatches,
     mapFeature

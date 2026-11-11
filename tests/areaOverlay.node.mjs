@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {overlappedArea2D,partitionAreaM2} from '../src/lib/areaOverlay.ts';
+const rect=(x,y,w,h)=>[{x,y},{x:x+w,y},{x:x+w,y:y+h},{x,y:y+h}];
+const land=rect(0,0,10,10);
+assert.ok(Math.abs(overlappedArea2D([land],[rect(-5,4,20,2)])-20)<0.001,'Faixa cortada no limite');
+assert.ok(Math.abs(overlappedArea2D([land],[rect(-5,4,20,2),rect(1,4,8,2)])-20)<0.001,'Sobreposição sem contagem dupla');
+assert.equal(overlappedArea2D([land],[rect(20,20,4,4)]),0,'Sem interseção');
+assert.ok(Math.abs(overlappedArea2D([land,rect(3,3,4,4)],[rect(-5,4,20,2)])-12)<0.001,'Desconta buracos');
+const result=partitionAreaM2([land],[rect(-5,4,20,2)],1000);
+assert.ok(Math.abs(result.easementM2-200)<0.01);
+assert.ok(Math.abs(result.remainderM2+result.easementM2-result.totalM2)<1e-8);
+console.log('OK: 6 verificações de interseção/união geométrica');

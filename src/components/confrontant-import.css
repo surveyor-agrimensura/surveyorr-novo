@@ -1,0 +1,14 @@
+.surveyor-dialog.sv-import-dialog{box-sizing:border-box;width:min(720px,100%);max-height:92vh;color:#14253b;font-size:13px}
+.sv-import-dialog .surveyor-dialog-body{display:flex;flex-direction:column;gap:12px}
+.sv-import-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%}
+.sv-import-dialog button:not(.surveyor-dialog-close){cursor:pointer;border-radius:6px;padding:8px 12px;background:#fff;border:1px solid #c5d5e9;color:#164a8d;font:inherit}
+.sv-import-dialog label{display:flex;flex-direction:column;gap:5px;font-weight:600}
+.sv-import-dialog textarea,.sv-import-dialog input,.sv-import-dialog select{box-sizing:border-box;width:100%;border:1px solid #c5d5e9;border-radius:6px;padding:8px;font:inherit;color:#17212b;background:#fff}
+.sv-import-warnings{padding:8px;border-radius:6px;background:#fff6dc;color:#735315}
+.sv-import-cardinals{display:grid;gap:8px}
+.sv-import-cardinal{display:grid;grid-template-columns:75px 1fr 165px;gap:8px;align-items:center}
+.sv-import-edges{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-height:200px;overflow:auto}
+.sv-import-edges label{display:flex;flex-direction:row;justify-content:space-between;align-items:center;padding:5px;border:1px solid #e3eaf4;border-radius:5px}
+.sv-import-edges select{width:110px}
+.sv-import-dialog .sv-import-primary{background:#0b60d1;color:white;border-color:#0b60d1}
+@media(max-width:580px){.sv-import-cardinal{grid-template-columns:1fr}.sv-import-edges{grid-template-columns:1fr}}

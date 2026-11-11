@@ -1,0 +1,53 @@
+.file-dropzone{display:grid;gap:8px;width:100%;font:inherit;color:#173b61}
+.file-dropzone-prompt{position:relative;display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border:1px dashed #9bbce2;border-radius:9px;background:#f6faff;transition:border-color .15s,background .15s}
+.file-dropzone.is-dragging .file-dropzone-prompt{border-color:#1557b7;background:#eaf3ff;box-shadow:0 0 0 2px #1557b722}
+.file-dropzone.is-disabled .file-dropzone-prompt{opacity:.6}
+.file-dropzone-copy{display:grid;gap:3px;flex:1;min-width:0;font-size:12px}
+.file-dropzone-copy strong{font-weight:700;color:#173b61}
+.file-dropzone-copy span{color:#667c95;overflow-wrap:anywhere;font-size:11px}
+.file-dropzone-select,.file-dropzone-action{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:0 0 auto;min-height:34px;padding:7px 10px;border:1px solid #a9c8ec;border-radius:7px;background:#fff;color:#1457a5;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.file-dropzone-select:hover:not(:disabled),.file-dropzone-action:hover:not(:disabled){background:#edf5ff}
+.file-dropzone-select:focus-visible,.file-dropzone-action:focus-visible{outline:3px solid #1c65c9;outline-offset:2px}
+.file-dropzone-select:disabled,.file-dropzone-action:disabled{opacity:.6;cursor:wait}
+.file-dropzone-input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.file-dropzone-list{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.file-dropzone-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;padding:8px 10px;border:1px solid #d9e3ef;border-radius:7px;background:#fff;font-size:11px}
+.file-dropzone-file{display:flex;align-items:baseline;justify-content:space-between;gap:8px;min-width:0}
+.file-dropzone-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:#284764}
+.file-dropzone-size{flex:0 0 auto;color:#6e8198}
+.file-dropzone-status{grid-column:1/-1;display:flex;align-items:center;gap:6px;color:#536a84;min-width:0}
+.file-dropzone-status span{overflow-wrap:anywhere}
+.file-dropzone-status progress{width:min(160px,35%);height:8px;margin-left:auto;accent-color:#1762bd}
+.file-dropzone-spinner{animation:file-dropzone-spin 1s linear infinite}
+.status-success .file-dropzone-status{color:#167344}
+.status-error .file-dropzone-status{color:#b42318}
+.status-cancelled .file-dropzone-status{color:#7a5a12}
+.file-dropzone-action{grid-column:2;min-height:28px;padding:4px 7px;font-size:10px}
+@keyframes file-dropzone-spin{to{transform:rotate(360deg)}}
+@media(max-width:520px){.file-dropzone-prompt{align-items:flex-start;flex-wrap:wrap}.file-dropzone-copy{flex-basis:calc(100% - 32px)}.file-dropzone-select{margin-left:29px}.file-dropzone-item{grid-template-columns:minmax(0,1fr)}.file-dropzone-action{grid-column:1;justify-self:start}}
+@media(prefers-reduced-motion:reduce){.file-dropzone-spinner{animation-duration:2s}}
+
+/* Aparência compartilhada com os demais campos de envio de arquivos. */
+.file-dropzone{gap:8px;color:#1559b7}
+.file-dropzone-prompt{min-height:48px;padding:8px 12px;border:1px dashed #2565bd;border-radius:6px;background:#fff;color:#1559b7}
+.file-dropzone-copy{display:flex;align-items:center;min-height:26px}
+.file-dropzone-copy strong{color:#4e83cd;font-size:13px;font-style:italic;font-weight:500}
+.file-dropzone-copy span{display:none}
+.file-dropzone-select,.file-dropzone-action{min-height:32px;border-color:#b9d0ee;border-radius:6px;color:#1559b7}
+.file-dropzone-prompt{position:relative}
+.file-dropzone-select{position:absolute;inset:0;width:100%;height:100%;min-height:0;padding:0;border:0;border-radius:6px;background:transparent;color:transparent;font-size:0}
+.file-dropzone-select:hover:not(:disabled){background:transparent}
+.file-dropzone-select:focus-visible{outline:3px solid #1c65c9;outline-offset:2px}
+.file-dropzone-list{gap:0;border:1px solid #dedede;background:#fff}
+.file-dropzone-item{grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:13px 14px;border:0;border-bottom:1px solid #d8d8d8;border-radius:0;background:#fff;font-size:13px}
+.file-dropzone-item:last-child{border-bottom:0}
+.file-dropzone-name{color:#4e83cd;font-size:13px;font-weight:500}
+.file-dropzone-size{color:#555;font-size:12px}
+.file-dropzone-status{grid-column:1/-1;min-height:18px}
+.file-dropzone-status progress{width:100%;height:5px;margin:4px 0 0;accent-color:#1559b7}
+.file-dropzone-status span{font-size:11px}
+.file-dropzone-action{grid-column:1/-1;justify-self:start}
+.file-dropzone.is-dragging .file-dropzone-prompt{background:#e6f0ff}
+.file-dropzone.is-disabled .file-dropzone-prompt{background:#e8f0fb}
+.file-dropzone-item.status-success .file-dropzone-name{color:#267644}
+.file-dropzone-item.status-error .file-dropzone-name{color:#c43727}

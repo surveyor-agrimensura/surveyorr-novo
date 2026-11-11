@@ -1,0 +1,12 @@
+/* Instalação PWA integrada ao cabeçalho sem modificar o fluxo de autenticação */
+.surveyor-pwa-control{position:relative;display:inline-flex;flex-shrink:0;align-items:center}
+.surveyor-install-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:35px;padding:7px 12px;border-radius:9px;border:1px solid #cadcf3;background:#edf5ff;color:#1559ad;font:inherit;font-size:12px;font-weight:750;cursor:pointer;white-space:nowrap}
+.surveyor-install-button:hover{background:#deedff;border-color:#90bbed}
+.surveyor-pwa-control.compact .surveyor-install-button{min-height:37px;font-size:11px;padding:6px 8px}
+.surveyor-pwa-hint{position:absolute;right:0;top:calc(100% + 10px);z-index:1200;width:min(330px,90vw);padding:17px;border-radius:12px;background:#fff;color:#193654;border:1px solid #ccdbee;box-shadow:0 10px 35px #132a4933;text-align:left;line-height:1.45;font-size:12px}
+.surveyor-pwa-hint strong{font-size:14px}.surveyor-pwa-hint p{margin:8px 0 0}.surveyor-pwa-close{float:right;border:0;background:transparent;cursor:pointer;color:#466282}
+@media(max-width:950px){.surveyor-pwa-control:not(.compact) .surveyor-install-button span{display:none}}
+/* O rodapé do menu lateral repetia a ação PWA já disponível no cabeçalho. */
+.map-navigation-panel .map-navigation-bottom{display:none}
+
+.surveyor-pwa-control .surveyor-pwa-icon{min-width:44px;min-height:44px;border:1px solid #d9e5f4;border-radius:50%;background:#fff;color:#163e73;display:grid;place-items:center;cursor:pointer}.surveyor-pwa-control .surveyor-pwa-icon:hover{background:#eaf3ff}

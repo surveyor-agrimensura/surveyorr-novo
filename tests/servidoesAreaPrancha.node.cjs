@@ -1,0 +1,61 @@
+'use strict';
+// Teste do renderizador SVG real, sem alterar serviços, banco ou dados do usuário.
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const ts=require('typescript');
+const root=path.resolve(__dirname,'..');
+const cache=new Map();
+function load(input){
+  const p=path.resolve(input);
+  if(p.endsWith('?raw'))return fs.readFileSync(p.slice(0,-4),'utf8');
+  if(cache.has(p))return cache.get(p).exports;
+  const mod={exports:{}};cache.set(p,mod);
+  const js=ts.transpileModule(fs.readFileSync(p,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText;
+  const localRequire=(id)=>{
+    if(!id.startsWith('.'))return require(id);
+    const file=path.resolve(path.dirname(p),id);
+    if(file.endsWith('?raw'))return fs.readFileSync(file.slice(0,-4),'utf8');
+    for(const f of [file,file+'.ts',file+'.tsx',file+'.js'])if(fs.existsSync(f)&&fs.statSync(f).isFile())return load(f);
+    throw Error(`Missing dependency: ${id} from ${p}`);
+  };
+  vm.runInNewContext(js,{module:mod,exports:mod.exports,require:localRequire,console,Buffer,URL,TextEncoder,structuredClone,setTimeout,clearTimeout,Math,Date,JSON,Array,Object,Map,Set,RegExp,Number,String,Boolean}, {filename:p,timeout:15000});
+  return mod.exports;
+}
+const {renderTechnicalSheet,defaultSheet,normalizeSheet}=load(path.join(root,'src/features/documents/technicalSheet.ts'));
+const {sheetProjection}=load(path.join(root,'src/features/documents/technicalSheet.ts'));
+const poly={id:'parcel-1',name:'IMÓVEL TESTE',vertices:[[-39.58,-12.99],[-39.57,-12.99],[-39.57,-12.98],[-39.58,-12.98]],areaM2:10000,perimeterM:400,properties:{}};
+const base= {...defaultSheet(),background:'vector',polygonStroke:'#111111',polygonFill:'#111111'};
+const ctx={municipality:'Bahia',owner:'Nome',company:'AGR',date:'31/10/2026',publicUrl:'',uf:'BA',composite:false};
+const {project}=sheetProjection(poly,base);
+const start=project([-39.585,-12.985]),end=project([-39.565,-12.985]);
+const road={id:'road1',points:[start,end],color:'#00aa00',width:25};
+const sv=renderTechnicalSheet(poly,{...base,sheetRoads:[road]},ctx);
+const quadro=sv.match(/<g data-sheet-area-scope="individual"[\s\S]*?<\/g>/)?.[0];
+assert.ok(quadro,'quadro presente');
+assert.match(quadro,/data-sheet-servitude-accounting="true"/);
+assert.match(quadro,/Remanescente/);
+assert.match(quadro,/Servidão 1/);
+assert.match(quadro,/Total do imóvel/);
+assert.match(quadro,/fill="#00aa00"/);
+assert.match(quadro,/fill="#111111"/);
+const values=[...quadro.matchAll(/<text x="1420"[^>]*>([\d,.]+)<\/text>/g)].map(x=>Number(x[1].replace('.','').replace(',','.')));
+assert.equal(values.length,3,'3 linhas de valores');
+assert.ok(values[0]<1 && values[1]>0 && values[1]<1);
+assert.ok(Math.abs(values[0]+values[1]-values[2])<0.0002,'soma da remanescente e servidão é total');
+assert.match(quadro,/400,00/,'perímetro original');
+const svTwo=renderTechnicalSheet(poly,{...base,sheetRoads:[road,{...road,id:'road2',color:'#ff0000'}]},ctx);
+const quadroTwo=svTwo.match(/<g data-sheet-area-scope="individual"[\s\S]*?<\/g>/)?.[0];
+const v2=[...quadroTwo.matchAll(/<text x="1420"[^>]*>([\d,.]+)<\/text>/g)].map(x=>Number(x[1].replace('.','').replace(',','.')));
+assert.equal(v2.length,3,'faixa coincidente tem área adicional zero e é omitida');
+assert.ok(Math.abs(v2[0]+v2[1]-v2[2])<0.0003,'servidões sobrepostas sem dupla contagem');
+assert.ok(Math.abs(v2[1]-values[1])<0.0001,'faixa coincidente não aumenta a área');
+const outside={...road,id:'outside',points:[project([-39.56,-12.975]),project([-39.55,-12.975])]};
+const other=renderTechnicalSheet(poly,{...base,sheetRoads:[outside]},ctx);
+const out=other.match(/<g data-sheet-area-scope="individual"[\s\S]*?<\/g>/)?.[0];
+assert.doesNotMatch(out,/Servidão 1/,'faixa fora do terreno não é contabilizada');
+assert.match(out,/1,0000/,'total é preservado quando a faixa está fora');
+console.log('SURVEYOR: testes da servidão interna, cores e soma de áreas aprovados');
+
+if(process.env.SURVEYOR_OVERLAY_TEST_SVG)fs.writeFileSync(process.env.SURVEYOR_OVERLAY_TEST_SVG,sv);
