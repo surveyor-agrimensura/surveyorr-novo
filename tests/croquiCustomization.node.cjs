@@ -89,7 +89,7 @@ const restored=renderer.normalizeCroquiSettings({...base,labelColors:{'area:poly
 assert.equal(restored.labelColors['area:polygon'],'#0000ff','cor salva permanece na normalização');
 assert.equal(restored.labelColors['vertex:0'],'#008800','cor do vértice persiste');
 const toolbar=fs.readFileSync('src/features/croqui/CroquiPage.tsx','utf8');
-assert.match(toolbar,/className="cq-bottom" role="toolbar"/,'barra inferior semântica');
+assert.match(toolbar,/className=\{`cq-bottom[^`]*`\} role="toolbar"/,'barra inferior semântica');
 assert.match(toolbar,/cq-toolbar-left/,'ações no bloco esquerdo');
 assert.match(toolbar,/cq-toolbar-middle/,'zoom central');
 assert.match(toolbar,/cq-toolbar-right/,'salvar/exportar no bloco direito');
