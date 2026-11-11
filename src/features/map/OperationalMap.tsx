@@ -1233,11 +1233,11 @@ export function OperationalMap(){
  };
  const legacyIcons:Record<string,ReactNode>={pointer:<MousePointer2/>,pentagon:<Pentagon/>,route:<Route/>,square:<Square/>,circle:<Circle/>,arc:<Waypoints/>,pin:<MapPin/>,edit:<Pencil/>,points:<Grid3X3/>,minus:<Minus/>,trash:<Trash2/>,refresh:<RefreshCw/>,ruler:<Ruler/>,coordinate:<Crosshair/>,measure:<SlidersHorizontal/>,split:<PanelRightClose/>,terrain:<Mountain/>,profile:<Route/>,cutfill:<Scissors/>,contours:<Layers3/>,spot:<MapPin/>,earth:<Globe2/>,x:<X/>};
  const formatMapCoordinates=(lat:number,lng:number)=>`Lat ${lat.toFixed(7)} · Lon ${lng.toFixed(7)}`;
- const rotateMapTo=(degrees:number)=>{const map=mapRef.current as RotatableLeafletMap|null;if(!map)return;const bearing=((degrees%360)+360)%360;map.setBearing(bearing);setMapBearing(map.getBearing());};
+ const rotateMapTo=(heading:number)=>{const map=mapRef.current as RotatableLeafletMap|null;if(!map)return;const normalized=((heading%360)+360)%360;map.setBearing((360-normalized)%360);setMapBearing(normalized);};
  const copyMapCoordinates=async(lat:number,lng:number)=>{
   const value=`${lat.toFixed(7)}, ${lng.toFixed(7)}`;
-  try{await navigator.clipboard.writeText(value);notify('Coordenadas copiadas em latitude, longitude.');}
-  catch{notify('Não foi possível copiar as coordenadas.');}
+  try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);notify('Coordenadas copiadas em latitude, longitude.');return;}throw new Error('Clipboard API indisponível');}
+  catch{const field=document.createElement('textarea');field.value=value;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';field.style.pointerEvents='none';document.body.appendChild(field);let copied=false;try{field.select();copied=document.execCommand('copy');}catch{}finally{field.remove();}notify(copied?'Coordenadas copiadas em latitude, longitude.':'Não foi possível copiar as coordenadas.');}
  };
  useEffect(()=>{
   const closeMapMenus=(event:MouseEvent)=>{
