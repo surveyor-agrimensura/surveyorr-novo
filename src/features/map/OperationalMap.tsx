@@ -34,6 +34,7 @@ import { mapDraftKeys, writeMapDraftSnapshot } from './mapDraftStorage';
 import { readOfflineDraft, writeOfflineDraft } from '../../lib/offlineDraftStore';
 import { findMapSnap } from './mapSnap';
 import { measureMapGeometry } from './geometryMetrics';
+import { tarefaCaption, tarefaUnitForState } from '../../lib/agrarianMeasure';
 import { openRing, closeRing, insertVertexOnEdge, removeVertexAt, replaceExteriorRing, segmentMetadataAfterInsert, segmentMetadataAfterRemove } from './vertexEditing';
 import { getVertexAppearance, updateVertexAppearance, shiftVertexAppearance, copyVertexAppearanceToAll } from './vertexAppearance';
 import { svgTextOutline } from '../../lib/svgTextContrast';
@@ -98,8 +99,11 @@ export function OperationalMap(){
  const historyChanges=useRef<MapFeature[][]>([]),redoChanges=useRef<MapFeature[][]>([]);
  const previousFeatures=useRef<MapFeature[]>(features),skipHistory=useRef(false);
  const [historyCount,setHistoryCount]=useState({undo:0,redo:0});
- const [officialInfo,setOfficialInfo]=useState<{layer:string;attributes:Record<string,unknown>|null;lat:number;lng:number;loading:boolean;error?:string}|null>(null);
+  const [officialInfo,setOfficialInfo]=useState<{layer:string;attributes:Record<string,unknown>|null;geometry?:Geometry|null;uf?:string;lat:number;lng:number;loading:boolean;error?:string}|null>(null);
  const [infoExpanded,setInfoExpanded]=useState(false);
+  const officialMetrics=officialInfo?.geometry?measureMapGeometry(officialInfo.geometry):null;
+  const officialTarefa=officialMetrics&&officialInfo?.uf?tarefaCaption(officialMetrics.areaM2,officialInfo.uf):'';
+  const officialTarefaUnit=officialInfo?.uf?tarefaUnitForState(officialInfo.uf):'';
  const queryFeatureRef=useRef<(point:L.LatLng)=>void>(()=>{});
 
  const featureRef=useRef<MapFeature[]>(features);
@@ -677,7 +681,7 @@ export function OperationalMap(){
   if(!map||!active.length||toolRef.current!=='pan')return;
   const requestId=++officialQuerySequence.current;
   // Mostrar o marcador no clique, sem esperar o GetFeatureInfo do servidor.
-  setDetailsFeatureId(null);setOfficialInfo({layer:active.at(-1)?.name||'Camada oficial',attributes:null,lat:point.lat,lng:point.lng,loading:true});setInfoExpanded(false);
+   setDetailsFeatureId(null);setOfficialInfo({layer:active.at(-1)?.name||'Camada oficial',attributes:null,uf:active.at(-1)?.uf||place?.uf||projectData.uf,lat:point.lat,lng:point.lng,loading:true});setInfoExpanded(false);
   void (async()=>{
    const xy=map.latLngToContainerPoint(point),size=map.getSize(),bounds=map.getBounds();
    let matched=false;
@@ -689,9 +693,10 @@ export function OperationalMap(){
      const response=await fetch(endpoint.toString(),{signal:AbortSignal.timeout(6500)});
      if(!response.ok)continue;
      const text=await response.text();if(!text.trim().startsWith('{'))continue;
-     const data=JSON.parse(text) as {features?:Array<{properties?:Record<string,unknown>}>};
-     const attributes=data.features?.find(f=>f.properties&&Object.keys(f.properties).length)?.properties;
-     if(attributes){if(requestId===officialQuerySequence.current){setOfficialInfo({layer:layer.name,attributes,lat:point.lat,lng:point.lng,loading:false});}matched=true;break;}
+      const data=JSON.parse(text) as {features?:Array<{properties?:Record<string,unknown>;geometry?:Geometry|null}>};
+      const feature=data.features?.find(f=>f.properties&&Object.keys(f.properties).length);
+      const attributes=feature?.properties;
+      if(attributes){if(requestId===officialQuerySequence.current){setOfficialInfo({layer:layer.name,attributes,geometry:feature.geometry||null,uf:layer.uf||place?.uf||projectData.uf,lat:point.lat,lng:point.lng,loading:false});}matched=true;break;}
     }catch(error){console.warn('SURVEYOR GetFeatureInfo indisponível',layer.id,error);}
    }
    if(requestId===officialQuerySequence.current&&!matched){setOfficialInfo(v=>v&&v.lat===point.lat&&v.lng===point.lng?{...v,loading:false,error:'Esta camada não retornou atributos públicos neste ponto. Tente outro imóvel ou aproxime o mapa.'}:v);setStatus('Nenhum atributo público disponível para o ponto selecionado.');}
@@ -788,7 +793,8 @@ export function OperationalMap(){
     referenceOverlay.current=tiles('Reference/World_Boundaries_and_Places');
     baseLayers.current[mapMode].addTo(map);if(mapMode==='hybrid')referenceOverlay.current.addTo(map);
     L.control.scale({imperial:false,metric:true,position:'bottomleft'}).addTo(map);
-    const rendered=L.geoJSON(undefined,{pointToLayer:(f,latlng)=>L.marker(latlng,{icon:f.properties?.hasMonument?monumentPointPin:regularPointPin,title:String(f.properties?.name||'Ponto marcado'),riseOnHover:true}),style:(f)=>{const color=String(f?.properties?.strokeColor||f?.properties?.lotColor||'#e9a405');return {color,weight:Number(f?.properties?.lineWeight??3),fillColor:String(f?.properties?.fillColor||f?.properties?.lotColor||color),fillOpacity:Number(f?.properties?.fillOpacity??.20)};},onEachFeature:(f,layer)=>{layer.on('click',(event:L.LeafletMouseEvent)=>{L.DomEvent.stopPropagation(event.originalEvent);if(toolRef.current!=='pan'){map.fire('click',event);return;}queryFeatureRef.current(event.latlng);setSelectedFeature(String(f.id));setDetailsFeatureId(String(f.id));setInfoExpanded(false);setEditingFeature(null);setContextAt(null);setPanel('layers');});
+     const drawingPane=map.createPane('surveyor-editable-drawings');drawingPane.style.zIndex='450';drawingPane.style.pointerEvents='auto';
+     const rendered=L.geoJSON(undefined,{pane:'surveyor-editable-drawings',interactive:true,pointToLayer:(f,latlng)=>L.marker(latlng,{icon:f.properties?.hasMonument?monumentPointPin:regularPointPin,title:String(f.properties?.name||'Ponto marcado'),riseOnHover:true}),style:(f)=>{const color=String(f?.properties?.strokeColor||f?.properties?.lotColor||'#e9a405');return {className:'surveyor-editable-feature-hit-target',color,weight:Number(f?.properties?.lineWeight??3),fill:true,fillColor:String(f?.properties?.fillColor||f?.properties?.lotColor||color),fillOpacity:Number(f?.properties?.fillOpacity??.20)};},onEachFeature:(f,layer)=>{layer.on('click',(event:L.LeafletMouseEvent)=>{L.DomEvent.stopPropagation(event.originalEvent);if(toolRef.current!=='pan'){map.fire('click',event);return;}queryFeatureRef.current(event.latlng);setSelectedFeature(String(f.id));setDetailsFeatureId(String(f.id));setInfoExpanded(false);setEditingFeature(null);setContextAt(null);setPanel('layers');});
       layer.on('contextmenu',(event:L.LeafletMouseEvent)=>{
        L.DomEvent.stop(event.originalEvent);if(f.geometry.type!=='Polygon')return;const rect=element.getBoundingClientRect();const x=event.originalEvent.clientX-rect.left,y=event.originalEvent.clientY-rect.top;
        setSelectedFeature(String(f.id));setDetailsFeatureId(String(f.id));setInfoExpanded(false);setEditingFeature(null);setPanel('layers');setContextAt({x:Math.max(12,Math.min(x,rect.width-220)),y:Math.max(76,Math.min(y,rect.height-290)),id:String(f.id)});
@@ -1256,9 +1262,9 @@ export function OperationalMap(){
   ] as [import('./shapefileExport').ShapeTarget,string][]).map(([id,title])=><label className={shapeProfile===id?'selected':''} key={id}><input name="shp-profile" type="radio" value={id} checked={shapeProfile===id} onChange={()=>setShapeProfile(id)}/><span>{title}</span></label>)}</div><footer><button onClick={()=>setShapeDialog(false)}>Cancelar</button><button className="map-primary" onClick={()=>{try{const result=toShapefileZip(featureRef.current,shapeProfile);downloadBytes(shapeProfile==='seia-cefir-ba'?'shapeImovelRural-SEIA-CEFIR.zip':`surveyor-${shapeProfile}.zip`,result);setShapeDialog(false);notify('Shapefile gerado.');}catch(err){notify(err instanceof Error?err.message:'Falha ao exportar Shapefile.');}}}>Validar e gerar</button></footer></section></div>}
   {legacyDraftAvailable&&<div className="map-legacy-recovery" role="status"><strong>Rascunho de versão anterior encontrado neste navegador.</strong> <span>Por segurança, não foi carregado automaticamente nesta conta.</span> <button type="button" onClick={recoverLegacyDraft}>Revisar e recuperar rascunho antigo</button> <button type="button" onClick={()=>setLegacyDraftAvailable(false)}>Ocultar aviso</button></div>}
   <WorkSidebar panel={panel==='gleba'?null:panel} municipalityState={municipalityState} saveError={saveError} onBackupDraft={exportFile} onClose={()=>setPanel(null)} onCatalog={()=>setModal('catalog')} project={projectData} onProjectChange={setProjectData} onSave={saveProject} cloudPending={cloudPending} activeLayers={officialLayers} onToggleLayer={toggleLayer} onRemoveLayer={removeLayer} onOpacityLayer={opacityLayer} onRefreshLayer={refreshOfficialLayer} features={features} selectedFeature={selectedFeature} onRemoveFeature={removeMapFeature} onStyleFeature={styleFeatureById} onEditGeometry={id=>{setSelectedFeature(id);setEditingFeature(id);}} onDivideFeature={id=>{setSelectedFeature(id);setPanel('gleba');}} onRenameFeature={(id,name)=>{setFeatures(current=>{const next=current.map(f=>String(f.id)===id?{...f,properties:{...f.properties,name}}:f);featureRef.current=next;return next;});}} onConfrontantFeature={(id,values)=>saveConfrontants(values,id)} onConfrontantDetailFeature={(id,values)=>saveConfrontantDetails(values,id)} />
-  {detailsFeature&&<FeatureDetailsPanel feature={detailsFeature} onClose={()=>setDetailsFeatureId(null)} />}
+  {detailsFeature&&<FeatureDetailsPanel feature={detailsFeature} uf={place?.uf||projectData.uf} onClose={()=>setDetailsFeatureId(null)} />}
   {panel==='gleba'&&<GlebaPanel features={features} selected={selectedFeature} onClose={()=>setPanel(null)} onChoose={id=>setSelectedFeature(id)} onCreate={createGlebas} onExtractManual={extractDrawnGleba} onStyleFeature={styleFeatureById} onRemoveFeature={removeMapFeature} onDraw={async(kind,parentId)=>{if(!await changeTool(kind))return;glebaDrawingRef.current=kind;glebaParentRef.current=parentId;notify(kind==='polygon'?'Clique no mapa para desenhar a gleba manual.':'Desenhe a linha guia e finalize.');}}/>}
-  {officialInfo&&infoExpanded&&<section className="map-official-details" aria-label="Dados de imóvel oficial"><header><strong>Dados do imóvel · {officialInfo.layer}</strong><button onClick={()=>setInfoExpanded(false)} aria-label="Fechar detalhes"><X size={16}/></button></header>{officialInfo.loading?<p role="status">Consultando atributos públicos do ponto selecionado…</p>:officialInfo.error?<p role="status">{officialInfo.error}</p>:<><small>Atributos retornados pela fonte oficial</small><dl>{Object.entries(officialInfo.attributes||{}).filter(([_,value])=>value!=null&&String(value).trim()).map(([key,value])=><div key={key}><dt>{key.replace(/_/g,' ')}</dt><dd>{String(value)}</dd></div>)}</dl></>}<p>Consulta: {officialInfo.lat.toFixed(6)}, {officialInfo.lng.toFixed(6)}</p>{!officialInfo.loading&&officialInfo.attributes&&<button className="map-primary" onClick={()=>void exportOfficialAt(officialInfo.lat,officialInfo.lng)}>Baixar pacote ZIP com dados e geometria disponível</button>}</section>}
+  {officialInfo&&infoExpanded&&<section className="map-official-details" aria-label="Dados de imóvel oficial"><header><strong>Dados do imóvel · {officialInfo.layer}</strong><button onClick={()=>setInfoExpanded(false)} aria-label="Fechar detalhes"><X size={16}/></button></header>{officialInfo.loading?<p role="status">Consultando atributos públicos do ponto selecionado…</p>:officialInfo.error?<p role="status">{officialInfo.error}</p>:<><small>Atributos retornados pela fonte oficial</small>{officialMetrics&&officialMetrics.areaM2>0&&<div className="map-official-area"><strong>Área da geometria retornada</strong><span>{(officialMetrics.areaM2/10000).toLocaleString('pt-BR',{maximumFractionDigits:4})} ha</span>{officialTarefa?<small>≈ {officialTarefa.replace(/\s+tarefas$/,'')} {officialTarefaUnit}</small>:officialInfo.uf&&<small>Conversão regional de tarefa não cadastrada · {officialInfo.uf}</small>}</div>}<dl>{Object.entries(officialInfo.attributes||{}).filter(([_,value])=>value!=null&&String(value).trim()).map(([key,value])=><div key={key}><dt>{key.replace(/_/g,' ')}</dt><dd>{String(value)}</dd></div>)}</dl></>}<p>Consulta: {officialInfo.lat.toFixed(6)}, {officialInfo.lng.toFixed(6)}</p>{!officialInfo.loading&&officialInfo.attributes&&<button className="map-primary" onClick={()=>void exportOfficialAt(officialInfo.lat,officialInfo.lng)}>Baixar pacote ZIP com dados e geometria disponível</button>}</section>}
   {mapContext&&<div className="map-feature-context" role="menu" style={{left:mapContext.x,top:mapContext.y}}><strong>Ações no mapa</strong>
    {tool!=='pan'&&<button onClick={async()=>{await changeTool('pan',true);setMapContext(null);}}>Cancelar ferramenta atual</button>}
    {selectedFeature&&<button onClick={()=>{setEditingFeature(selectedFeature);setMapContext(null);}}>Editar vértices da feição selecionada</button>}

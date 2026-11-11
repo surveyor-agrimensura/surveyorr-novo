@@ -9,3 +9,13 @@ export function tarefaCaption(areaM2: number, state: string, override?: number):
   if (equivalent === null || !Number.isFinite(areaM2) || areaM2 < 0) return '';
   return `${(areaM2 / equivalent).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} tarefas`;
 }
+export function tarefaUnitForState(state: string, override?: number): string {
+  if (typeof override === 'number' && Number.isFinite(override) && override > 0) return 'tarefas (configuração local)';
+  const labels: Readonly<Record<string, string>> = {
+    BA: 'tarefas baianas',
+    CE: 'tarefas cearenses',
+    SE: 'tarefas sergipanas',
+    AL: 'tarefas alagoanas',
+  };
+  return labels[state.trim().toUpperCase()] || '';
+}

@@ -5,12 +5,14 @@ import { measureMapGeometry } from './geometryMetrics';
 import { downloadText, toKml } from './mapFormats';
 import { featuresToDxf } from './advancedTerrainTools';
 import { downloadBytes, toShapefileZip } from './shapefileExport';
+import { tarefaCaption, tarefaUnitForState } from '../../lib/agrarianMeasure';
 
 type MapFeature = Feature<Geometry, GeoJsonProperties>;
 type FeatureExport = 'GeoJSON' | 'KML' | 'DXF' | 'Shapefile';
 
 export type FeatureDetailsPanelProps = {
   feature: MapFeature;
+  uf?: string;
   onClose: () => void;
 };
 
@@ -33,11 +35,17 @@ function isPolygon(geometry: Geometry): geometry is Extract<Geometry, { type: 'P
   return geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
 }
 
-export function FeatureDetailsPanel({ feature, onClose }: FeatureDetailsPanelProps) {
+export function FeatureDetailsPanel({ feature, uf = '', onClose }: FeatureDetailsPanelProps) {
   const [exportError, setExportError] = useState('');
   const geometry = feature.geometry;
   const polygon = isPolygon(geometry);
   const metrics = polygon ? measureMapGeometry(geometry) : null;
+  const state = String(feature.properties?.uf || feature.properties?.UF || uf);
+  const rawTarefa = feature.properties?.tarefaM2 ?? feature.properties?.tarefa_m2;
+  const tarefaOverride = typeof rawTarefa === 'number' ? rawTarefa : typeof rawTarefa === 'string' ? Number(rawTarefa) : undefined;
+  const tarefa = metrics && state ? tarefaCaption(metrics.areaM2, state, tarefaOverride) : '';
+  const tarefaUnit = state ? tarefaUnitForState(state, tarefaOverride) : '';
+  const tarefaCount = tarefa ? tarefa.replace(/\s+tarefas$/, '') : '';
   const positions = positionsOf(geometry);
   const featureId = feature.id == null ? '' : String(feature.id);
   const name = String(feature.properties?.name || '').trim() || (featureId ? `Feição ${featureId}` : 'Feição');
@@ -71,7 +79,7 @@ export function FeatureDetailsPanel({ feature, onClose }: FeatureDetailsPanelPro
       </header>
       <h3>{name}</h3>
       <div className="map-measures" aria-label="Medições da feição">
-        <span>Área<b>{metrics ? `${(metrics.areaM2 / 10000).toLocaleString('pt-BR', { maximumFractionDigits: 4 })} ha` : '—'}</b></span>
+        <span>Área<b>{metrics ? `${(metrics.areaM2 / 10000).toLocaleString('pt-BR', { maximumFractionDigits: 4 })} ha` : '—'}</b>{metrics && (tarefaUnit ? <small className="map-measure-unit-note">≈ {tarefaCount} {tarefaUnit}</small> : state ? <small className="map-measure-unit-note">Conversão regional de tarefa não cadastrada · {state}</small> : null)}</span>
         <span>Perímetro<b>{metrics ? `${metrics.perimeterMeters.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} m` : '—'}</b></span>
         <span>Vértices<b>{metrics?.vertexCount ?? positions.length}</b></span>
       </div>

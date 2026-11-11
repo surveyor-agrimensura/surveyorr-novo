@@ -623,3 +623,15 @@
  transition:none!important;
  animation:none!important;
 }
+
+/* Pesquisa de imóvel, seleção de feições e confirmação de exclusão. */
+.map-official-area{display:grid;gap:5px;margin:10px 0;padding:10px;border:1px solid #cfe0f1;border-radius:8px;background:#f5f9fe}
+.map-official-area strong{font-size:10px;color:#456482}
+.map-official-area>span{font-size:15px;font-weight:800;color:#17395b}
+.map-official-area small,.map-feature-details-panel .map-measure-unit-note{display:block;margin-top:2px;color:#68819b;font-size:9px;line-height:1.4}
+.surveyor-dialog-footer .map-confirm-cancel,.surveyor-dialog-footer .map-confirm-delete{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 18px;border:1px solid #cbd9e8;border-radius:8px!important;background:#fff;color:#24415f;font:700 13px Inter,'Segoe UI',sans-serif;cursor:pointer}
+.surveyor-dialog-footer .map-confirm-cancel:hover{background:#f3f7fc}
+.surveyor-dialog-footer .map-confirm-delete{border-color:#c83b43;background:#c83b43;color:#fff}
+.surveyor-dialog-footer .map-confirm-delete:hover{border-color:#a92932;background:#a92932;color:#fff}
+.leaflet-surveyor-editable-drawings-pane{pointer-events:auto!important}
+.leaflet-surveyor-editable-drawings-pane path.surveyor-editable-feature-hit-target{pointer-events:all!important}
