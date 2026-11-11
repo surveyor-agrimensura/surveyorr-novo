@@ -416,6 +416,7 @@ export function ConfrontationPage() {
               {currentStep === 0 && <section className="confrontation-section">
                 <h2>Projeto e imóvel</h2>
                 <ProjectSourcePicker scope="confrontation" projects={projects} projectId={projectId} loading={loadingProjects||loading} onProjectChange={next => void open(next)} onImport={(data,fileName) => void open(data.project?.id||`local-upload:confrontation:${encodeURIComponent(fileName)}`,data)} onClearImport={() => void open('')} />
+                {!projectId&&!full&&!loadingProjects&&!loading&&<p className="doc-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</p>}
                 {polygons.length > 1 && (
                   <label>
                     Gleba / perímetro

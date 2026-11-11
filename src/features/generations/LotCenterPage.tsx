@@ -639,9 +639,9 @@ export function LotCenterPage() {
                     <strong>{projectTitle(full.project || { id: projectId })}</strong>
                     <span>{polygons.length} gleba(s) encontrada(s). Avance para escolher quais serão geradas.</span>
                   </div>
-                ) : (
-                  <p className="doc-hint">Selecione um projeto salvo ou arraste um arquivo GeoJSON/KML para começar.</p>
-                )}
+                ) : !loading && !loadingProjects ? (
+                  <div className="doc-status-card"><span>Selecione um projeto para carregar os dados do imóvel e as glebas.</span></div>
+                ) : null}
               </>}
 
               {currentStep === 1 && <>

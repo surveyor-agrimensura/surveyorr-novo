@@ -114,8 +114,7 @@ body .workspace-shell.document-workflow{grid-template-rows:minmax(0,1fr)!importa
 .workspace-shell.document-workflow .doc-workflow-bar.has-steps{grid-template-columns:minmax(190px,1fr) auto minmax(190px,1fr)}
 .doc-workflow-start,.doc-workflow-start-actions,.doc-workflow-actions{display:flex;align-items:center;gap:8px;min-width:0}
 .doc-workflow-actions{justify-content:flex-end}
-.doc-workflow-actions .doc-download-menu{top:calc(100% + 6px);bottom:auto;z-index:25;max-height:min(70vh,420px);overflow:auto}
-.doc-workflow-actions .doc-download-menu{top:calc(100% + 6px);bottom:auto;z-index:25;max-height:min(70vh,420px);overflow:auto}
+.doc-workflow-actions .doc-download-menu{top:calc(100% + 6px);bottom:auto;z-index:25;max-height:min(70vh,420px);overflow-x:hidden;overflow-y:auto}
 .doc-workflow-back{width:38px;height:38px;display:grid;place-items:center;flex:none;border:1px solid #aeb8c4;border-radius:var(--gov-radius-control,6px);background:#fff;color:var(--gov-blue,#1351b4);text-decoration:none}
 .doc-workflow-back:hover{background:#f1f6fc;border-color:#1351b4}
 .doc-workflow-title{overflow:hidden;color:var(--gov-blue-dark,#0c326f);font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
@@ -195,7 +194,7 @@ body .workspace-shell.document-workflow{grid-template-rows:minmax(0,1fr)!importa
 .workspace-shell.document-workflow .doc-workflow-bar--croqui .doc-workflow-actions{gap:10px}
 .workspace-shell.document-workflow .doc-workflow-bar--croqui .doc-workflow-actions{justify-content:flex-end}
 .doc-workflow-bar--croqui .doc-menu-wrap{position:relative}
-.doc-workflow-bar--croqui .doc-download-menu{top:calc(100% + 6px);right:auto;bottom:auto;left:0;z-index:20;max-height:min(70vh,420px);overflow:auto;border-radius:4px}
+.doc-workflow-bar--croqui .doc-download-menu{top:calc(100% + 6px);right:auto;bottom:auto;left:0;z-index:20;max-height:min(70vh,420px);overflow-x:hidden;overflow-y:auto;border-radius:4px}
 .doc-workflow-bar--croqui .doc-workflow-action{height:40px;min-height:40px;padding:0 14px;border-radius:4px;font-size:13px;white-space:nowrap}
 .doc-workflow-bar--croqui .doc-workflow-action.doc-primary{background:#1351b4;border-color:#1351b4;color:#fff}
 .doc-workflow-bar--croqui .doc-workflow-action:disabled{opacity:.55;cursor:not-allowed}
@@ -206,9 +205,13 @@ body .workspace-shell.document-workflow{grid-template-rows:minmax(0,1fr)!importa
 .doc-step-navigation{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding-top:13px;border-top:1px solid #d8e2ec}
 .doc-sidebar--workflow{display:flex;flex-direction:column}
 .doc-panel--workflow{display:flex;flex:1 0 auto;flex-direction:column;min-height:100%;box-sizing:border-box}
-.doc-panel--workflow .doc-step-navigation{margin-top:auto;position:sticky;bottom:0;padding:13px 0 8px;background:#fff}
+.doc-panel--workflow .doc-step-navigation{flex:0 0 auto;margin-top:auto;position:sticky;bottom:0;z-index:3;padding:13px 0 8px;background:#fff;box-shadow:0 -5px 12px rgba(16,42,67,.06)}
 .doc-step-navigation span{color:#64748b;font-size:12px;white-space:nowrap}
 .doc-step-navigation .doc-workflow-action{min-width:86px}
+.doc-project-empty{box-sizing:border-box;margin:0;padding:12px;border-left:3px solid #1351b4;background:#f1f6fc;color:#586779;font-size:12px;line-height:1.45}
+.doc-download-menu{box-sizing:border-box;min-width:min(185px,calc(100vw - 24px));max-width:min(360px,calc(100vw - 24px));overflow-x:hidden;overflow-y:auto}
+.doc-download-menu button{box-sizing:border-box;min-width:0;white-space:normal;text-align:left;overflow-wrap:anywhere}
+.doc-download-menu button svg{flex:none}
 @media(max-width:1000px){
  .workspace-shell.document-workflow .doc-workflow-bar--croqui,
  .workspace-shell.document-workflow .doc-workflow-bar--croqui.has-steps{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;padding:0 10px}

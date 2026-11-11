@@ -1,11 +1,15 @@
-import { useEffect, useState, type DragEvent } from 'react';
+import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent } from 'react';
 import { FileText, Trash2, UploadCloud } from 'lucide-react';
 import { readOfflineDraft, removeOfflineDraft, writeOfflineDraft } from '../lib/offlineDraftStore';
 import type { Project, ProjectFeature, ProjectFull } from '../features/projects/projectsApi';
-import { FileUploadField, type UploadProgressReporter } from './FileUploadField';
+import type { UploadProgressReporter } from './FileUploadField';
+import { validateUploadFiles } from './fileUploadValidation';
 import './ProjectSourcePicker.css';
 
 type StoredProject = { name: string; full: ProjectFull };
+const importAccept = '.json,.geojson,.kml,application/json,application/geo+json,application/vnd.google-earth.kml+xml';
+const importMaxBytes = 50 * 1024 * 1024;
+
 type Props = {
   scope: string;
   projects: Project[];
@@ -71,6 +75,7 @@ export function ProjectSourcePicker({ scope, projects, projectId, onProjectChang
   const [localName, setLocalName] = useState('');
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState('');
+  const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let active = true;
@@ -116,6 +121,17 @@ export function ProjectSourcePicker({ scope, projects, projectId, onProjectChang
     onImport(full, file.name);
   };
 
+  const processFiles = (files: FileList | File[]) => {
+    const incoming = Array.from(files);
+    if (!incoming.length) return;
+    const issues = validateUploadFiles(incoming, { accept: importAccept, maxFiles: 1, maxBytes: importMaxBytes });
+    if (issues.length) {
+      setError(issues.map(({ file, message }) => file.name + ': ' + message).join(' '));
+      return;
+    }
+    void handleFile(incoming[0]).catch(reason => setError(reason instanceof Error ? reason.message : 'Falha ao importar o projeto.'));
+  };
+
   const clearImport = () => {
     setLocalName('');
     setError('');
@@ -140,9 +156,36 @@ export function ProjectSourcePicker({ scope, projects, projectId, onProjectChang
       <div><FileText size={17}/><span><strong>{localName || 'Projeto importado'}</strong><small>Salvo neste navegador</small></span></div>
       <button type="button" onClick={clearImport} aria-label="Remover projeto importado"><Trash2 size={15}/> Remover arquivo</button>
     </div> : !hasCloudProject && <>
-      <div className={`project-import-dropzone${dragging ? ' is-dragging' : ''}`} onDragEnter={event => { event.preventDefault(); setDragging(true); }} onDragOver={event => event.preventDefault()} onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false); }} onDrop={(event: DragEvent<HTMLDivElement>) => { if ((event.target as HTMLElement).closest('.file-upload-field')) return; event.preventDefault(); setDragging(false); const file = event.dataTransfer.files[0]; if (file) void handleFile(file).catch(reason => setError(reason instanceof Error ? reason.message : 'Falha ao importar o projeto.')); }}>
-        <UploadCloud size={19}/><div><strong>Importar projeto do dispositivo</strong><small>Arraste um GeoJSON ou KML até aqui, ou escolha um arquivo.</small></div>
-        <FileUploadField className="project-import-control" label="Selecionar arquivo" accept=".json,.geojson,.kml,application/json,application/geo+json,application/vnd.google-earth.kml+xml" maxBytes={50 * 1024 * 1024} onFile={handleFile} onRemove={clearImport}/>
+      <div
+        className={'project-import-dropzone' + (dragging ? ' is-dragging' : '')}
+        role="button"
+        tabIndex={loading ? -1 : 0}
+        aria-label="Importar projeto GeoJSON ou KML"
+        aria-disabled={loading}
+        onClick={event => { if (event.target !== fileInput.current && !loading) fileInput.current?.click(); }}
+        onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+          if (!loading && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault();
+            fileInput.current?.click();
+          }
+        }}
+        onDragEnter={(event: DragEvent<HTMLDivElement>) => { if (!loading) { event.preventDefault(); setDragging(true); } }}
+        onDragOver={(event: DragEvent<HTMLDivElement>) => { if (!loading) event.preventDefault(); }}
+        onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false); }}
+        onDrop={(event: DragEvent<HTMLDivElement>) => { event.preventDefault(); setDragging(false); if (!loading) processFiles(event.dataTransfer.files); }}
+      >
+        <input
+          ref={fileInput}
+          className="project-import-file-input"
+          type="file"
+          accept={importAccept}
+          disabled={loading}
+          tabIndex={-1}
+          aria-hidden="true"
+          onChange={event => { processFiles(event.currentTarget.files || []); event.currentTarget.value = ''; }}
+        />
+        <UploadCloud size={19} aria-hidden="true" />
+        <div><strong>Importar projeto do dispositivo</strong><small>Arraste um GeoJSON ou KML até aqui, ou clique para escolher um arquivo (até 50 MB).</small></div>
       </div>
       {error && <p className="project-import-error" role="alert">{error}</p>}
     </>}

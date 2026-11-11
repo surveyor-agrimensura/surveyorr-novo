@@ -81,9 +81,10 @@
   }
 }
 
-.gen-sidebar--wizard { display: flex; flex-direction: column; }
+.gen-sidebar--wizard { display: flex; flex-direction: column; overflow: hidden; }
 .gen-sidebar--wizard .gen-controls { flex: 1 1 0; min-height: 0; gap: 14px; padding-bottom: 10px; overflow-x: hidden; overflow-y: auto; }
 .gen-wizard-project { display: grid; gap: 5px; padding: 12px; border: 1px solid #d7e3f0; border-radius: 7px; background: #f6f9fd; color: #193b5d; }
+.gen-project-empty { padding: 12px; border: 1px solid #d7e3f0; border-radius: 7px; background: #f6f9fd; color: #607997; font-size: 12px; line-height: 1.45; }
 .gen-wizard-project strong { font-size: 11px; }
 .gen-wizard-project span { overflow-wrap: anywhere; font-size: 12px; font-weight: 700; }
 .gen-wizard-project button { min-height: 34px; margin-top: 4px; border: 1px solid #bed2e8; border-radius: 5px; background: #fff; color: #1558ae; font-weight: 700; cursor: pointer; }

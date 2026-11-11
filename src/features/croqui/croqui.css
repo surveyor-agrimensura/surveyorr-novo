@@ -330,6 +330,11 @@
 .cq-step-panel>.cq-outline{align-self:flex-start;min-height:38px;padding:8px 12px}
 .cq-step-panel-signature .cq-signature-upload{margin-top:2px}
 .cq-step-panel-signature .cq-signature-preview{align-self:flex-start;max-height:130px}
+.cq-step-panel-signature .doc-outline,.cq-step-panel-signature .doc-primary{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;border:1px solid #bcd1ed;border-radius:6px;background:#fff;color:#0857b7;font-weight:650;line-height:1.2;cursor:pointer}
+.cq-step-panel-signature .doc-outline:hover:not(:disabled){background:#f1f6ff;border-color:#8fb6e7}
+.cq-step-panel-signature .doc-primary{border-color:#0865dd;background:#0865dd;color:#fff}
+.cq-step-panel-signature .doc-primary:disabled{opacity:.5;cursor:not-allowed}
+ .cq-step-panel-signature button:focus-visible{outline:2px solid #1266d5;outline-offset:2px}
  .cq-bottom button{min-height:44px}
 
 @media(max-width:650px){.cq-mobile-edit-hint{display:block}}

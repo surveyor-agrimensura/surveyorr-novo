@@ -292,7 +292,6 @@ export function REURBPage(){
    <div className="gen-multi-input"><label className="gen-control"><span>Faixa / testada-alvo (m)</span><input type="number" value={testada} min="1" step=".5" onChange={event=>setTestada(Number(event.target.value)||1)}/></label><label className="gen-control"><span>Eixo de corte</span><select value={axis} onChange={event=>setAxis(event.target.value as 'x'|'y')}><option value="x">Vertical (E)</option><option value="y">Horizontal (N)</option></select></label></div>
    <label className="gen-control"><span>Sentido da numeração</span><select value={clockwise?'horario':'antihorario'} onChange={event=>setClockwise(event.target.value==='horario')}><option value="horario">Horário</option><option value="antihorario">Anti-horário</option></select></label>
    <div className="gen-action-row"><button type="button" onClick={split}>Dividir quadra</button><button type="button" onClick={renumber}>Numerar lotes em sequência</button></div>
-   <p className="gen-note">A divisão usa faixas geométricas paralelas ao eixo escolhido e não infere frente para rua. Revise todas as linhas divisórias.</p>
   </>}
   {currentStep===3&&<>
    <h3>Cadastro de lotes e beneficiários</h3>
@@ -314,7 +313,6 @@ export function REURBPage(){
    <table className="gen-table"><thead><tr><th>Classe</th><th>Área (m²)</th><th>% da gleba</th></tr></thead><tbody>{byCategory.map(item=><tr key={item.category}><td>{item.label}</td><td>{fmt(item.area)}</td><td>{total?fmt(item.area/total*100):'—'}%</td></tr>)}<tr><th>Total contabilizado</th><th>{fmt(sum)}</th><th>{total?fmt(sum/total*100):'—'}%</th></tr><tr><th>Gleba</th><th>{fmt(total)}</th><th>{total?'100%':'—'}</th></tr></tbody></table>
    {total>0&&sum>total*1.0001&&<p className="gen-error">A soma das áreas supera a gleba. Existem possíveis sobreposições ou categorias duplicadas; revise antes da emissão.</p>}
    <Switch label="Cores por classe de uso" value={coloring} onChange={setColoring}/><Switch label="Exibir áreas dos lotes" value={showArea} onChange={setShowArea}/>
-   <p className="gen-note">Os arquivos são peças preliminares. Confira referência de coordenadas, área, confrontações e exigências municipais antes de usar em procedimento oficial.</p>
   </>}
   {error&&<p className="gen-error" role="status">{error}</p>}
  </GenerationWorkspace>;

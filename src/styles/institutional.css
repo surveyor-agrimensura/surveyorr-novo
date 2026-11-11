@@ -932,3 +932,5 @@ body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-start{fl
 body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-start-actions{flex:0 0 auto;flex-wrap:nowrap;white-space:nowrap}
 body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-start-actions>*{flex:0 0 auto}
 body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-title{flex:0 1 auto;min-width:0}
+
+.workspace-shell .projects-page .surveyor-pagination{position:sticky;bottom:0;z-index:8}

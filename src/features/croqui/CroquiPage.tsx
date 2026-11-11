@@ -828,6 +828,7 @@ export function CroquiPage(){
    {workflowStep===1&&<section className="cq-project-card" aria-label="Projeto">
   <h2>Projeto</h2>
   <ProjectSourcePicker scope="croqui" projects={projects} projectId={projectId} loading={loadingProjects||loading} onProjectChange={id=>{setWorkflowStep(1);void openProject(id);}} onImport={importProject} onClearImport={()=>{setWorkflowStep(1);void openProject('');}} />
+  {!projectId&&!full&&!loadingProjects&&!loading&&<div className="cq-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</div>}
   {projectId&&full&&<div className="cq-project-identification"><span>Projeto selecionado</span><strong>{projectTitle(full.project||{id:projectId})}</strong><small>{[text(full.project?.municipality||full.project?.city),text(full.project?.uf||full.project?.stateCode)].filter(Boolean).join(' / ')||`${polys.length} gleba${polys.length===1?'':'s'} disponível${polys.length===1?'':'is'}`}</small></div>}
   {projectId&&full&&!polys.length&&<div className="cq-project-empty">Este projeto não contém polígonos válidos para gerar o croqui. Selecione outro projeto.</div>}
  {polygon&&polys.length>1&&<Setting label="Gerar para"><select value={featureId} onChange={e=>void selectPolygon(e.target.value)}>
@@ -923,7 +924,6 @@ export function CroquiPage(){
   </section>
   <section className="cq-step-panel cq-step-panel-profile" id="cq-panel-profile" aria-labelledby="cq-step-profile" hidden={workflowStep!==3}>
    <h2 className="cq-step-heading">Perfis de apresentação</h2>
-   <p className="cq-step-note">Os perfis ajustam a apresentação do croqui. Não certificam conformidade normativa.</p>
    <Setting label="Perfil"><select value={settings.profile} onChange={e=>applyProfile(e.target.value as CroquiSettings['profile'])}><option value="custom">Personalizado (manual)</option><option value="incra">INCRA / Cartório</option><option value="ambiental">SEIA / CEFIR Bahia (Ambiental)</option><option value="comercial">Comercial / Executivo</option><option value="reurb">REURB / Regularização fundiária</option></select></Setting>
    <button type="button" className="cq-outline" onClick={()=>applyProfile(settings.profile)}>Aplicar perfil selecionado</button>
   </section>

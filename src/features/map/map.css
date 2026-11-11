@@ -269,7 +269,7 @@
 .map-muni-search{display:flex;align-items:center;gap:6px;border:1px solid #bcd5f2;border-radius:7px;padding:8px;margin:10px 0}.map-muni-search input{border:0;outline:0;min-width:0;flex:1;font-size:11px}
 .map-muni-results{max-height:260px;overflow:auto}.map-muni-results>button{border:1px solid #e5ecf5;background:#fff;border-radius:7px;padding:10px;display:flex;align-items:center;justify-content:space-between;width:100%;color:#1565c0;cursor:pointer;margin:4px 0}.map-muni-results>button span{display:flex;flex-direction:column;align-items:flex-start;color:#193e60;font-size:11px}.map-muni-results small{color:#69809b;font-size:9px;margin-top:3px}
 .map-wms-identify{position:absolute;z-index:690;pointer-events:none}
-.map-import-note{margin:12px 16px 0;padding:10px 12px;border:1px solid #d4e2f1;border-radius:8px;background:#f5f9ff;color:#45627f;font-size:11px;line-height:1.5}
+
 @media(max-width:700px){.map-dialog-head button,.map-municipality-download header button{width:44px;height:44px;min-width:44px}.map-catalog-group-title,.map-uf-list button{min-height:44px}}
 .map-wms-question{pointer-events:auto;background:#e7f4ff;border:2px solid #297aca;border-radius:8px;padding:8px 11px;color:#0d55ac;font-weight:900;box-shadow:0 8px 22px #224b6d35;cursor:pointer}
 .map-wms-properties{pointer-events:auto;width:280px;max-height:350px;overflow:auto;box-sizing:border-box;background:#fff;border:1px solid #cee1f5;border-radius:12px;box-shadow:0 12px 30px #193a5d40;padding:12px}
@@ -635,3 +635,58 @@
 .surveyor-dialog-footer .map-confirm-delete:hover{border-color:#a92932;background:#a92932;color:#fff}
 .leaflet-surveyor-editable-drawings-pane{pointer-events:auto!important}
 .leaflet-surveyor-editable-drawings-pane path.surveyor-editable-feature-hit-target{pointer-events:all!important}
+
+
+/* Ajustes das anotações: mapa compacto, coordenadas copiáveis, escala e bússola. */
+.map-compass-control:has(.map-compass-pad){width:auto;height:auto;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+.map-compass-pad{display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);gap:2px;place-items:center;width:max-content;padding:6px;box-sizing:border-box;border:1px solid #d6e4f1;border-radius:14px;background:#fff;box-shadow:0 4px 18px #1a39581c}
+.map-compass-pad>.map-compass-arrow:nth-of-type(1){grid-column:2;grid-row:1}
+.map-compass-pad>.map-compass-arrow:nth-of-type(2){grid-column:3;grid-row:2}
+.map-compass-pad>.map-compass-arrow:nth-of-type(3){grid-column:2;grid-row:3}
+.map-compass-pad>.map-compass-arrow:nth-of-type(4){grid-column:1;grid-row:2}
+.map-compass-pad>:not(.map-compass-arrow){grid-column:2;grid-row:2;display:grid;place-items:center;width:32px;height:32px;color:#163955;font-size:10px;font-weight:900;line-height:1}
+.map-compass-pad .map-compass-arrow{display:grid;place-items:center;box-sizing:border-box;width:34px;height:34px;min-width:34px;min-height:34px;padding:0;border:1px solid #dbe7f0;border-radius:9px;background:#fff;color:#163955;box-shadow:0 4px 17px #152d4816;cursor:pointer}
+.map-compass-pad .map-compass-arrow:hover{border-color:#94bdec;background:#f2f7ff;color:#075bc4}
+.map-compass-pad .map-compass-arrow:focus-visible{position:relative;z-index:1;outline:3px solid #155ec6;outline-offset:2px}
+.map-compass-pad>:not(.map-compass-arrow):focus-visible{position:relative;z-index:1;outline:3px solid #155ec6;outline-offset:2px}
+.map-mini-map{position:absolute;right:16px;bottom:41px;width:138px;height:100px;z-index:490;overflow:hidden;border:2px solid #d8e8f9;border-radius:10px;background:#f0f6f9;box-shadow:0 5px 20px #203c5725;pointer-events:none}.map-mini-map .leaflet-control-container{display:none}
+.operational-screen .leaflet-bottom.leaflet-right .leaflet-control-scale{margin-right:calc(138px + 16px + 8px)}
+.map-basemap-rich{width:260px;padding:10px;max-height:min(550px,calc(100dvh - 95px));overflow-y:auto}
+.map-basemap-rich button{gap:10px;min-height:43px;padding:5px 7px!important}
+.map-basemap-rich button img{flex:none;width:43px;height:35px;border:1px solid #d9e7f2;border-radius:7px;object-fit:cover}
+.map-basemap-rich button span{flex:1}.map-basemap-rich button svg{color:#1470d6}
+.map-basemap-rich{box-sizing:border-box;width:88px;max-width:calc(100vw - 16px);padding:8px;overflow-y:auto;transition:width .18s ease}
+.map-basemap-rich:is(:hover,:focus-within){width:min(260px,calc(100vw - 16px))}
+.map-basemap-rich>h4{height:14px;line-height:14px;margin:3px 5px 6px;padding:0;overflow:hidden;white-space:nowrap;opacity:0;transition:opacity .12s ease}
+.map-basemap-rich:is(:hover,:focus-within)>h4{opacity:1}
+.map-basemap-rich .map-basemap-option{box-sizing:border-box;gap:10px;padding:4px 7px!important}
+.map-basemap-rich .map-basemap-option img{box-sizing:border-box}
+.map-basemap-rich .map-basemap-option .map-basemap-label{flex:1 1 auto;min-width:0;max-width:0;overflow:hidden;white-space:nowrap;opacity:0;transition:max-width .16s ease,opacity .12s ease}
+.map-basemap-rich .map-basemap-option:is(:hover,:focus-visible) .map-basemap-label{max-width:140px;opacity:1}
+.map-basemap-rich .map-basemap-option>svg{box-sizing:border-box;flex:0 0 0;width:0;height:0;overflow:hidden;opacity:0;transition:width .16s ease,opacity .12s ease}
+.map-basemap-rich .map-basemap-option:is(:hover,:focus-visible)>svg{flex-basis:16px;width:16px;height:16px;opacity:1}
+.map-basemap-rich .map-basemap-option:focus-visible{position:relative;z-index:1;outline:3px solid #155ec6;outline-offset:1px}
+.map-context-coordinates{display:flex;align-items:center;gap:8px;min-width:0;margin:5px 2px 2px;padding:8px;border:1px solid #d6e4f1;border-radius:8px;background:#f5f9ff;color:#24486a;font-size:11px;line-height:1.4}
+.map-context-coordinates>span,.map-context-coordinates>code{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;color:inherit;font:inherit;font-variant-numeric:tabular-nums}
+.map-feature-context .map-context-coordinates>button{display:grid;place-items:center;flex:0 0 40px;width:40px;min-width:40px;height:40px;min-height:40px;padding:0;border:1px solid #cbdff5;border-radius:8px;background:#fff;color:#0759c2;text-align:center;cursor:pointer}
+.map-feature-context .map-context-coordinates>button:hover{background:#eaf3ff;color:#0759c2}
+.map-feature-context .map-context-coordinates>button:focus-visible{outline:3px solid #155ec6;outline-offset:2px;position:relative;z-index:1}
+.map-basemap-rich .map-basemap-option{min-width:0;min-height:43px}
+.map-basemap-rich .map-basemap-option img{flex:0 0 43px;width:43px;height:35px;object-fit:cover}
+.map-basemap-rich .map-basemap-option[aria-pressed="true"]{background:#edf5ff;color:#075bc4}
+.map-basemap-rich .map-basemap-option[aria-pressed="true"] img{border-color:#78a9e8;box-shadow:0 0 0 2px #d9eaff}
+.map-basemap-rich .map-basemap-option .map-basemap-label{min-width:0;max-width:0;overflow:hidden;white-space:nowrap;opacity:0;visibility:hidden;transition:max-width .16s ease,opacity .12s ease,visibility 0s linear .16s}
+.map-basemap-rich .map-basemap-option:is(:hover,:focus-visible,:focus-within) .map-basemap-label{max-width:140px;opacity:1;visibility:visible;transition-delay:0s}
+.map-basemap-rich .map-basemap-option:focus-visible{outline:3px solid #155ec6;outline-offset:1px}
+.map-basemap-rich .map-basemap-option:active{background:#deedff}
+.map-compass-control:has(.map-compass-pad),.map-compass-pad{pointer-events:none}
+.map-compass-pad>button{pointer-events:auto;touch-action:manipulation}
+.map-compass-pad>button:not(.map-compass-arrow){border:1px solid #dbe7f0;border-radius:50%;background:#f4f8fd;color:#163955;font:900 10px/1 Inter,'Segoe UI',sans-serif;cursor:pointer}
+.map-compass-pad>button:not(.map-compass-arrow):hover{border-color:#94bdec;background:#eaf3ff;color:#075bc4}
+.map-compass-pad>button:not(.map-compass-arrow):active{background:#dcecff;transform:translateY(1px)}
+.map-compass-pad>button:not(.map-compass-arrow):focus-visible{position:relative;z-index:1;outline:3px solid #155ec6;outline-offset:2px}
+.map-compass-pad .map-compass-arrow:active{background:#deedff;transform:translateY(1px)}
+.operational-screen .map-topbar .map-tool{box-shadow:none!important}
+.operational-screen .map-topbar .map-tools-group{border-right:0!important}
+.operational-screen .map-feature-context{box-sizing:border-box;max-height:calc(100dvh - 120px);overflow-y:auto;overscroll-behavior:contain}
+.operational-screen .map-feature-context .map-context-coordinates{position:sticky;bottom:0;z-index:1;box-sizing:border-box;width:100%;background:#f5f9ff}

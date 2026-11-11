@@ -278,7 +278,7 @@ export function ProjectSpreadsheetPage() {
               {currentStep === 0 && <>
               <strong>Projeto</strong>
               <ProjectSourcePicker scope="project-spreadsheet" projects={projects} projectId={projectId} loading={loadingProjects||loading} onProjectChange={next => void open(next)} onImport={(data,fileName) => void open(data.project?.id||`local-upload:project-spreadsheet:${encodeURIComponent(fileName)}`,data)} onClearImport={() => void open('')} />
-              {!full && <p className="doc-hint">Selecione o projeto que será usado na planilha.</p>}
+              {!full&&!projectId&&!loadingProjects&&!loading&&<p className="doc-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</p>}
               <nav className="doc-step-navigation" aria-label="Navegação da planilha">
                 <button type="button" className="doc-workflow-action doc-outline" disabled>Anterior</button>
                 <span>Etapa 1 de 3</span>
@@ -319,16 +319,14 @@ export function ProjectSpreadsheetPage() {
                 </>}
                 {firstRowPreview(sheets)}
                 <strong><Palette size={16} /> Editar planilha</strong>
-                <p className="doc-hint">Defina as cores da folha e da tabela. Para destacar uma célula, selecione a cor, ative a pintura e clique nela.</p>
                 <label>Cor do fundo da folha<input type="color" value={appearance.paperColor} onChange={event => setAppearance(current => ({ ...current, paperColor: event.target.value }))} /></label>
                 <label>Cor da tabela<input type="color" value={appearance.tableColor} onChange={event => setAppearance(current => ({ ...current, tableColor: event.target.value }))} /></label>
                 <label>Cor do cabeçalho<input type="color" value={appearance.headerColor} onChange={event => setAppearance(current => ({ ...current, headerColor: event.target.value }))} /></label>
                 <label>Cor das bordas<input type="color" value={appearance.borderColor} onChange={event => setAppearance(current => ({ ...current, borderColor: event.target.value }))} /></label>
                 <label>Cor para destacar células<input type="color" value={appearance.highlightColor} onChange={event => setAppearance(current => ({ ...current, highlightColor: event.target.value }))} /></label>
-                <button type="button" className={`doc-workflow-action ${paintMode ? 'doc-primary' : 'doc-outline'}`} onClick={() => setPaintMode(value => !value)}>
+                <button type="button" className={`doc-workflow-action ${paintMode ? 'doc-primary' : 'doc-outline'}`} aria-pressed={paintMode} onClick={() => setPaintMode(value => !value)}>
                   <Paintbrush size={15} /> {paintMode ? 'Concluir pintura' : 'Pintar células'}
                 </button>
-                <p className="doc-hint" role="status">{paintMode ? 'Modo de pintura ativo: clique em uma célula da tabela para aplicar a cor selecionada.' : 'O ODS mantém as cores da tabela, do cabeçalho, das bordas e dos destaques. O fundo da folha é aplicado à prévia.'}</p>
                 <button type="button" className="doc-workflow-action doc-outline" disabled={!Object.keys(appearance.cellColors).length} onClick={() => setAppearance(current => ({ ...current, cellColors: {} }))}>Limpar destaques</button>
                 <nav className="doc-step-navigation" aria-label="Navegação da planilha">
                   <button type="button" className="doc-workflow-action doc-outline" onClick={() => goToWorkflowStep(0)}>Anterior</button>

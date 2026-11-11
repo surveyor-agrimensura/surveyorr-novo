@@ -152,7 +152,79 @@ function mdtModelSvg(points:ZPoint[],stats:[string,string][],method:'IDW'|'TIN',
  const fillAltitude=async()=>{const missing=points.filter(p=>p.z===undefined);if(!missing.length){setError('Todos os pontos já possuem cota.');return;}if(missing.length>200){setError('Consulte no máximo 200 pontos por solicitação.');return;}setBusy(true);setError('');try{const results:number[]=[];for(let i=0;i<missing.length;i+=50){const group=missing.slice(i,i+50),qs=new URLSearchParams({latitude:group.map(p=>p.lat).join(','),longitude:group.map(p=>p.lon).join(',')});const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);try{const r=await fetch(`https://api.open-meteo.com/v1/elevation?${qs}`,{signal:controller.signal});if(!r.ok)throw new Error('API retornou HTTP '+r.status);const json=await r.json();if(!Array.isArray(json.elevation)||json.elevation.length!==group.length)throw new Error('Resposta altimétrica incompleta.');results.push(...json.elevation.map(Number));}finally{clearTimeout(timeout)}}let j=0;const updated=points.map(p=>p.z===undefined?{...p,z:results[j++]}:p);setPoints(updated);setInput(serialize(updated));}catch(e){setError('Falha na consulta de elevação Open-Meteo: '+(e instanceof Error?e.message:'indisponível'))}finally{setBusy(false)}};
  const fillWeighted=()=>{try{const known=points.filter((p):p is GeoPoint&{z:number}=>Number.isFinite(p.z));if(known.length<3)throw new Error('São necessários ao menos 3 pontos conhecidos para interpolar as cotas pendentes.');const pr=makeProjection(known[0].lon,known[0].lat),meters=known.map(p=>({...pr.toXY(p),z:p.z}));const updated=points.map(p=>p.z===undefined?{...p,z:idw(meters,pr.toXY(p).x,pr.toXY(p).y,power)}:p);setPoints(updated);setInput(serialize(updated));setError('As cotas faltantes foram interpoladas por IDW. São estimativas, não levantamentos medidos.');}catch(e){setError(e instanceof Error?e.message:'Interpolação indisponível.');}};
  const min=xy.length?Math.min(...xy.map(p=>p.z)):0,max=xy.length?Math.max(...xy.map(p=>p.z)):0,mean=xy.length?xy.reduce((s,p)=>s+p.z,0)/xy.length:0,slope=meanSlope(xy);const stats:[string,string][]=[['Cota mínima',`${min.toFixed(2)} m`],['Cota máxima',`${max.toFixed(2)} m`],['Desnível',`${(max-min).toFixed(2)} m`],['Cota média',`${mean.toFixed(2)} m`],['Decliv. média¹',Number.isFinite(slope)?`${slope.toFixed(2)}%`:'N/D']];
- return <GenerationWorkspace kind="mdt" heading="Planialtimetria / MDT" data={data} points={xy} stats={xy.length>=3?stats:undefined} modelAsset={{url:'/models/planta-altimetrica-3d.svg',fileName:'PLANTA_ALTIMETRICA_3D_SURVEYOR.svg',createSvg:options=>mdtModelSvg(xy,xy.length>=3?stats:[],method,power,interval,major,String(data.project?.project?.propertyName||data.project?.project?.name||data.projectId||'Imóvel'),options)}} draw={opts=>xy.length>=3?<Heatmap points={xy} method={method} power={power} interval={interval} major={major} opts={opts}/>:<text x="400" y="350" fill="#6f849a" fontSize="14">Carregue 3 ou mais pontos com altitude</text>}>
- <h3>Dados altimétricos</h3><FileUploadField label="Importar CSV, TXT, GeoJSON, KML ou DXF ASCII POINT" accept=".csv,.txt,.json,.geojson,.kml,.dxf" maxBytes={50*1024*1024} description="Pontos em latitude/longitude WGS84; até 50 MB." onFile={importFile}/><label className="gen-control"><span>Pontos: ID;Latitude;Longitude;Altitude</span><textarea rows={6} value={input} onChange={e=>setInput(e.target.value)} placeholder={'V-01;-12.45;-39.65;385.6\nV-02;-12.46;-39.64;387.2'}/></label><div className="gen-action-row"><button onClick={apply}>Carregar vértices + altitudes</button><button onClick={()=>{setInput('');setPoints([]);}}>Limpar</button></div><button onClick={fillWeighted}>Calcular cotas ponderadas (IDW)</button><button disabled={busy} onClick={()=>void fillAltitude()}>{busy?'Consultando...':'Consultar elevação automática (Open-Meteo)'}</button><h3>Interpolação e curvas</h3><label className="gen-control"><span>Método de interpolação</span><select value={method} onChange={e=>setMethod(e.target.value as 'IDW'|'TIN')}><option value="IDW">IDW • Inverso da distância</option><option value="TIN">TIN • Triangulação Delaunay</option></select></label>{method==='IDW'&&<label className="gen-control"><span>Potência IDW</span><input type="number" min=".5" max="8" step=".5" value={power} onChange={e=>setPower(Math.max(.5,Number(e.target.value)||2))}/></label>}<div className="gen-multi-input"><label className="gen-control"><span>Intermediárias (m)</span><input type="number" value={interval} min=".1" step=".5" onChange={e=>setInterval(Math.max(.1,Number(e.target.value)||1))}/></label><label className="gen-control"><span>Mestras (m)</span><input type="number" min=".1" value={major} step="1" onChange={e=>setMajor(Math.max(.1,Number(e.target.value)||5))}/></label></div><div className="gen-summary"><span>Pontos com Z: <b>{xy.length}</b></span><span>Sem Z: <b>{points.length-xy.length}</b></span>{xy.length>=3&&stats.map(([n,v])=><span key={n}>{n}: <b>{v}</b></span>)}</div>{error&&<p className="gen-error" role="alert">{error}</p>}
- </GenerationWorkspace>;
+   return <GenerationWorkspace
+    kind="mdt"
+    heading="Planialtimetria / MDT"
+    data={data}
+    points={xy}
+    stats={xy.length >= 3 ? stats : undefined}
+    modelAsset={{
+      url: '/models/planta-altimetrica-3d.svg',
+      fileName: 'PLANTA_ALTIMETRICA_3D_SURVEYOR.svg',
+      createSvg: options => mdtModelSvg(
+        xy,
+        xy.length >= 3 ? stats : [],
+        method,
+        power,
+        interval,
+        major,
+        String(data.project?.project?.propertyName || data.project?.project?.name || data.projectId || 'Imóvel'),
+        options
+      )
+    }}
+    draw={opts => xy.length >= 3
+      ? <Heatmap points={xy} method={method} power={power} interval={interval} major={major} opts={opts}/>
+      : <text x="400" y="350" fill="#6f849a" fontSize="14">Carregue 3 ou mais pontos com altitude</text>}
+    interpolationContent={
+      <>
+        <h3>Interpolação e curvas</h3>
+        <label className="gen-control">
+          <span>Método de interpolação</span>
+          <select value={method} onChange={e => setMethod(e.target.value as 'IDW' | 'TIN')}>
+            <option value="IDW">IDW • Inverso da distância</option>
+            <option value="TIN">TIN • Triangulação Delaunay</option>
+          </select>
+        </label>
+        {method === 'IDW' && <label className="gen-control">
+          <span>Potência IDW</span>
+          <input type="number" min=".5" max="8" step=".5" value={power} onChange={e => setPower(Math.max(.5, Number(e.target.value) || 2))}/>
+        </label>}
+        <div className="gen-multi-input">
+          <label className="gen-control">
+            <span>Intermediárias (m)</span>
+            <input type="number" value={interval} min=".1" step=".5" onChange={e => setInterval(Math.max(.1, Number(e.target.value) || 1))}/>
+          </label>
+          <label className="gen-control">
+            <span>Mestras (m)</span>
+            <input type="number" min=".1" value={major} step="1" onChange={e => setMajor(Math.max(.1, Number(e.target.value) || 5))}/>
+          </label>
+        </div>
+        <div className="gen-summary">
+          <span>Pontos com Z: <b>{xy.length}</b></span>
+          <span>Sem Z: <b>{points.length - xy.length}</b></span>
+          {xy.length >= 3 && stats.map(([name, value]) => <span key={name}>{name}: <b>{value}</b></span>)}
+        </div>
+        {error && <p className="gen-error" role="alert">{error}</p>}
+      </>
+    }
+  >
+    <h3>Dados altimétricos</h3>
+    <FileUploadField
+      label="Importar CSV, TXT, GeoJSON, KML ou DXF ASCII POINT"
+      accept=".csv,.txt,.json,.geojson,.kml,.dxf"
+      maxBytes={50 * 1024 * 1024}
+      description="Pontos em latitude/longitude WGS84; até 50 MB."
+      onFile={importFile}
+    />
+    <label className="gen-control">
+      <span>Pontos: ID;Latitude;Longitude;Altitude</span>
+      <textarea rows={6} value={input} onChange={e => setInput(e.target.value)} placeholder={'V-01;-12.45;-39.65;385.6\nV-02;-12.46;-39.64;387.2'}/>
+    </label>
+    <div className="gen-action-row">
+      <button onClick={apply}>Carregar vértices + altitudes</button>
+      <button onClick={() => { setInput(''); setPoints([]); }}>Limpar</button>
+    </div>
+    <button onClick={fillWeighted}>Calcular cotas ponderadas (IDW)</button>
+    <button disabled={busy} onClick={() => void fillAltitude()}>{busy ? 'Consultando...' : 'Consultar elevação automática (Open-Meteo)'}</button>
+  </GenerationWorkspace>;
 }

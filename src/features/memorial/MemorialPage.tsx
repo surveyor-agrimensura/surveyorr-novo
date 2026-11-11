@@ -1047,8 +1047,8 @@ export function MemorialPage() {
                     <option value="both">Ambos (Geográficas + Planas UTM)</option>
                   </select>
                 </label>
-                <label className="mem-check"><input type="checkbox" checked={showMap} onChange={event => setMapOverride(event.target.checked)} /> Incluir página de croqui / mapa de localização</label>
-                <label className="mem-check"><input type="checkbox" checked={showVertexTable} onChange={event => setVertexTableOverride(event.target.checked)} /> Exibir quadro de vértices no memorial</label>
+                <label className="mem-check mem-check--compact"><input type="checkbox" checked={showMap} onChange={event => setMapOverride(event.target.checked)} /> Incluir página de croqui / mapa de localização</label>
+                <label className="mem-check mem-check--compact"><input type="checkbox" checked={showVertexTable} onChange={event => setVertexTableOverride(event.target.checked)} /> Exibir quadro de vértices no memorial</label>
                 {chosen.length > 0 && (() => {
                   const activePoly = chosen[0];
                   const draft = readSharedCroquiSettings(record(prefs.options), projectId, activePoly.id, croquiUserKey, text(prefs.responsibleTechnician), polygons.length === 1);

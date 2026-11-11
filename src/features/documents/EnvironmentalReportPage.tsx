@@ -244,10 +244,10 @@ export function EnvironmentalReportPage() {
               <strong>{['Projeto', 'Análise', 'Relatório', 'Assinatura'][currentStep]}</strong>
               {currentStep === 0 && <>
                 <ProjectSourcePicker scope="environmental-report" projects={projects} projectId={id} loading={loadingProjects||loading} onProjectChange={next => void open(next)} onImport={(data,fileName) => void open(data.project?.id||`local-upload:environmental-report:${encodeURIComponent(fileName)}`,data)} onClearImport={() => void open('')} />
+                {!id&&!full&&!loadingProjects&&!loading&&<p className="doc-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</p>}
                 {full && <div className="doc-status-card"><strong>{projectTitle(full.project || { id })}</strong><span>Projeto carregado. Avance para analisar as áreas ambientais.</span></div>}
               </>}
               {currentStep === 1 && full && <>
-                <p className="doc-hint">Informe ou ajuste as áreas em hectares caso não estejam separadas em camadas no mapa.</p>
                 {categories.map(([key, label]) => (
                   <label key={key}>
                     {label} (ha)
@@ -262,7 +262,6 @@ export function EnvironmentalReportPage() {
               </>}
               {currentStep === 2 && full && <>
                 <h2>Relatório ambiental preliminar</h2>
-                <p className="doc-hint">Confira a prévia do documento ao lado. O parecer abaixo será incluído na exportação.</p>
                 <label>
                   Parecer / Observações técnicas
                   <textarea rows={7} value={technicalNotes} onChange={e => setTechnicalNotes(e.target.value)} />
@@ -274,11 +273,6 @@ export function EnvironmentalReportPage() {
                 <label className="doc-inline">
                   <input type="checkbox" checked={includeSignature} onChange={e => setIncludeSignature(e.target.checked)} /> Incluir assinatura
                 </label>
-                <p className="doc-hint">
-                  {activeSignature
-                    ? 'Assinatura da sua conta carregada. Você pode substituí-la apenas neste relatório.'
-                    : 'Nenhuma assinatura cadastrada na conta. Cadastre na Personalização ou importe abaixo.'}
-                </p>
                 {activeSignature && <img style={{ maxWidth: 180, maxHeight: 65, objectFit: 'contain' }} src={activeSignature} alt="Prévia da assinatura" />}
                 <FileUploadField label="Substituir assinatura neste relatório" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" maxBytes={2_000_000} description="PNG, JPEG ou WebP, até 2 MB." onFile={changeSignature} />
                 <SignaturePadControl label="Desenhar assinatura na tela" onApply={dataUrl => { setSignature(dataUrl); setIncludeSignature(true); }} />

@@ -638,7 +638,7 @@ export function TechnicalSheetsPage(){
   setSettings(built.settings);original.current=structuredClone(built.stored);setDirty(built.recovered);
   setMessage(built.recovered?'Edição local recuperada. Clique em Salvar alterações para sincronizar com a nuvem.':'Projeto importado e salvo neste navegador.');
  }} onClearImport={()=>{setProjectStep(0);void openProject('');}} />
- {!projectId&&<p className="doc-hint">Selecione um projeto salvo no mapa ou importe um arquivo GeoJSON ou KML para começar.</p>}
+ {!projectId&&!full&&!loadingProjects&&!loading&&<p className="doc-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</p>}
  {projectId&&full&&!polygon&&<p className="doc-hint">Este projeto não contém polígonos válidos para gerar a prancha.</p>}
  {projectId&&full&&polygon&&<p className="doc-hint"><strong>Projeto selecionado:</strong> {projectTitle(full.project||{id:projectId})}</p>}
 </>:<>{polys.length>1&&<label>Imóvel / Gleba<select value={featureId} onChange={async e=>{
