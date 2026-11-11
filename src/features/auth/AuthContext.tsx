@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import {
   clearSession, login as loginRequest, logout as logoutRequest,
   readSession, verifyLogin as verifyLoginRequest,
-  ACTIVITY_KEY, IDLE_TIMEOUT_MS,
+  getLastSessionActivity, isSessionIdleExpired, markSessionExpiredByInactivity, recordSessionActivity,
   type LoginResult, type SurveyorSession
 } from './authService';
 import { ApiError } from '../../lib/api';
@@ -53,26 +53,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!session) return;
     let lastWrite = 0;
+    let ended = false;
+    const expireIfIdle = () => {
+      if (ended || !isSessionIdleExpired(getLastSessionActivity(session))) return ended;
+      ended = true;
+      markSessionExpiredByInactivity(session);
+      setSession(null);
+      setError('');
+      setStatus('ready');
+      return true;
+    };
     const track = () => {
       const now = Date.now();
+      if (expireIfIdle()) return;
       if (now - lastWrite < 15000) return;
       lastWrite = now;
-      const previous = Number(sessionStorage.getItem(ACTIVITY_KEY) || now);
-      if (now - previous <= IDLE_TIMEOUT_MS) sessionStorage.setItem(ACTIVITY_KEY, String(now));
+      recordSessionActivity(now);
     };
-    // Atividade no mapa envolve arrastar, mover a câmera, zoom e rolar a tela.
-    // O servidor, não um relógio de inatividade local, decide se o token expirou.
+    const interval = window.setInterval(expireIfIdle, 5000);
+    const checkOnReturn = () => { if (document.visibilityState === 'visible') expireIfIdle(); };
     window.addEventListener('pointerdown', track, { passive: true });
     window.addEventListener('pointermove', track, { passive: true });
     window.addEventListener('wheel', track, { passive: true });
     window.addEventListener('touchmove', track, { passive: true });
     window.addEventListener('keydown', track, { passive: true });
+    window.addEventListener('focus', checkOnReturn);
+    document.addEventListener('visibilitychange', checkOnReturn);
     return () => {
+      window.clearInterval(interval);
       window.removeEventListener('pointerdown', track);
       window.removeEventListener('pointermove', track);
       window.removeEventListener('wheel', track);
       window.removeEventListener('touchmove', track);
       window.removeEventListener('keydown', track);
+      window.removeEventListener('focus', checkOnReturn);
+      document.removeEventListener('visibilitychange', checkOnReturn);
     };
   }, [session]);
 
@@ -85,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if(document.visibilityState!=='visible')return;
       try{
         const current=readSession();
-        if(!current)return;
+        if(!current){if(!disposed){setSession(null);setStatus('ready');}return;}
         const updated=await refreshAuthenticatedSession(current);
         if(!disposed){setSession(updated);setError('');setStatus('ready');}
       }catch(error){

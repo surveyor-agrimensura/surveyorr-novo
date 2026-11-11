@@ -45,7 +45,7 @@ export function LoginPage() {
 
   useEffect(() => {
     const reason = new URLSearchParams(window.location.search).get('reason');
-    if (reason === 'idle_timeout') setMessage('Sua sessão expirou após 20 minutos sem atividade. Entre novamente.');
+    if (reason === 'idle_timeout') setMessage('Sua sessão expirou após 30 minutos sem atividade. Entre novamente.');
     if (reason === 'session_revoked') setMessage('Sua sessão foi encerrada. Entre novamente para continuar.');
     if (reason === 'plan_expired') setMessage('Seu plano está expirado. Entre em contato com o suporte.');
   }, []);

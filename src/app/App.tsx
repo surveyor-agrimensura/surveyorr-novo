@@ -8,6 +8,7 @@ import { RouteTransitionGuard } from './RouteTransitionGuard';
 import { CookiePreferences } from '../components/CookiePreferences';
 import {ConfirmDialogHost} from '../components/ConfirmDialogHost';
 import { migrateLegacyOfflineDrafts } from '../lib/offlineDraftStore';
+import { SESSION_NOTICE_KEY, IDLE_TIMEOUT_REASON } from '../features/auth/authService';
 const LoginPage = lazy(() => import('../features/auth/LoginPage').then(module => ({ default: module.LoginPage })));
 const ProjectsPage = lazy(() => import('../features/projects/ProjectsPage').then(module => ({ default: module.ProjectsPage })));
 const SupportPage = lazy(() => import('../features/support/SupportPage').then(module => ({ default: module.SupportPage })));
@@ -43,7 +44,7 @@ function Protected({children,home=false,bare=false}:{children:ReactNode;home?:bo
  const {session,status,error,retry}=useAuth();
  if(status==='checking')return <div className="page-loading" role="status"><span className="loader"/>Validando sua sessão...</div>;
  if(status==='offline')return <div className="page-loading"><h1>Conexão indisponível</h1><p>{error}</p><button className="button primary" onClick={()=>void retry()}>Tentar novamente</button></div>;
- if(!session)return <Navigate to="/login/" replace/>;
+ if(!session)return <Navigate to={sessionStorage.getItem(SESSION_NOTICE_KEY)===IDLE_TIMEOUT_REASON?'/login/?reason=idle_timeout':'/login/'} replace/>;
  if(bare)return <PageErrorBoundary>{children}</PageErrorBoundary>;
  return <WorkspaceLayout home={home}><PageErrorBoundary>{children}</PageErrorBoundary></WorkspaceLayout>;
 }

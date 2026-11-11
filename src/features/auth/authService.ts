@@ -53,8 +53,52 @@ export type LoginResult =
   | { kind: 'first-access'; token: string; email: string; message: string };
 
 export const SESSION_KEY = 'georural-auth-session-v3';
-export const ACTIVITY_KEY = 'georural-auth-last-activity-v1';
-export const IDLE_TIMEOUT_MS = 20 * 60 * 1000;
+export const ACTIVITY_KEY = 'georural-auth-last-activity-v2';
+export const LEGACY_ACTIVITY_KEY = 'georural-auth-last-activity-v1';
+export const SESSION_NOTICE_KEY = 'georural-auth-session-notice-v1';
+export const IDLE_LOGOUT_ATTEMPT_KEY = 'georural-auth-idle-logout-attempted-v1';
+export const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+export const IDLE_TIMEOUT_REASON = 'idle_timeout';
+export const IDLE_TIMEOUT_MESSAGE = 'Sua sessão expirou após 30 minutos sem atividade. Entre novamente.';
+
+export function getLastSessionActivity(session?: SurveyorSession | null): number | null {
+  let stored = localStorage.getItem(ACTIVITY_KEY);
+  if (stored === null) {
+    const legacy = sessionStorage.getItem(ACTIVITY_KEY) ?? sessionStorage.getItem(LEGACY_ACTIVITY_KEY);
+    if (legacy !== null) {
+      localStorage.setItem(ACTIVITY_KEY, legacy);
+      sessionStorage.removeItem(ACTIVITY_KEY);
+      sessionStorage.removeItem(LEGACY_ACTIVITY_KEY);
+      stored = legacy;
+    }
+  }
+  const timestamp = stored === null ? Date.parse(session?.updatedAt || '') : Number(stored);
+  if (stored === null && Number.isFinite(timestamp) && timestamp > 0) {
+    recordSessionActivity(timestamp);
+  }
+  return Number.isFinite(timestamp) && timestamp > 0 ? timestamp : null;
+}
+
+export function isSessionIdleExpired(lastActivity: number | null, now = Date.now()): boolean {
+  return lastActivity === null || !Number.isFinite(lastActivity) || now - lastActivity >= IDLE_TIMEOUT_MS;
+}
+
+export function recordSessionActivity(now = Date.now()): void {
+  localStorage.setItem(ACTIVITY_KEY, String(now));
+  sessionStorage.removeItem(LEGACY_ACTIVITY_KEY);
+}
+
+export function revokeExpiredSession(session: SurveyorSession | null): void {
+  if (sessionStorage.getItem(SESSION_NOTICE_KEY) !== IDLE_TIMEOUT_REASON
+      || sessionStorage.getItem(IDLE_LOGOUT_ATTEMPT_KEY) === '1') return;
+  sessionStorage.setItem(IDLE_LOGOUT_ATTEMPT_KEY, '1');
+  void revokeServerSession(session);
+}
+
+export function markSessionExpiredByInactivity(session: SurveyorSession | null): void {
+  clearSession(IDLE_TIMEOUT_REASON);
+  revokeExpiredSession(session);
+}
 
 export function normalizeSession(data: AuthenticationResponse): SurveyorSession {
   const user = data.user || data.session?.user;
@@ -74,7 +118,10 @@ export function normalizeSession(data: AuthenticationResponse): SurveyorSession 
 export function saveSession(session: SurveyorSession, resetActivity = true): void {
   // Acesso permanece apenas na memória; a renovação persistente usa o cookie HttpOnly do servidor.
   sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...session, accessToken: '' }));
-  if (resetActivity || !sessionStorage.getItem(ACTIVITY_KEY)) sessionStorage.setItem(ACTIVITY_KEY, String(Date.now()));
+  if (resetActivity) recordSessionActivity();
+  else getLastSessionActivity(); // Migra o registro antigo sem renovar o prazo durante um refresh.
+  sessionStorage.removeItem(SESSION_NOTICE_KEY);
+  sessionStorage.removeItem(IDLE_LOGOUT_ATTEMPT_KEY);
   // Compatível com o modelo de sessão por aba do SURVEYOR antigo.
   localStorage.removeItem(SESSION_KEY);
 }
@@ -83,25 +130,30 @@ export function readSession(): SurveyorSession | null {
   try {
     const value = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null') as SurveyorSession | null;
     if (!value?.user) return null;
+    const lastActivity = getLastSessionActivity(value);
+    if (isSessionIdleExpired(lastActivity)) {
+      markSessionExpiredByInactivity(value);
+      return null;
+    }
     const session = { ...value, accessToken: String(value.accessToken || '') };
     // Remove tokens de acesso legados do sessionStorage sem interromper a aba atual.
     if (session.accessToken) saveSession(session, false);
-    const lastActivity = Number(sessionStorage.getItem(ACTIVITY_KEY) || Date.now());
-    // Não invalidar credenciais locais por inatividade da aba: a API valida
-    // a expiração verdadeira do token e o refresh. O temporizador client-side
-    // encerrava sessões de quem trabalhava ativamente no mapa.
-    void lastActivity;
-    return value;
+    return session;
   } catch { return null; }
 }
 
-export function clearSession(): void {
+export function clearSession(notice?: typeof IDLE_TIMEOUT_REASON): void {
   sessionStorage.removeItem(SESSION_KEY);
   sessionStorage.removeItem(ACTIVITY_KEY);
+  sessionStorage.removeItem(LEGACY_ACTIVITY_KEY);
   sessionStorage.removeItem('surveyor-map-visited-session-v1');
   sessionStorage.removeItem('surveyor-map-last-view-v1');
   sessionStorage.removeItem('surveyor-map-place-v1');
   localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(ACTIVITY_KEY);
+  if (notice) sessionStorage.setItem(SESSION_NOTICE_KEY, notice);
+  else sessionStorage.removeItem(SESSION_NOTICE_KEY);
+  sessionStorage.removeItem(IDLE_LOGOUT_ATTEMPT_KEY);
 }
 
 export async function login(email: string, password: string): Promise<LoginResult> {
@@ -172,16 +224,20 @@ export async function checkSession(session: SurveyorSession): Promise<SurveyorSe
     method: 'POST', body: session.refreshToken ? { refreshToken: session.refreshToken } : {}
   });
   const updated = normalizeSession({ ...refresh, user: refresh.user || session.user });
-  saveSession(updated);
+  saveSession(updated, false);
   return updated;
 }
 
-export async function logout(session: SurveyorSession | null): Promise<void> {
+export async function revokeServerSession(session: SurveyorSession | null): Promise<void> {
   try {
     await apiRequest('/api/auth/logout', {
       method: 'POST', accessToken: session?.accessToken,
       body: session?.refreshToken ? { refreshToken: session.refreshToken } : {}
     });
   } catch { /* A sessão local precisa ser encerrada mesmo sem conexão. */ }
+}
+
+export async function logout(session: SurveyorSession | null): Promise<void> {
+  try { await revokeServerSession(session); }
   finally { clearSession(); }
 }

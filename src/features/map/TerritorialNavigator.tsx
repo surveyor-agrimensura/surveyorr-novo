@@ -5,6 +5,7 @@ import { ArrowLeft, ChevronRight, Layers, Minus, Plus, Search, X, MapPinned } fr
 import { useNavigate } from 'react-router-dom';
 import * as L from 'leaflet';
 import { featureCode, getMunicipalities, getStates, normalize, STATES, type Municipality, type State } from './geoData';
+import { clearStaleLeafletRotationRecovery, recoverFromStaleLeafletRotation } from './territorialMapRecovery';
 import type { Feature, Geometry } from 'geojson';
 
 const styleDefault:L.PathOptions={color:'#edf2f7',weight:1.1,fillColor:'#b6c1cb',fillOpacity:1};
@@ -96,8 +97,14 @@ export function TerritorialNavigator(){
    }}).addTo(map);
    statesRef.current=layer;
    if(layer.getBounds().isValid())map.fitBounds(layer.getBounds(),{padding:[38,40],animate:false});
+   clearStaleLeafletRotationRecovery({getItem:key=>sessionStorage.getItem(key),setItem:(key,value)=>sessionStorage.setItem(key,value),removeItem:key=>sessionStorage.removeItem(key)});
    setLoading('');setError('');
-  }).catch(e=>{if(alive){setLoading('');setError(`Não foi possível abrir o Brasil. ${errorText(e)}`);}});
+  }).catch(e=>{
+   if(!alive)return;
+   const recovered= recoverFromStaleLeafletRotation(e,{getItem:key=>sessionStorage.getItem(key),setItem:(key,value)=>sessionStorage.setItem(key,value),removeItem:key=>sessionStorage.removeItem(key)},()=>window.location.reload());
+   if(recovered)return;
+   setLoading('');setError(`Não foi possível abrir o Brasil. ${errorText(e)}`);
+  });
   return()=>{alive=false;++requestRef.current;mapRef.current=null;statesRef.current=null;citiesRef.current=null;stateIndex.current.clear();cityIndex.current.clear();map.remove();};
  },[chooseState,retry]);
  const matches=useMemo(()=>{
