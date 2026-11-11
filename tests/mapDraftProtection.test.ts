@@ -63,9 +63,9 @@ describe('proteção de desenhos incompletos no mapa', () => {
     expect(page).toContain("if(cloudPending){event.preventDefault();setSaveError('Aguarde a confirmação do salvamento na nuvem antes de sair do mapa.')");
   });
 
-  it('exibe um controle de toque para cancelar o desenho ou encerrar marcações', () => {
-    expect(page).toContain("aria-label={tool==='point'?'Concluir marcação de pontos':'Cancelar desenho'}");
-    expect(page).toContain("tool==='point'?'Concluir pontos':'Cancelar'");
-    expect(page).toContain("onClick={async()=>{if(await changeTool('pan',true))setPointDialog(false);}}");
+  it('oferece ações contextuais para cancelar a ferramenta ou concluir marcações', () => {
+    expect(page).toContain('Concluir marcação de pontos');
+    expect(page).toContain('Cancelar ferramenta atual');
+    expect(page).toContain("if(await changeTool('pan',true)){setPointDialog(false);setMapContext(null);}");
   });
 });
