@@ -32,8 +32,9 @@ describe('gestos dos editores em telas de toque', () => {
     expect(page).toContain('Ações da ferramenta ${mapToolLabels[tool]}');
     expect(page).toContain('Finalizar desenho');
     expect(page).toContain('Cancelar ferramenta atual');
-    expect(page).toContain("aria-label={draft.length?'Desfazer último vértice':'Desfazer última alteração'}");
-    expect(page).toContain('disabled={!draft.length&&!historyCount.undo} onClick={undo}');
+    expect(page).toContain('aria-label={label} title={title||label}');
+    expect(page).toContain("button('Desfazer',<Undo2 size={16}/>,undo");
+    expect(page).toContain("button('Refazer',<Redo2 size={16}/>,redo");
     expect(css).toMatch(/\.map-measure-readout\{position:absolute;bottom:110px/);
     expect(css).toMatch(/@media\(max-width:700px\)\{\.map-measure-readout span\{display:none\}\}/);
   });
