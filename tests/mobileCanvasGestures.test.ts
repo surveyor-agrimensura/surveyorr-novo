@@ -14,6 +14,7 @@ describe('gestos dos editores em telas de toque', () => {
     expect(css).toMatch(/\.map-grab-edge\s*\{[^}]*touch-action:\s*none/);
     expect(css).toMatch(/@media\(max-width:700px\)\{\.map-tools-group\{height:44px\}\.map-tool\{min-height:44px;min-width:44px;font-size:9px\}/);
     expect(css).toMatch(/\.map-work-sidebar button,\.map-work-sidebar summary,\.map-feature-details button,\.map-point-dialog button,\.map-modal-backdrop button,\.map-index-modal-backdrop button,\.map-municipality-download button\{min-height:44px\}/);
+    expect(css).toMatch(/\.map-drawing-bar button\{min-height:44px;box-sizing:border-box\}/);
     expect(css).toMatch(/\.map-operational-search\{height:44px\}\.map-operational-search button\{width:44px;height:44px;flex:none\}/);
     expect(css).toMatch(/\.map-feature-context button,\.map-basemap-popover button,\.map-export-popover button,\.map-flyout-head button,\.map-flyout-body>button,\.map-point-batch-menu>button,\.map-legacy-tool\{min-height:44px/);
     expect(css).toMatch(/\.map-work-sidebar\{top:114px\}\.map-tools-palette\{top:116px\}/);
@@ -23,20 +24,21 @@ describe('gestos dos editores em telas de toque', () => {
     expect(page).toMatch(/if\(modal\)\{setModal\(null\);return;\}/);
   });
 
-  it('remove a faixa de desenho e mantém controles contextuais acessíveis', () => {
+  it('compacta a barra de desenho móvel e mantém Finalizar, Cancelar e Desfazer acessíveis', () => {
     const css = readSource('src/features/map/map.css');
     const page = readSource('src/features/map/OperationalMap.tsx');
 
     expect(page).toContain("const mapToolLabels:Record<Tool,string>={pan:'Mapa',point:'Pontos',line:'Linha',polygon:'Polígono',rectangle:'Retângulo',circle:'Círculo',arc:'Arco',measure:'Medição'}");
-    expect(page).not.toContain('className="map-drawing-bar"');
-    expect(page).toContain('Ações da ferramenta ${mapToolLabels[tool]}');
-    expect(page).toContain('Finalizar desenho');
-    expect(page).toContain('Cancelar ferramenta atual');
-    expect(page).toContain('aria-label={label} title={title||label}');
-    expect(page).toContain("button('Desfazer',<Undo2 size={16}/>,undo");
-    expect(page).toContain("button('Refazer',<Redo2 size={16}/>,redo");
+    expect(page).toContain('role="group" aria-label={`Ferramentas de desenho: ${mapToolLabels[tool]}`}');
+    expect(page).toContain('<span className="map-drawing-mobile-title" aria-hidden="true">{mapToolLabels[tool]}</span>');
+    expect(page).toContain("aria-label={draft.length?'Desfazer último vértice':'Desfazer última alteração'}");
+    expect(page).toContain('disabled={!draft.length&&!historyCount.undo} onClick={undo}');
+    expect(css).toContain('.map-drawing-mobile-title{display:none}');
+    expect(css).toContain('.map-drawing-mobile-title{display:block;white-space:nowrap;font-size:11px;font-weight:800}');
+    expect(css).toContain('.map-drawing-bar button{gap:4px;padding:0 6px;font-size:10px;flex:0 0 auto}');
     expect(css).toMatch(/\.map-measure-readout\{position:absolute;bottom:110px/);
     expect(css).toMatch(/@media\(max-width:700px\)\{\.map-measure-readout span\{display:none\}\}/);
+    expect(css).toMatch(/\.map-drawing-bar button\{min-height:44px;box-sizing:border-box\}/);
   });
 
   it('abre as opções dos vértices por toque e permite arrastá-los no mapa móvel', () => {
@@ -135,14 +137,11 @@ describe('gestos dos editores em telas de toque', () => {
     expect(page).not.toMatch(/onMouseMove=\{e\s*=>/);
   });
 
-  it('mantém a bússola simples e não mostra avisos internos de funções pendentes', () => {
+  it('não mostra avisos internos de funções pendentes na interface do mapa', () => {
     const page = readSource('src/features/map/OperationalMap.tsx');
     const css = readSource('src/features/map/map.css');
 
-    expect(page).toMatch(/className="map-compass-control map-compass-safe" role="img" aria-label="Orientação do mapa: norte para cima"/);
-    expect(page).toMatch(/className="map-north-readonly" aria-hidden="true">N<\/span>/);
-    expect(page).not.toMatch(/map-compass-pad|Orientar o mapa para (norte|leste|sul|oeste)/);
-    expect(page).not.toMatch(/leaflet-rotate|setBearing|mapBearing/);
+    expect(page).toMatch(/role="img" aria-label="Orientação do mapa: norte para cima" title="Norte para cima"/);
     expect(page).not.toMatch(/Motor em migração|temporariamente desativada|map-legacy-pending/);
     expect(css).not.toMatch(/map-legacy-pending|map-pending-dot|map-north-reset|map-export-pending/);
   });

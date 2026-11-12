@@ -59,7 +59,6 @@ export const SESSION_NOTICE_KEY = 'georural-auth-session-notice-v1';
 export const IDLE_LOGOUT_ATTEMPT_KEY = 'georural-auth-idle-logout-attempted-v1';
 export const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 export const IDLE_TIMEOUT_REASON = 'idle_timeout';
-export const IDLE_TIMEOUT_MESSAGE = 'Sua sessão expirou após 30 minutos sem atividade. Entre novamente.';
 
 export function getLastSessionActivity(session?: SurveyorSession | null): number | null {
   let stored = localStorage.getItem(ACTIVITY_KEY);
@@ -73,9 +72,7 @@ export function getLastSessionActivity(session?: SurveyorSession | null): number
     }
   }
   const timestamp = stored === null ? Date.parse(session?.updatedAt || '') : Number(stored);
-  if (stored === null && Number.isFinite(timestamp) && timestamp > 0) {
-    recordSessionActivity(timestamp);
-  }
+  if (stored === null && Number.isFinite(timestamp) && timestamp > 0) recordSessionActivity(timestamp);
   return Number.isFinite(timestamp) && timestamp > 0 ? timestamp : null;
 }
 
@@ -88,16 +85,11 @@ export function recordSessionActivity(now = Date.now()): void {
   sessionStorage.removeItem(LEGACY_ACTIVITY_KEY);
 }
 
-export function revokeExpiredSession(session: SurveyorSession | null): void {
-  if (sessionStorage.getItem(SESSION_NOTICE_KEY) !== IDLE_TIMEOUT_REASON
-      || sessionStorage.getItem(IDLE_LOGOUT_ATTEMPT_KEY) === '1') return;
-  sessionStorage.setItem(IDLE_LOGOUT_ATTEMPT_KEY, '1');
-  void revokeServerSession(session);
-}
-
 export function markSessionExpiredByInactivity(session: SurveyorSession | null): void {
   clearSession(IDLE_TIMEOUT_REASON);
-  revokeExpiredSession(session);
+  if (sessionStorage.getItem(IDLE_LOGOUT_ATTEMPT_KEY) === '1') return;
+  sessionStorage.setItem(IDLE_LOGOUT_ATTEMPT_KEY, '1');
+  void revokeServerSession(session);
 }
 
 export function normalizeSession(data: AuthenticationResponse): SurveyorSession {
@@ -119,7 +111,7 @@ export function saveSession(session: SurveyorSession, resetActivity = true): voi
   // Acesso permanece apenas na memória; a renovação persistente usa o cookie HttpOnly do servidor.
   sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...session, accessToken: '' }));
   if (resetActivity) recordSessionActivity();
-  else getLastSessionActivity(); // Migra o registro antigo sem renovar o prazo durante um refresh.
+  else getLastSessionActivity();
   sessionStorage.removeItem(SESSION_NOTICE_KEY);
   sessionStorage.removeItem(IDLE_LOGOUT_ATTEMPT_KEY);
   // Compatível com o modelo de sessão por aba do SURVEYOR antigo.
@@ -130,8 +122,7 @@ export function readSession(): SurveyorSession | null {
   try {
     const value = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null') as SurveyorSession | null;
     if (!value?.user) return null;
-    const lastActivity = getLastSessionActivity(value);
-    if (isSessionIdleExpired(lastActivity)) {
+    if (isSessionIdleExpired(getLastSessionActivity(value))) {
       markSessionExpiredByInactivity(value);
       return null;
     }

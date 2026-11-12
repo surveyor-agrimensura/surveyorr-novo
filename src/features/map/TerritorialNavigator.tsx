@@ -101,7 +101,7 @@ export function TerritorialNavigator(){
    setLoading('');setError('');
   }).catch(e=>{
    if(!alive)return;
-   const recovered= recoverFromStaleLeafletRotation(e,{getItem:key=>sessionStorage.getItem(key),setItem:(key,value)=>sessionStorage.setItem(key,value),removeItem:key=>sessionStorage.removeItem(key)},()=>window.location.reload());
+   const recovered=recoverFromStaleLeafletRotation(e,{getItem:key=>sessionStorage.getItem(key),setItem:(key,value)=>sessionStorage.setItem(key,value),removeItem:key=>sessionStorage.removeItem(key)},()=>window.location.reload());
    if(recovered)return;
    setLoading('');setError(`Não foi possível abrir o Brasil. ${errorText(e)}`);
   });

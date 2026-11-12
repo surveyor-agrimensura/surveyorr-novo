@@ -17,6 +17,7 @@ dist/
 *credentials*.json
 *secrets*.json
 .DS_Store
+*.tsbuildinfo
 
 # Backups locais gerados durante melhorias
 BACKUP_*.zip

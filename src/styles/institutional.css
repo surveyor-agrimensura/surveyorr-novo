@@ -83,10 +83,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .workspace-shell .workspace-main .doc-sheet-context,.workspace-shell .workspace-main .doc-download-menu{border-radius:var(--gov-radius-control);border-color:var(--gov-border);box-shadow:var(--gov-shadow-menu)}
 .workspace-shell .workspace-main.memorial-main{height:calc(100dvh - 72px)}
 /* Mapa: superfícies e ferramentas quadradas; geometrias não são alteradas */
-.operational-screen .map-topbar,.operational-screen .map-tools-group,.operational-screen .map-navigation-panel,.operational-screen .map-flyout,.operational-screen .map-basemap-popover,.operational-screen .map-export-popover,.operational-screen .map-tools-palette,.operational-screen .map-recovery,.operational-screen .map-shape-dialog{border-radius:var(--gov-radius-control);border-color:var(--gov-border);box-shadow:var(--gov-shadow-menu)}
+.operational-screen .map-topbar,.operational-screen .map-navigation-panel,.operational-screen .map-flyout,.operational-screen .map-basemap-popover,.operational-screen .map-export-popover,.operational-screen .map-tools-palette,.operational-screen .map-recovery,.operational-screen .map-shape-dialog{border-radius:var(--gov-radius-control);border-color:var(--gov-border);box-shadow:var(--gov-shadow-menu)}
 .operational-screen .map-topbar{border-top:3px solid var(--gov-blue)}
 .operational-screen .map-tool,.operational-screen .map-tools-palette button,.operational-screen .map-navigation-item,.operational-screen .map-flyout button,.operational-screen .map-basemap-popover button,.operational-screen .map-export-popover button,.operational-screen .map-drawing-bar button,.operational-screen .map-right-controls>button,.operational-screen .map-navigation-close{border-radius:var(--gov-radius-control);box-shadow:none}
 .operational-screen .map-tool{min-height:42px;font-size:12px}
+.operational-screen .map-tool:focus-visible{outline:3px solid var(--gov-blue);outline-offset:2px;position:relative;z-index:2}
 .operational-screen .map-tool-active,.operational-screen .map-navigation-item:hover,.operational-screen .map-navigation-item:focus-visible{background:var(--gov-blue-soft);color:var(--gov-blue-dark);border-color:#c8d8eb}
 .operational-screen .map-navigation-item{min-height:46px;font-size:14px}
 .operational-screen .map-navigation-panel{border-radius:0 var(--gov-radius-control) var(--gov-radius-control) 0}
@@ -933,4 +934,13 @@ body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-start-ac
 body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-start-actions>*{flex:0 0 auto}
 body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-title{flex:0 1 auto;min-width:0}
 
-.workspace-shell .projects-page .surveyor-pagination{position:sticky;bottom:0;z-index:8}
+/* A lista da nuvem rola dentro da página; os controles e a paginação ficam acessíveis. */
+.workspace-shell .workspace-main.projects-page{box-sizing:border-box;height:100%;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:0}
+.workspace-shell .workspace-main.projects-page>.projects-container{box-sizing:border-box;width:100%;height:100%;min-height:0;flex:1 1 auto;display:flex;flex-direction:column;overflow:hidden}
+.workspace-shell .projects-page .project-page-heading,
+.workspace-shell .projects-page .project-team-info,
+.workspace-shell .projects-page .project-stats,
+.workspace-shell .projects-page .projects-toolbar,
+.workspace-shell .projects-page>.projects-container>.page-error{flex:0 0 auto}
+.workspace-shell .projects-page .projects-list{min-height:0;flex:1 1 auto;overflow-x:hidden;overflow-y:auto;align-content:start;scrollbar-gutter:stable}
+.workspace-shell .projects-page .surveyor-pagination{position:sticky;bottom:0;z-index:5;flex:0 0 auto;margin:0;box-shadow:0 -4px 14px rgba(16,42,67,.08)}
