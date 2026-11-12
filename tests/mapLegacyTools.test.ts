@@ -11,7 +11,7 @@ describe('ferramentas adicionais do mapa', () => {
 
     expect(ids).not.toContain('identify');
     expect(page).not.toMatch(/identifyMode|case 'identify'/);
-    expect(page).toMatch(/setSelectedFeature\(String\(f\.id\)\);setDetailsFeatureId\(String\(f\.id\)\);setInfoExpanded\(false\);setEditingFeature\(null\);setContextAt\(null\);setMapContext\(null\);setPanel\('layers'\)/);
+    expect(page).toMatch(/setInfoExpanded\(false\);setSelectedFeature\(String\(f\.id\)\);setDetailsFeatureId\(String\(f\.id\)\);setEditingFeature\(null\);setContextAt\(null\);setMapContext\(null\);setPanel\('layers'\)/);
   });
 
   it('tem um caminho de execução para cada ferramenta publicada no catálogo', () => {
