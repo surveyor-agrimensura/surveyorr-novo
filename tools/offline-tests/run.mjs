@@ -46,6 +46,24 @@ const noCompile = args.includes('--no-compile');
 const filter = args.filter((arg) => !arg.startsWith('--')).join(' ');
 const filterRegex = filter ? new RegExp(filter, 'i') : null;
 
+// Prefer the project's real test runner when its local package is installed. This
+// keeps `test:offline` behavior identical to CI on a provisioned checkout and avoids
+// the compatibility shim's intentionally smaller browser/module surface.
+const vitestCli = join(projectRoot, 'node_modules', 'vitest', 'vitest.mjs');
+if (!listOnly && !args.includes('--force-shim') && existsSync(vitestCli)) {
+  const forwardedArgs = args.filter((arg) => !arg.startsWith('--'));
+  const result = spawnSync(process.execPath, [vitestCli, 'run', ...forwardedArgs], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+    timeout: 600_000,
+  });
+  if (result.error) {
+    console.error(`Vitest local não iniciou: ${result.error.message}`);
+    process.exit(1);
+  }
+  process.exit(result.status ?? 1);
+}
+
 register(hooksUrl);
 
 // ---------------------------------------------------------------------------- compilar
