@@ -564,8 +564,8 @@ body .public-map-page .public-head{border-top:0!important}
 .workspace-shell .projects-page .toolbar-actions select{width:172px;height:40px;padding:0 10px;font-size:13px}
 .workspace-shell .projects-page .icon-refresh{width:40px;height:40px}
 .workspace-shell .projects-page .create-project{min-height:40px;padding:0 14px;font-size:13px}
-.workspace-shell .projects-page .projects-list{display:grid;gap:9px}
-.workspace-shell .projects-page .project-item{margin:0;border:1px solid var(--gov-border);border-radius:var(--gov-radius-panel);box-shadow:none;background:#fff}
+.workspace-shell .projects-page .projects-list{display:flex;flex-direction:column;align-items:stretch;gap:9px}
+.workspace-shell .projects-page .project-item{flex:0 0 auto;min-height:74px;margin:0;border:1px solid var(--gov-border);border-radius:var(--gov-radius-panel);box-shadow:none;background:#fff}
 .workspace-shell .projects-page .project-item-head{display:grid;grid-template-columns:minmax(220px,1fr) minmax(360px,1.7fr) auto;gap:16px;align-items:center;min-height:72px;padding:10px 15px;background:#fff}
 .workspace-shell .projects-page .project-item-head:hover{background:#f7f9fb}
 .workspace-shell .projects-page .project-item-name{min-width:0;gap:3px}

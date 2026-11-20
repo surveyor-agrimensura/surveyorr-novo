@@ -57,7 +57,9 @@ export function WorkspaceLayout({ children, home = false }: { children: ReactNod
   const visibleToolCount = visibleToolGroups.reduce((count, group) => count + group.tools.length, 0);
 
   // Apenas um atalho ocupa a largura expandida. Os demais se deslocam naturalmente.
-  const activeShortcut = expandedShortcut ?? (toolsOpen ? 'tools' : null);
+  const normalizedPath = location.pathname.replace(/\/+$/, '') || '/';
+  const activeRouteShortcut = menus.find(menu => menu.href?.replace(/\/+$/, '') === normalizedPath)?.key ?? null;
+  const activeShortcut = expandedShortcut ?? (toolsOpen ? 'tools' : activeRouteShortcut);
 
   function guardWorkspaceLink(event: ReactMouseEvent<HTMLDivElement>) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

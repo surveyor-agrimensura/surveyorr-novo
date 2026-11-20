@@ -53,8 +53,14 @@ function detectCsvDelimiter(header:string):string{
  }
  return semicolons>commas?';':',';
 }
+export function downloadBlob(filename:string,blob:Blob){
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.style.display='none';
+ (document.body||document.documentElement).appendChild(a);a.click();a.remove();
+ // Keep the object URL alive while the browser starts larger file downloads.
+ setTimeout(()=>URL.revokeObjectURL(url),10_000);
+}
 export function downloadText(filename:string,content:string,mime:string){
- const blob=new Blob([content],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ downloadBlob(filename,new Blob([content],{type:mime}));
 }
 function kmlCoordinates(raw:string|null|undefined):number[][]|null{
  const values=String(raw||'').trim().split(/\s+/).filter(Boolean);

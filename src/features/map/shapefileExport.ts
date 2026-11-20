@@ -1,5 +1,5 @@
 import type {Feature,Geometry,GeoJsonProperties} from 'geojson';
-import {toCsv,toKml} from './mapFormats';
+import {downloadBlob,toCsv,toKml} from './mapFormats';
 
 type Geodata=Feature<Geometry,GeoJsonProperties>;
 type XY=[number,number];
@@ -146,6 +146,5 @@ export function toTechnicalPackage(features:Geodata[],project:Record<string,unkn
 }
 export function downloadBytes(filename:string,bytes:Uint8Array):void{
  const copy=new Uint8Array(bytes.length);copy.set(bytes);
- const blob=new Blob([copy.buffer],{type:'application/zip'});
- const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ downloadBlob(filename,new Blob([copy.buffer],{type:'application/zip'}));
 }

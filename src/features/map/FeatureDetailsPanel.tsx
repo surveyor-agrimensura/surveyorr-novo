@@ -4,7 +4,7 @@ import type { Feature, Geometry, GeoJsonProperties } from 'geojson';
 import { measureMapGeometry } from './geometryMetrics';
 import { downloadText, toKml } from './mapFormats';
 import { featuresToDxf } from './advancedTerrainTools';
-import { downloadBytes, toShapefileZip } from './shapefileExport';
+import { downloadBytes, toShapefileZip, type ShapeTarget } from './shapefileExport';
 import { tarefaCaption, tarefaUnitForState } from '../../lib/agrarianMeasure';
 
 type MapFeature = Feature<Geometry, GeoJsonProperties>;
@@ -37,6 +37,8 @@ function isPolygon(geometry: Geometry): geometry is Extract<Geometry, { type: 'P
 
 export function FeatureDetailsPanel({ feature, uf = '', onClose }: FeatureDetailsPanelProps) {
   const [exportError, setExportError] = useState('');
+  const [shapeDialog, setShapeDialog] = useState(false);
+  const [shapeProfile, setShapeProfile] = useState<ShapeTarget>(() => uf.toUpperCase() === 'BA' ? 'seia-cefir-ba' : 'qgis-arcgis');
   const geometry = feature.geometry;
   const polygon = isPolygon(geometry);
   const metrics = polygon ? measureMapGeometry(geometry) : null;
@@ -64,7 +66,7 @@ export function FeatureDetailsPanel({ feature, uf = '', onClose }: FeatureDetail
       } else if (format === 'DXF') {
         downloadText(`feicao-${fileId}.dxf`, featuresToDxf([feature]), 'application/dxf');
       } else {
-        downloadBytes(`feicao-${fileId}-shape.zip`, toShapefileZip([feature]));
+        setShapeDialog(true);
       }
     } catch (error) {
       setExportError(error instanceof Error ? error.message : 'Falha ao exportar feição.');
@@ -99,7 +101,28 @@ export function FeatureDetailsPanel({ feature, uf = '', onClose }: FeatureDetail
           {supportsShapefile && <button type="button" onClick={() => exportFeature('Shapefile')}>Shapefile</button>}
         </div>
       </section>
-      {exportError && <p className="map-save-alert" role="alert">{exportError}</p>}
+      {exportError && !shapeDialog && <p className="map-save-alert" role="alert">{exportError}</p>}
+      {shapeDialog && <div className="map-modal-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setShapeDialog(false); }}>
+        <section className="map-shape-dialog" role="dialog" aria-modal="true" aria-label="Exportar Shapefile">
+          <header><div><h2>Exportar Shapefile</h2><span>Onde este arquivo será utilizado?</span></div><button type="button" aria-label="Fechar" onClick={() => setShapeDialog(false)}><X size={18} /></button></header>
+          <div className="map-shape-profiles">{([
+            ['seia-cefir-ba', 'SEIA / CEFIR — Bahia'], ['sicar-car', 'SICAR / CAR — Brasil'], ['sigef-incra', 'INCRA / SIGEF — referência'], ['qgis-arcgis', 'QGIS / ArcGIS / software SIG'], ['other', 'Outro sistema']
+          ] as [ShapeTarget, string][]).map(([id, title]) => <label className={shapeProfile === id ? 'selected' : ''} key={id}>
+            <input name={`shp-profile-${fileId}`} type="radio" value={id} checked={shapeProfile === id} onChange={() => setShapeProfile(id)} /><span>{title}</span>
+          </label>)}</div>
+          {exportError && <p className="map-save-alert" role="alert">{exportError}</p>}
+          <footer><button type="button" onClick={() => setShapeDialog(false)}>Cancelar</button><button type="button" className="map-primary" onClick={() => {
+            try {
+              const bytes = toShapefileZip([feature], shapeProfile);
+              const suffix = shapeProfile === 'seia-cefir-ba' ? 'shapeImovelRural-SEIA-CEFIR' : `feicao-${fileId}-${shapeProfile}`;
+              downloadBytes(`${suffix}.zip`, bytes);
+              setShapeDialog(false);
+            } catch (error) {
+              setExportError(error instanceof Error ? error.message : 'Falha ao exportar Shapefile.');
+            }
+          }}>Validar e gerar</button></footer>
+        </section>
+      </div>}
     </aside>
   );
 }

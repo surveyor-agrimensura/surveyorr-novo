@@ -7,6 +7,7 @@ const readSource = (path: string) => readFileSync(resolve(process.cwd(), path), 
 describe('ações das camadas oficiais do mapa', () => {
   const panel = readSource('src/features/map/MapWorkPanels.tsx');
   const page = readSource('src/features/map/OperationalMap.tsx');
+  const featureDetails = readSource('src/features/map/FeatureDetailsPanel.tsx');
   const css = readSource('src/features/map/map.css');
 
   it('abre informações reais da camada e identifica o serviço WMS', () => {
@@ -47,5 +48,27 @@ describe('ações das camadas oficiais do mapa', () => {
     expect(css).toContain('.map-layer-details-content dl{grid-template-columns:1fr}');
     expect(css).toContain('.map-layer-details-actions>a,.map-layer-details-actions>button{min-height:44px;flex:1}');
     expect(css).toContain('.map-layer-actions button{flex:1 1 calc(50% - 4px);min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.25;text-align:center}');
+  });
+
+  it('abre o seletor de destino ao exportar Shapefile pela ficha da feição', () => {
+    expect(featureDetails).toContain("setShapeDialog(true)");
+    expect(featureDetails).toContain('SEIA / CEFIR — Bahia');
+    expect(featureDetails).toContain('toShapefileZip([feature], shapeProfile)');
+    expect(featureDetails).not.toContain('toShapefileZip([feature]));');
+  });
+
+  it('oferece edição direta de vértices para polígonos desbloqueados selecionados no mapa', () => {
+    expect(featureDetails).not.toContain('map-feature-edit-vertices');
+    expect(page).toContain('Editar vértices</button>');
+    expect(page).toContain('beginVertexEditing(contextAt.id)');
+    expect(page).toContain('beginVertexEditing(String(mapContextEditFeature.id))');
+    expect(page).toContain('setEditingFeature(id);setDetailsFeatureId(null);setContextAt(null);setMapContext(null);setPanel(null);');
+  });
+
+  it('expande o atalho ativo de Projetos mesmo sem hover', () => {
+    const layout = readSource('src/components/layout/WorkspaceLayout.tsx');
+    expect(layout).toContain("const normalizedPath = location.pathname.replace(/\\/+$/, '') || '/';");
+    expect(layout).toContain("const activeRouteShortcut = menus.find(menu => menu.href?.replace(/\\/+$/, '') === normalizedPath)?.key ?? null;");
+    expect(layout).toContain("const activeShortcut = expandedShortcut ?? (toolsOpen ? 'tools' : activeRouteShortcut);");
   });
 });

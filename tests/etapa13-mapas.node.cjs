@@ -52,8 +52,10 @@ assert.match(croqui,/setPreviewZoom\(value=>clamp\(value\+5,40,180\)\)/);
 assert.doesNotMatch(croqui,/Exportação 1 por 1/);
 assert.doesNotMatch(croqui,/<summary>Foto sobreposta<\/summary>/);
 assert.match(croqui,/mapAppearancePatch/);
-const map=fs.readFileSync('src/features/map/MapWorkPanels.tsx','utf8');
-for(const ext of ['GeoJSON','KML','DXF','Shapefile'])assert.ok(map.includes(`>${ext}</button>`),`Individual ${ext} export`);
+const map=fs.readFileSync('src/features/map/FeatureDetailsPanel.tsx','utf8');
+for(const ext of ['GeoJSON','KML','DXF','Shapefile'])assert.ok(map.includes(`exportFeature('${ext}')`),`Individual ${ext} export`);
+assert.ok(map.includes('SEIA / CEFIR — Bahia'),'Individual Shapefile target selection');
+assert.ok(map.includes('toShapefileZip([feature], shapeProfile)'),'Individual Shapefile export uses the selected target');
 for(const tool of ['CroquiPage.tsx','TechnicalSheetsPage.tsx']){
  const source=fs.readFileSync(tool==='CroquiPage.tsx'?'src/features/croqui/'+tool:'src/features/documents/'+tool,'utf8');
  assert.ok(source.includes('Nome no Mapa'),`Name editor missing in ${tool}`);

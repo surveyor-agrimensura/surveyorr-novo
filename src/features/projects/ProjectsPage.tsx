@@ -84,8 +84,8 @@ export function ProjectsPage(){
   finally{setDeleting(null);}
  }
 
- return <main className="workspace-main projects-page"><GlobalLoading active={loading} /><div className="workspace-container projects-container">
-  <div className="page-heading project-page-heading"><span className="heading-icon"><FolderKanban size={23}/></span><div><h1>Projetos</h1><p>Gerencie e retome seus trabalhos de campo.</p></div></div>{teamMember&&<p role="status" className="project-team-info">Projetos do espaço compartilhado da equipe. O acesso depende das permissões da sua conta; os projetos pertencem ao titular do espaço.</p>}
+ return <main className="workspace-main projects-page"><h1 className="sr-only">Projetos</h1><GlobalLoading active={loading} /><div className="workspace-container projects-container">
+  {teamMember&&<p role="status" className="project-team-info">Projetos do espaço compartilhado da equipe. O acesso depende das permissões da sua conta; os projetos pertencem ao titular do espaço.</p>}
   <div className="project-stats">
    <section className="stat-card project-stat-card project-stat-storage"><div className="project-stat-content"><span className="project-stat-icon"><Database size={18}/></span><div className="project-stat-copy"><span className="stat-label">Armazenamento da conta/equipe</span>
     <strong>{storageError?'Indisponível':storage?`${formatBytes(used)}${limit!==null?` de ${formatBytes(limit)}`:' usados'}`:loading?'Carregando...':'Indisponível'}</strong>

@@ -100,10 +100,16 @@ function compile() {
       sourceMap: false,
       rootDir: projectRoot,
       outDir: buildRoot,
-      types: [],
+      types: ['node'],
+      typeRoots: [join(projectRoot, 'node_modules', '@types').replaceAll('\\', '/')],
     },
-    include: [join(projectRoot, 'src', '**', '*'), join(projectRoot, 'tests', '**', '*.test.ts')],
-    exclude: [join(projectRoot, 'node_modules')],
+    // TypeScript treats backslashes in `include` globs inconsistently on Windows;
+    // normalize only glob paths while keeping compiler output paths native.
+    include: [
+      join(projectRoot, 'src', '**', '*').replaceAll('\\', '/'),
+      join(projectRoot, 'tests', '**', '*.test.ts').replaceAll('\\', '/'),
+    ],
+    exclude: [join(projectRoot, 'node_modules').replaceAll('\\', '/')],
   };
   writeFileSync(configPath, JSON.stringify(config, null, 2));
 
