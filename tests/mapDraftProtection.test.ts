@@ -36,9 +36,9 @@ describe('proteção de desenhos incompletos no mapa', () => {
     const saveProject = findArrowBody('saveProject');
 
     expect(saveProject.indexOf('draftRef.current.length')).toBeLessThan(saveProject.indexOf('save(true)'));
-    expect(page).toContain("const validate=()=>{if(!ensureCompletedDrawing('validar o projeto'))return;setModal('verify');}");
+    expect(page).toContain("const validate=()=>{if(!ensureCompletedDrawing('validar o projeto'))return;setPendingExport(null);setExportReviewIssues([]);setModal('verify');}");
     expect(page).toContain("draft.length?'Finalize ou cancele o desenho para exportar':undefined");
-    expect(page).toContain("ensureCompletedDrawing('exportar o pacote técnico')");
+    expect(page).toContain("if(!ensureCompletedDrawing('exportar'))return;");
   });
 
   it('mantém cancelamento explícito pelo Escape e pelo menu de contexto', () => {

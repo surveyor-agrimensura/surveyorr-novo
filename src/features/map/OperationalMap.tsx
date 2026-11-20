@@ -27,6 +27,7 @@ import {extractManualGleba} from './extractManualGleba';
 import {SpatialAnalysis} from '../analysis/SpatialAnalysis';
 import {parcelFromFeature,validateParcel} from '../analysis/topology';
 import {AdvancedMapSearch} from './AdvancedMapSearch';
+import {ExportReadinessDialog} from '../../components/ExportReadinessDialog';
 import type {OfficialPropertyResult} from './propertyLookup';
 import {importPointFile} from './pointImport';
 import { buildPolygonFromBatch, importedPointBatches, visibleOnMap } from './importedPointPolygon';
@@ -41,6 +42,7 @@ import { getVertexAppearance, updateVertexAppearance, shiftVertexAppearance, cop
 import { svgTextOutline } from '../../lib/svgTextContrast';
 import {toShapefileZip,toTechnicalPackage,downloadBytes,zipFiles} from './shapefileExport';
 import { AdvancedTerrainModal, reversePolygonRing, featuresToDxf, type AdvancedToolKind } from './advancedTerrainTools';
+import {resolveUndoRedoAction} from '../../lib/undoRedoShortcuts';
 type Tool = 'pan'|'point'|'line'|'polygon'|'rectangle'|'circle'|'arc'|'measure';
 type Basemap='default'|'satellite'|'clarity'|'cloudless'|'hybrid'|'streets'|'topo'|'relief';
 type MapFeature=Feature<Geometry,GeoJsonProperties>;
@@ -86,6 +88,9 @@ export function OperationalMap(){
  }
  const place=placeRef.current;
  const projectId=params.get('project');
+ const requestedFeatureId=params.get('feature')||'';
+ const requestedFeatureEdit=params.get('edit')==='1';
+ const requestedProjectPanel=params.get('openProject')==='1';
  const accountId=String(session?.user?.id||'visitante');
  const draftKeys=mapDraftKeys(accountId,projectId||place?.id||'workspace');
  const storageKey=draftKeys.draft;
@@ -148,10 +153,13 @@ export function OperationalMap(){
  const [officialLayers,setOfficialLayers]=useState<ActiveLayer[]>([]);
  const [selectedFeature,setSelectedFeature]=useState<string|null>(null);
  const [detailsFeatureId,setDetailsFeatureId]=useState<string|null>(null);
+ const appliedFocusRequest=useRef('');
+ const appliedProjectPanelRequest=useRef('');
  const [editingFeature,setEditingFeature]=useState<string|null>(null);
  const [layerUF,setLayerUF]=useState(place?.uf||'BA');
  const [baseMenu,setBaseMenu]=useState(false);
  const [exportMenu,setExportMenu]=useState(false);
+ const [pendingExport,setPendingExport]=useState<(()=>void)|null>(null),[exportReviewIssues,setExportReviewIssues]=useState<Issue[]>([]);
  const [paletteOpen,setPaletteOpen]=useState(false);
  const [measureLabels,setMeasureLabels]=useState(true);
  const [editMidpointsEnabled,setEditMidpointsEnabled]=useState(()=>{try{return localStorage.getItem('surveyor-edit-midpoints-v2')==='1';}catch{return false;}});
@@ -432,6 +440,13 @@ export function OperationalMap(){
   featureRef.current=next;setFeatures(next);
   setHistoryCount({undo:historyChanges.current.length,redo:redoChanges.current.length});
  };
+ useEffect(()=>{
+  const onKey=(event:KeyboardEvent)=>{
+   const action=resolveUndoRedoAction(event);if(!action)return;
+   event.preventDefault();if(action==='undo')undo();else redo();
+  };
+  window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey);
+ },[redo,undo]);
 
  const save=async(quiet=false):Promise<boolean>=>{
   const snapshot=structuredClone(featureRef.current);
@@ -516,7 +531,7 @@ export function OperationalMap(){
   notify('GeoJSON gerado para download.');
   return true;
  };
- const validate=()=>{if(!ensureCompletedDrawing('validar o projeto'))return;setModal('verify');};
+ const validate=()=>{if(!ensureCompletedDrawing('validar o projeto'))return;setPendingExport(null);setExportReviewIssues([]);setModal('verify');};
  const saveProject=async()=>{
   setSaveError('');
   if(draftRef.current.length){setSaveError(`Finalize ou cancele o desenho em andamento (${draftRef.current.length} ${draftRef.current.length===1?'vértice':'vértices'}) antes de salvar o projeto.`);return;}
@@ -755,8 +770,8 @@ export function OperationalMap(){
  const removeLayer=(id:string)=>{officialQuerySequence.current++;setOfficialInfo(null);setOfficialLayers(a=>a.filter(x=>x.id!==id));};
  const opacityLayer=(id:string,n:number)=>setOfficialLayers(a=>a.map(x=>x.id===id?{...x,opacity:n}:x));
  const refreshOfficialLayer=(id:string)=>{const tile=appliedRefs.current.get(id);if(!tile){notify('A camada ainda não está pronta para atualização.');return;}setOfficialLayers(current=>current.map(layer=>layer.id===id?{...layer,state:'carregando'}:layer));tile.redraw();notify('Solicitação de atualização enviada ao serviço oficial.');};
- const validateIssues=():Issue[]=>[
-  ...features.flatMap((f,i)=>{const parcel=parcelFromFeature(f as {id?:string|number;geometry:{type:string;coordinates?:unknown};properties?:Record<string,unknown>|null},i);return parcel?validateParcel(parcel).map(issue=>({title:`${parcel.name}: ${issue.title}`,description:issue.detail,critical:issue.kind==='error',action:()=>{setAnalysisOpen(true);setSelectedFeature(parcel.id);}})):[];}),
+ const validateIssues=(scope:MapFeature[]=features):Issue[]=>[
+  ...scope.flatMap((f,i)=>{const parcel=parcelFromFeature(f as {id?:string|number;geometry:{type:string;coordinates?:unknown};properties?:Record<string,unknown>|null},i);return parcel?validateParcel(parcel).map(issue=>({title:`${parcel.name}: ${issue.title}`,description:issue.detail,critical:issue.kind==='error',actionLabel:'Editar perímetro',action:()=>{const target=featureRef.current.find(item=>String(item.id)===parcel.id);if(!target)return;setAnalysisOpen(false);if(target.geometry.type==='Polygon'&&!target.properties?.locked)beginVertexEditing(parcel.id);else{setSelectedFeature(parcel.id);setDetailsFeatureId(parcel.id);setPanel('layers');setStatus(target.properties?.locked?'Este perímetro está bloqueado. Desbloqueie-o antes de corrigir a geometria.':'Feição selecionada; use as ferramentas de edição do mapa.');}const bounds=L.geoJSON(target).getBounds();if(bounds.isValid())mapRef.current?.fitBounds(bounds,{padding:[60,60],maxZoom:18});}})):[];}),
   ...(!projectData.name.trim()?[{title:'Nome do imóvel ausente',description:'Informe um nome antes de finalizar.',critical:true,action:()=>setPanel('project')}]:[]),
   ...(!projectData.city.trim()?[{title:'Município não definido',description:'Complete o cadastro do projeto.',critical:false,action:()=>setPanel('project')}]:[]),
   ...(!features.length?[{title:'Nenhuma geometria',description:'Desenhe ou importe pelo menos uma feição.',critical:true,action:()=>{setPaletteOpen(true);}}]:[]),
@@ -764,6 +779,17 @@ export function OperationalMap(){
   ...(!officialLayers.some(x=>x.id.includes('cefir')||x.id.includes('sicar'))?[{title:'CAR / CEFIR sem referência',description:'Adicione uma camada oficial se for necessária ao projeto.',critical:false,action:()=>setModal('catalog')}]:[]),
   ...(!officialLayers.some(x=>x.source.includes('INCRA'))?[{title:'SIGEF / INCRA não verificado',description:'A consulta externa deverá ser conferida no portal oficial.',critical:false,action:()=>setPanel('layers')}]:[])
  ];
+ const beginExportPreflight=(run:()=>void,scope?:MapFeature[])=>{
+  if(!ensureCompletedDrawing('exportar'))return;
+  const issues=validateIssues(scope).filter(issue=>!issue.title.startsWith('CAR / CEFIR')&&!issue.title.startsWith('SIGEF / INCRA'));
+  setExportReviewIssues(issues);setPendingExport(()=>run);setExportMenu(false);setModal('verify');
+ };
+ const closePreflight=()=>{setPendingExport(null);setExportReviewIssues([]);setModal(null);};
+ const continuePendingExport=()=>{const run=pendingExport;closePreflight();run?.();};
+ const exportContextPackage=()=>{
+  const selected=contextAt&&featureRef.current.find(item=>String(item.id)===contextAt.id);if(!selected)return;
+  beginExportPreflight(()=>{downloadBytes(`surveyor-desenho-${selected.id}.zip`,zipFiles({'dados.txt':Object.entries(selected.properties||{}).map(([k,v])=>`${k}: ${String(v)}`).join('\n'),'feicao.geojson':JSON.stringify({type:'FeatureCollection',features:[selected]},null,2),'feicao.kml':toKml([selected]),'feicao.dxf':featuresToDxf([selected]),'feicao.csv':toCsv([selected]),'shapefile.zip':toShapefileZip([selected])}));setContextAt(null);},[selected]);
+ };
  // A inicialização acontece após o commit do React. O agendamento também evita
  // a montagem dupla do Leaflet no mesmo elemento durante React.StrictMode.
  useEffect(()=>{
@@ -1176,6 +1202,17 @@ export function OperationalMap(){
   }).catch(()=>{if(!cancelled){notify('Não foi possível carregar o projeto da nuvem. Rascunho local preservado.');setSaveError('A API não carregou a revisão do projeto. Confira o domínio da API e a Function antes de sincronizar.');}});
   return()=>{cancelled=true;};
  },[projectId,session,notify,storageKey]);
+ useEffect(()=>{
+  if(!projectId||!remoteReady)return;
+  if(requestedProjectPanel&&appliedProjectPanelRequest.current!==projectId){appliedProjectPanelRequest.current=projectId;setPanel('project');}
+  const requestKey=`${projectId}:${requestedFeatureId}:${requestedFeatureEdit?'edit':'view'}`;
+  if(!requestedFeatureId||appliedFocusRequest.current===requestKey)return;
+  const target=features.find(item=>String(item.id)===requestedFeatureId);if(!target)return;
+  appliedFocusRequest.current=requestKey;setSelectedFeature(requestedFeatureId);
+  if(requestedFeatureEdit&&target.geometry.type==='Polygon'&&!target.properties?.locked){setEditingFeature(requestedFeatureId);setDetailsFeatureId(null);setPanel(null);setStatus('Perímetro aberto para correção. Revise os vértices e salve o projeto.');}
+  else{setEditingFeature(null);setDetailsFeatureId(requestedFeatureId);setPanel('layers');setStatus(target.properties?.locked?'Perímetro selecionado, mas está bloqueado para edição.':'Feição selecionada para revisão.');}
+  const bounds=L.geoJSON(target).getBounds();if(bounds.isValid())mapRef.current?.fitBounds(bounds,{padding:[60,60],maxZoom:18});
+ },[projectId,remoteReady,requestedProjectPanel,requestedFeatureId,requestedFeatureEdit,features]);
   const confirmMapExit=async()=>{
    if(cloudPending){setSaveError('Aguarde a confirmação do salvamento na nuvem antes de sair do mapa.');return false;}
    const pending=draftRef.current.length;
@@ -1261,7 +1298,7 @@ export function OperationalMap(){
     <div className="map-tools-group"><button type="button" className={`map-tool ${baseMenu?'map-tool-active':''}`} aria-label="Mapa" title="Mapa" aria-controls="map-basemap-menu" aria-expanded={baseMenu} onClick={()=>{setBaseMenu(v=>!v);setExportMenu(false);}}><MapIcon size={17}/><span>Mapa</span></button></div>
     <div className="map-tools-group">{button('Importar',<Upload size={17}/>,()=>setModal('import'))}{button('Exportar',<Download size={17}/>,()=>{setExportMenu(v=>!v);setBaseMenu(false);},exportMenu,draft.length>0,draft.length?'Finalize ou cancele o desenho para exportar':undefined)}</div>
     <div className="map-tools-group">{button('Compartilhar',<Share2 size={17}/>,()=>void share())}</div>
-    {(draft.length>0||historyCount.undo>0||historyCount.redo>0)&&<div className="map-tools-group map-tools-undo">{button('Desfazer',<Undo2 size={16}/>,undo,false,!draft.length&&!historyCount.undo)}{button('Refazer',<Redo2 size={16}/>,redo,false,!historyCount.redo)}</div>}
+    {(draft.length>0||historyCount.undo>0||historyCount.redo>0)&&<div className="map-tools-group map-tools-undo">{button('Desfazer',<Undo2 size={16}/>,undo,false,!draft.length&&!historyCount.undo,'Desfazer último ponto ou alteração (Ctrl+Z)')}{button('Refazer',<Redo2 size={16}/>,redo,false,!historyCount.redo,'Refazer alteração (Ctrl+Shift+Z)')}</div>}
    </div>
    <AdvancedMapSearch onClearProperty={clearOfficialProperty} onProperty={highlightOfficialProperty} uf={place?.uf||projectData.uf} initialCity={place?{id:place.id,name:place.name,uf:place.uf,stateName:place.stateName}:null} onCoordinates={(lat,lng)=>mapRef.current?.flyTo([lat,lng],16)} onBounds={bounds=>{const map=mapRef.current;if(!map)return;map.invalidateSize({animate:false});map.flyToBounds(bounds,{paddingTopLeft:[panel?390:55,65],paddingBottomRight:[80,65],maxZoom:15,duration:.65});setStatus('Enquadramento atualizado para o município selecionado.');}}/>
   </header>
@@ -1275,7 +1312,7 @@ export function OperationalMap(){
   </div>}
   {pointBatchMenu&&readyPointBatches.length>1&&<div className="map-point-batch-menu" role="dialog" aria-label="Gerar polígono a partir de pontos"><strong>Escolha os pontos para ligar</strong><p>Os vértices serão conectados na ordem do arquivo original.</p>{readyPointBatches.map(batch=><button key={batch.id} onClick={()=>void makePolygonFromPoints(batch.id)}><Pentagon size={16}/><span>{batch.label}<small>{batch.points.length} pontos</small></span></button>)}<button className="map-point-batch-dismiss" onClick={()=>setPointBatchMenu(false)}>Cancelar</button></div>}
   {baseMenu&&<div id="map-basemap-menu" className="map-basemap-popover map-basemap-rich" role="group" aria-label="Visualização do mapa"><h4>Visualização do mapa</h4><button type="button" className="map-basemap-option" aria-label="Visão territorial" aria-pressed={false} onClick={()=>navigateBack()}><img src="/basemap-thumbs/territorial-brazil.webp" alt=""/><span className="map-basemap-label">Visão territorial</span></button>{basemapOptions.map(([kind,label])=><button type="button" className={`map-basemap-option ${mapMode===kind?'selected':''}`} aria-label={label} aria-pressed={mapMode===kind} title={kind==='clarity'?'Imagens de arquivo; podem ser mais antigas que o Satélite padrão.':label} key={kind} onClick={()=>{setMapMode(kind);setBaseMenu(false);}}><img src={`/basemap-thumbs/${kind==='clarity'||kind==='cloudless'?'satellite':kind}.jpg`} alt=""/><span className="map-basemap-label">{label}</span>{mapMode===kind&&<Check size={16}/>}</button>)}</div>}
-  {exportMenu&&<div className="map-export-popover"><h4>Exportar projeto</h4><button onClick={()=>{if(exportFile())setExportMenu(false);}}>GeoJSON</button><button onClick={()=>{if(!ensureCompletedDrawing('exportar KML'))return;downloadText('surveyor.kml',toKml(featureRef.current),'application/vnd.google-earth.kml+xml');setExportMenu(false);}}>KML</button><button onClick={()=>{if(!ensureCompletedDrawing('exportar DXF'))return;downloadText('surveyor.dxf',featuresToDxf(featureRef.current),'application/dxf');setExportMenu(false);}}>AutoCAD (.dxf)</button><button onClick={()=>{if(!ensureCompletedDrawing('exportar CSV'))return;downloadText('surveyor.csv',toCsv(featureRef.current),'text/csv;charset=utf-8');setExportMenu(false);}}>CSV</button><button onClick={()=>{if(!ensureCompletedDrawing('exportar TXT'))return;downloadText('surveyor-feicoes.txt',featureRef.current.map(f=>JSON.stringify(f)).join('\n'),'text/plain');setExportMenu(false);}}>TXT</button><button onClick={()=>{if(!ensureCompletedDrawing('exportar shapefile'))return;setExportMenu(false);setShapeDialog(true);}}>Shapefile (.zip)</button><button onClick={()=>{if(!ensureCompletedDrawing('exportar o pacote técnico'))return;downloadBytes('surveyor-pacote-tecnico.zip',toTechnicalPackage(featureRef.current,projectData));notify('Pacote técnico de trabalho exportado.');setExportMenu(false);}}>Pacote técnico (.zip)</button></div>}
+  {exportMenu&&<div className="map-export-popover"><h4>Exportar projeto</h4><button onClick={()=>beginExportPreflight(()=>{exportFile();setExportMenu(false);})}>GeoJSON</button><button onClick={()=>beginExportPreflight(()=>{downloadText('surveyor.kml',toKml(featureRef.current),'application/vnd.google-earth.kml+xml');setExportMenu(false);})}>KML</button><button onClick={()=>beginExportPreflight(()=>{downloadText('surveyor.dxf',featuresToDxf(featureRef.current),'application/dxf');setExportMenu(false);})}>AutoCAD (.dxf)</button><button onClick={()=>beginExportPreflight(()=>{downloadText('surveyor.csv',toCsv(featureRef.current),'text/csv;charset=utf-8');setExportMenu(false);})}>CSV</button><button onClick={()=>beginExportPreflight(()=>{downloadText('surveyor-feicoes.txt',featureRef.current.map(f=>JSON.stringify(f)).join('\n'),'text/plain');setExportMenu(false);})}>TXT</button><button onClick={()=>beginExportPreflight(()=>setShapeDialog(true))}>Shapefile (.zip)</button><button onClick={()=>beginExportPreflight(()=>{downloadBytes('surveyor-pacote-tecnico.zip',toTechnicalPackage(featureRef.current,projectData));notify('Pacote técnico de trabalho exportado.');setExportMenu(false);})}>Pacote técnico (.zip)</button></div>}
   {paletteOpen&&<div className="map-tools-palette map-tools-legacy"><header><strong>Ferramentas adicionais · {legacyMapTools.filter(x=>!['polygon','point','mark','coordinates','cancel','edit','delete','refresh','terrain'].includes(x.id)).length+1}</strong><button onClick={()=>setPaletteOpen(false)} aria-label="Fechar ferramentas"><X size={15}/></button></header><div className="map-tools-legacy-grid">{legacyMapTools.filter(entry=>!['polygon','point','mark','coordinates','cancel','edit','delete','refresh','terrain'].includes(entry.id)).map(entry=><button key={entry.id} type="button" className={`map-legacy-tool ${isLegacyToolSelected(entry.id,legacyToolSelectionState)?'map-legacy-active':''}`} aria-pressed={isLegacyToolSelected(entry.id,legacyToolSelectionState)} title={entry.label} aria-label={entry.label} onClick={()=>useLegacyTool(entry.id)}>{legacyIcons[entry.icon]}<span>{entry.label}</span></button>)}<button type="button" className="map-legacy-tool" onClick={()=>{setPaletteOpen(false);const polys=featureRef.current.filter(f=>f.geometry.type==='Polygon'&&f.properties?.hidden!==true);if(!polys.length){notify('Desenhe primeiro um polígono no mapa para gerar faixa paralela / buffer.');return;}if(!selectedFeature)setSelectedFeature(String(polys[0].id));setTerrainModal('buffer');}}><SlidersHorizontal size={18}/><span>Buffer / Recuo (m)</span></button></div></div>}
   {historyOpen&&<aside className="map-flyout"><div className="map-flyout-head"><strong>Versões locais</strong><button onClick={()=>setHistoryOpen(false)} aria-label="Fechar"><X size={17}/></button></div><div className="map-flyout-body">{versions.length?versions.map(v=><button key={v.date} onClick={()=>restore(v)}><History size={16}/>{new Date(v.date).toLocaleString('pt-BR')} ({v.features.length} feições)</button>):<p>Nenhuma versão local salva.</p>}</div></aside>}
   {shapeDialog&&<div className="map-modal-backdrop"><section className="map-shape-dialog" role="dialog" aria-modal="true" aria-label="Exportar Shapefile"><header><div><h2>Exportar Shapefile</h2><span>Onde este arquivo será utilizado?</span></div><button onClick={()=>setShapeDialog(false)} aria-label="Fechar"><X size={18}/></button></header><div className="map-shape-profiles">{([
@@ -1283,7 +1320,7 @@ export function OperationalMap(){
   ] as [import('./shapefileExport').ShapeTarget,string][]).map(([id,title])=><label className={shapeProfile===id?'selected':''} key={id}><input name="shp-profile" type="radio" value={id} checked={shapeProfile===id} onChange={()=>setShapeProfile(id)}/><span>{title}</span></label>)}</div><footer><button onClick={()=>setShapeDialog(false)}>Cancelar</button><button className="map-primary" onClick={()=>{try{const result=toShapefileZip(featureRef.current,shapeProfile);downloadBytes(shapeProfile==='seia-cefir-ba'?'shapeImovelRural-SEIA-CEFIR.zip':`surveyor-${shapeProfile}.zip`,result);setShapeDialog(false);notify('Shapefile gerado.');}catch(err){notify(err instanceof Error?err.message:'Falha ao exportar Shapefile.');}}}>Validar e gerar</button></footer></section></div>}
   {legacyDraftAvailable&&<div className="map-legacy-recovery" role="status"><strong>Rascunho de versão anterior encontrado neste navegador.</strong> <span>Por segurança, não foi carregado automaticamente nesta conta.</span> <button type="button" onClick={recoverLegacyDraft}>Revisar e recuperar rascunho antigo</button> <button type="button" onClick={()=>setLegacyDraftAvailable(false)}>Ocultar aviso</button></div>}
   <WorkSidebar panel={panel==='gleba'?null:panel} municipalityState={municipalityState} saveError={saveError} onBackupDraft={exportFile} onClose={()=>setPanel(null)} onCatalog={()=>setModal('catalog')} project={projectData} onProjectChange={setProjectData} onSave={saveProject} cloudPending={cloudPending} activeLayers={officialLayers} onToggleLayer={toggleLayer} onRemoveLayer={removeLayer} onOpacityLayer={opacityLayer} onRefreshLayer={refreshOfficialLayer} features={features} selectedFeature={selectedFeature} onRemoveFeature={removeMapFeature} onStyleFeature={styleFeatureById} onDivideFeature={id=>{setSelectedFeature(id);setPanel('gleba');}} onRenameFeature={(id,name)=>{setFeatures(current=>{const next=current.map(f=>String(f.id)===id?{...f,properties:{...f.properties,name}}:f);featureRef.current=next;return next;});}} onConfrontantFeature={(id,values)=>saveConfrontants(values,id)} onConfrontantDetailFeature={(id,values)=>saveConfrontantDetails(values,id)} />
-  {detailsFeature&&<FeatureDetailsPanel feature={detailsFeature} uf={place?.uf||projectData.uf} onClose={()=>setDetailsFeatureId(null)} />}
+  {detailsFeature&&<FeatureDetailsPanel feature={detailsFeature} uf={place?.uf||projectData.uf} onClose={()=>setDetailsFeatureId(null)} onBeforeExport={beginExportPreflight} />}
   {panel==='gleba'&&<GlebaPanel features={features} selected={selectedFeature} onClose={()=>setPanel(null)} onChoose={id=>setSelectedFeature(id)} onCreate={createGlebas} onExtractManual={extractDrawnGleba} onStyleFeature={styleFeatureById} onRemoveFeature={removeMapFeature} onDraw={async(kind,parentId)=>{if(!await changeTool(kind))return;glebaDrawingRef.current=kind;glebaParentRef.current=parentId;notify(kind==='polygon'?'Clique no mapa para desenhar a gleba manual.':'Desenhe a linha guia e finalize.');}}/>}
   {officialInfo&&infoExpanded&&<section className="map-official-details" aria-label="Dados de imóvel oficial"><header><strong>Dados oficiais · {officialInfo.layer}</strong><button onClick={()=>setInfoExpanded(false)} aria-label="Fechar detalhes"><X size={16}/></button></header>{officialInfo.loading&&<p className="map-official-progress" role="status">As fontes estão respondendo; os dados aparecem conforme cada consulta termina.</p>}{officialMetrics&&officialMetrics.areaM2>0&&<div className="map-official-area"><strong>Área da geometria retornada</strong><span>{(officialMetrics.areaM2/10000).toLocaleString('pt-BR',{maximumFractionDigits:4})} ha</span>{officialTarefa?<small>≈ {officialTarefa.replace(/\s+tarefas$/,'')} {officialTarefaUnit}</small>:officialInfo.uf&&<small>Conversão regional de tarefa não cadastrada · {officialInfo.uf}</small>}</div>}{officialInfo.sources.map(source=><article className={'map-official-source map-official-source--'+source.status} key={source.id}><header><strong>{source.group}</strong><span>{source.status==='loading'?'Consultando…':source.status==='found'?'Dados encontrados':source.status==='empty'?'Sem registro no ponto':'Fonte indisponível'}</span></header><small>{source.label}</small>{source.status==='loading'?<p role="status">Aguardando retorno desta fonte.</p>:source.status==='empty'?<p>Nenhum registro deste tipo foi informado neste ponto.</p>:source.status==='unavailable'?<p>Esta fonte não respondeu ou não disponibilizou um formato de consulta compatível agora.</p>:<dl>{Object.entries(source.attributes||{}).filter(([_,value])=>value!=null&&String(value).trim()).map(([key,value])=><div key={key}><dt>{key.replace(/_/g,' ')}</dt><dd>{String(value)}</dd></div>)}</dl>}</article>)}<p>Consulta: {officialInfo.lat.toFixed(6)}, {officialInfo.lng.toFixed(6)}</p>{!officialInfo.loading&&officialInfo.attributes&&<button className="map-primary" onClick={()=>void exportOfficialAt(officialInfo.lat,officialInfo.lng)}>Baixar pacote ZIP com dados e geometria disponível</button>}</section>}
   {mapContext&&<div className="map-feature-context" role="menu" aria-label={tool==='pan'?'Ações no mapa':`Ações da ferramenta ${mapToolLabels[tool]}`} style={{left:mapContext.x,top:mapContext.y}} onContextMenu={event=>event.preventDefault()}>
@@ -1312,7 +1349,7 @@ export function OperationalMap(){
     <button onClick={()=>{setSelectedFeature(contextAt.id);setTerrainModal('frontback');setContextAt(null);}}>Classificar Frente / Fundo / Testadas</button>
     <button onClick={()=>{setSelectedFeature(contextAt.id);setTerrainModal('buffer');setContextAt(null);}}>Gerar Faixa Paralela / Buffer (m)</button>
     <button onClick={()=>{const id=contextAt.id;setFeatures(current=>{const next=current.map(f=>String(f.id)===id?reversePolygonRing(f):f);featureRef.current=next;return next;});setContextAt(null);notify('Sentido de caminhamento dos vértices invertido (Horário ↔ Anti-horário).');}}>Inverter sentido dos vértices</button>
-    <button onClick={()=>{const f=featureRef.current.find(x=>String(x.id)===contextAt.id);if(f)downloadBytes(`surveyor-desenho-${f.id}.zip`,zipFiles({'dados.txt':Object.entries(f.properties||{}).map(([k,v])=>`${k}: ${String(v)}`).join('\n'),'feicao.geojson':JSON.stringify({type:'FeatureCollection',features:[f]},null,2),'feicao.kml':toKml([f]),'feicao.dxf':featuresToDxf([f]),'feicao.csv':toCsv([f]),'shapefile.zip':toShapefileZip([f])}));setContextAt(null);}}>Baixar pacote ZIP · desenho</button>
+    <button onClick={exportContextPackage}>Baixar pacote ZIP · desenho</button>
     <button className="map-context-danger" onClick={()=>{const id=contextAt.id;void requestConfirmation({title:'Remover elemento?',message:'Este elemento será removido do rascunho atual.',confirmLabel:'Remover elemento',destructive:true}).then(confirmed=>{if(!confirmed)return;setFeatures(current=>{const next=current.filter(f=>String(f.id)!==id);featureRef.current=next;return next;});setSelectedFeature(null);setEditingFeature(null);setContextAt(null);});}}>Remover polígono</button>
     <button className="map-context-close" onClick={()=>setContextAt(null)}>Fechar</button>
    </div>}
@@ -1329,7 +1366,7 @@ export function OperationalMap(){
   {pointDialog&&<PointDialog onClose={async()=>{await changeTool('pan',true);setPointDialog(false);}} onCreate={async(name,lat,lon)=>{if(!await changeTool('pan'))return;const f=feature('Point',[[lat,lon]]);f.properties={...f.properties,name,pointOrigin:'mapa',pointClass:'P',hasMonument:false};addFeature(f);setPointDialog(false);mapRef.current?.panTo([lat,lon]);}} onPlace={async()=>{if(!await changeTool('point'))return;setPointDialog(false);notify('Clique no mapa para marcar um ponto.');}} onImport={(file,classification)=>importPoints(file,classification)} />}
   <LayerCatalog uf={layerUF} modalOpen={modal==='catalog'} onClose={()=>setModal(null)} onUse={onOfficialAdd} existing={officialLayers.map(x=>x.id)}/>
   {modal==='import'&&<ImportDialog onClose={()=>setModal(null)} onImport={importFileFromDialog}/>}
-  {modal==='verify'&&<ValidationDialog issues={validateIssues()} onClose={()=>setModal(null)}/>}
+  {modal==='verify'&&(pendingExport?<ExportReadinessDialog issues={exportReviewIssues.map((issue,index)=>({id:`${issue.title}-${index}`,severity:issue.critical?'error':'warning',title:issue.title,description:issue.description,actionLabel:issue.actionLabel,action:issue.action}))} onClose={closePreflight} onContinue={continuePendingExport} continueLabel='Gerar arquivo'/>:<ValidationDialog issues={validateIssues()} onClose={()=>setModal(null)}/>)}
   {terrainModal&&<AdvancedTerrainModal tool={terrainModal} features={features} selectedFeatureId={selectedFeature} onSelectFeature={id=>setSelectedFeature(id)} onAddFeatures={items=>{setFeatures(current=>{const next=[...current,...items];featureRef.current=next;return next;});}} onUpdateFeature={(id,patch)=>{setFeatures(current=>{const next=current.map(f=>String(f.id)===id?{...f,...patch,properties:{...f.properties,...patch.properties}}:f);featureRef.current=next;return next;});}} onClose={()=>setTerrainModal(null)} notify={notify} />}
   {analysisOpen&&<SpatialAnalysis features={features} onClose={()=>setAnalysisOpen(false)} onOpenGleba={id=>{setAnalysisOpen(false);setSelectedFeature(id);setPanel('gleba');}} onClear={()=>{spatialOverlayRef.current?.remove();spatialOverlayRef.current=null;notify('Comparação visual removida.');}} onOverlay={(a,b)=>{const map=mapRef.current;if(!map)return;spatialOverlayRef.current?.remove();const group=L.layerGroup().addTo(map);spatialOverlayRef.current=group;const matches=[a,b].map(id=>features.find(f=>String(f.id)===id)).filter((f):f is MapFeature=>!!f);matches.forEach((f,i)=>L.geoJSON(f,{interactive:false,style:{color:i===0?'#2563eb':'#ed7100',weight:4,dashArray:i===0?'8 4':'4 3',fillOpacity:.10}}).addTo(group));const bounds=L.featureGroup(group.getLayers()).getBounds();if(bounds.isValid())map.fitBounds(bounds,{padding:[45,45]});setAnalysisOpen(false);notify('Perímetros A (azul) e B (laranja) sobrepostos visualmente. Os dados não foram alterados.');}} onFocus={id=>{setAnalysisOpen(false);setSelectedFeature(id);const f=features.find(item=>String(item.id)===id);if(f){const bounds=L.geoJSON(f as Feature).getBounds();if(bounds.isValid())mapRef.current?.fitBounds(bounds,{padding:[60,60],maxZoom:18});}}}/>}
    <div className="map-right-controls"><div className="map-compass-control map-compass-safe" role="img" aria-label="Orientação do mapa: norte para cima" title="Norte para cima"><span className="map-north-readonly" aria-hidden="true">N</span></div><button type="button" aria-label="Voltar ao enquadramento inicial do município" title="Voltar ao município" onClick={home}><Home size={19}/></button><button type="button" aria-label="Minha localização" title="Minha localização" onClick={locateUser}><LocateFixed size={20}/></button><button type="button" title="Aproximar" aria-label="Aproximar" onClick={()=>mapRef.current?.zoomIn()}><Plus size={22}/></button><button type="button" title="Afastar" aria-label="Afastar" onClick={()=>mapRef.current?.zoomOut()}><Minus size={22}/></button></div>

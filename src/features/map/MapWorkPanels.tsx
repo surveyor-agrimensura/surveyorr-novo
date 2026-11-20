@@ -17,7 +17,7 @@ import {GEO_GROUPS,layersForUF,officialLayerLegendUrl} from './geoServices';
 import {toggleSelectedLayer} from './layerCatalogSelection';
 import {Dialog} from '../../components/Dialog';
 export type MapFeature=Feature<Geometry,GeoJsonProperties>;
-export type Issue={title:string;description:string;critical:boolean;action:()=>void};
+export type Issue={title:string;description:string;critical:boolean;action:()=>void;actionLabel?:string};
 export type Panel='project'|'layers'|null;
 export type Modal='catalog'|'import'|'verify'|null;
 export type MapProjectData={name:string;owner:string;cpf:string;rg:string;owner2:string;additionalOwners?:{name:string;cpf:string;rg:string}[];city:string;uf:string;description:string};

@@ -14,6 +14,7 @@ export type FeatureDetailsPanelProps = {
   feature: MapFeature;
   uf?: string;
   onClose: () => void;
+  onBeforeExport: (run: () => void, scope?: MapFeature[]) => void;
 };
 
 function collectPositions(value: unknown): [number, number][] {
@@ -35,7 +36,7 @@ function isPolygon(geometry: Geometry): geometry is Extract<Geometry, { type: 'P
   return geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
 }
 
-export function FeatureDetailsPanel({ feature, uf = '', onClose }: FeatureDetailsPanelProps) {
+export function FeatureDetailsPanel({ feature, uf = '', onClose, onBeforeExport }: FeatureDetailsPanelProps) {
   const [exportError, setExportError] = useState('');
   const [shapeDialog, setShapeDialog] = useState(false);
   const [shapeProfile, setShapeProfile] = useState<ShapeTarget>(() => uf.toUpperCase() === 'BA' ? 'seia-cefir-ba' : 'qgis-arcgis');
@@ -57,20 +58,22 @@ export function FeatureDetailsPanel({ feature, uf = '', onClose }: FeatureDetail
   const supportsShapefile = ['Polygon', 'MultiPolygon', 'Point', 'LineString'].includes(geometry.type);
 
   const exportFeature = (format: FeatureExport) => {
-    setExportError('');
-    try {
-      if (format === 'GeoJSON') {
-        downloadText(`feicao-${fileId}.geojson`, JSON.stringify({ type: 'FeatureCollection', features: [feature] }, null, 2), 'application/geo+json');
-      } else if (format === 'KML') {
-        downloadText(`feicao-${fileId}.kml`, toKml([feature]), 'application/vnd.google-earth.kml+xml');
-      } else if (format === 'DXF') {
-        downloadText(`feicao-${fileId}.dxf`, featuresToDxf([feature]), 'application/dxf');
-      } else {
-        setShapeDialog(true);
+    onBeforeExport(()=>{
+      setExportError('');
+      try {
+        if (format === 'GeoJSON') {
+          downloadText(`feicao-${fileId}.geojson`, JSON.stringify({ type: 'FeatureCollection', features: [feature] }, null, 2), 'application/geo+json');
+        } else if (format === 'KML') {
+          downloadText(`feicao-${fileId}.kml`, toKml([feature]), 'application/vnd.google-earth.kml+xml');
+        } else if (format === 'DXF') {
+          downloadText(`feicao-${fileId}.dxf`, featuresToDxf([feature]), 'application/dxf');
+        } else {
+          setShapeDialog(true);
+        }
+      } catch (error) {
+        setExportError(error instanceof Error ? error.message : 'Falha ao exportar feição.');
       }
-    } catch (error) {
-      setExportError(error instanceof Error ? error.message : 'Falha ao exportar feição.');
-    }
+    }, [feature]);
   };
 
   return (
