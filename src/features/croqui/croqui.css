@@ -240,7 +240,7 @@
 
 /* Editor de croqui no mesmo formato imersivo do Memorial: barra de fluxo,
    painel de ajustes e prévia ocupando toda a área de trabalho. */
-.workspace-shell.croqui-workspace{height:111.12dvh;min-height:0;overflow:hidden;grid-template-rows:minmax(0,1fr);background:#f4f6f8}
+.workspace-shell.croqui-workspace{height:100dvh;min-height:0;overflow:hidden;grid-template-rows:minmax(0,1fr);background:#f4f6f8}
 .workspace-shell.croqui-workspace>.workspace-header{display:none!important}
 .workspace-shell.croqui-workspace>.workspace-main.cq-page{height:100%!important;min-height:0!important;display:flex;flex-direction:column;overflow:hidden!important;padding:0!important;background:#f4f6f8}
 .cq-workflow-bar{position:relative;z-index:12;flex:0 0 64px;min-width:0;display:grid;grid-template-columns:minmax(220px,1fr) auto minmax(220px,1fr);align-items:center;gap:12px;padding:0 16px;background:#fff;border-bottom:1px solid #cbd5e1;color:#102a43}

@@ -3,6 +3,11 @@ import { saveProjectBundle } from '../src/features/projects/projectsApi';
 import { checkSaveFunctionHealth, saveFunctionRequest } from '../src/lib/saveApi';
 import type { SurveyorSession } from '../src/features/auth/authService';
 
+vi.hoisted(() => {
+ vi.stubEnv('VITE_SURVEYOR_ENV', 'production');
+ vi.stubEnv('VITE_SURVEYOR_ALLOW_REMOTE_LOCAL', 'true');
+});
+
 const session={accessToken:'jwt-unit-test',user:{id:'usuario'},tokenType:'Bearer',updatedAt:'2026-01-01T00:00:00Z'} as SurveyorSession;
 const response=(body:object,status=200)=>({ok:status>=200&&status<300,status,text:async()=>JSON.stringify(body),json:async()=>body} as Response);
 afterEach(()=>vi.unstubAllGlobals());

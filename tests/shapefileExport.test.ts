@@ -50,7 +50,8 @@ describe('exportação Shapefile', () => {
     const fieldNames = Array.from({ length: 8 }, (_, index) => new TextDecoder().decode(dbf.subarray(32 + index * 32, 32 + index * 32 + 11)).replace(/\0.*$/, ''));
     expect(fieldNames).toEqual(['ID', 'NOME', 'CATEGORIA', 'MUNICIPIO', 'UF', 'AREA_HA', 'PERIM_M', 'VERTICES']);
     const prj = new TextDecoder().decode(files.get('shapeImovelRural.prj'));
-    expect(prj).toContain('SIRGAS 2000');
+    expect(prj).toContain('WGS_1984');
+    expect(prj).not.toContain('SIRGAS 2000');
     expect(files.get('shapeImovelRural.shp')!.byteLength).toBeGreaterThan(100);
   });
 

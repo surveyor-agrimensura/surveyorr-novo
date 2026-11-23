@@ -19,6 +19,12 @@ No Windows, também é possível dar dois cliques em `INICIAR_SURVEYOR.bat`.
 
 Copie `.env.example` para `.env.local` apenas se quiser apontar para outros endpoints. Ele contém somente URLs públicas; **segredos ficam nas variáveis de cada Function no Appwrite**, nunca no frontend.
 
+### Ambientes da API
+
+O Vite em desenvolvimento assume `VITE_SURVEYOR_ENV=local`: API, Function Save, suporte e geosserviços ficam sem endpoint remoto por padrão. Configure URLs `localhost` no `.env.local` para serviços locais; API e salvamento informam quando não estão configurados. Staging exige URLs explícitas para os quatro serviços e bloqueia hosts de produção. Builds de produção mantêm os endpoints atuais como defaults para compatibilidade.
+
+Endpoints remotos em desenvolvimento são recusados, a menos que `VITE_SURVEYOR_ALLOW_REMOTE_LOCAL=true` seja definido conscientemente. Use `.env.example` como modelo. Nunca coloque segredos em variáveis `VITE_*`, pois são incorporadas ao frontend.
+
 ## Comandos
 
 | Comando | O que faz |

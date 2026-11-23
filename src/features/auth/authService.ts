@@ -33,6 +33,7 @@ export interface AuthenticationResponse {
   access_token?: string;
   refreshToken?: string;
   refreshCookie?: boolean;
+  refreshCookieMigration?: boolean;
   tokenType?: string;
   expiresIn?: number;
   requiresEmailVerification?: boolean;
@@ -107,6 +108,24 @@ export function normalizeSession(data: AuthenticationResponse): SurveyorSession 
   };
 }
 
+const COOKIE_AUTH_ORIGINS = new Set(['https://surveyorr.com.br', 'https://www.surveyorr.com.br']);
+
+export async function completeRefreshCookieMigration(
+  data: AuthenticationResponse,
+  origin = typeof window === 'undefined' ? '' : window.location.origin,
+  exchange: (refreshToken: string) => Promise<AuthenticationResponse> = (refreshToken) =>
+    apiRequest<AuthenticationResponse>('/api/auth/refresh', { method: 'POST', body: { refreshToken } })
+): Promise<AuthenticationResponse> {
+  if (!data.refreshCookieMigration || !data.refreshToken || !COOKIE_AUTH_ORIGINS.has(origin)) return data;
+  try {
+    const migrated = await exchange(data.refreshToken);
+    return { ...migrated, user: migrated.user || data.user };
+  } catch {
+    // The rotated body token remains a working fallback if cookie exchange is temporarily unavailable.
+    return data;
+  }
+}
+
 export function saveSession(session: SurveyorSession, resetActivity = true): void {
   // Acesso permanece apenas na memória; a renovação persistente usa o cookie HttpOnly do servidor.
   sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...session, accessToken: '' }));
@@ -166,7 +185,7 @@ export async function login(email: string, password: string): Promise<LoginResul
       message: response.message || 'Defina sua senha definitiva.'
     };
   }
-  const session = normalizeSession(response);
+  const session = normalizeSession(await completeRefreshCookieMigration(response));
   saveSession(session);
   return { kind: 'success', session };
 }
@@ -175,7 +194,7 @@ export async function verifyLogin(email: string, code: string, token: string): P
   const result = await apiRequest<AuthenticationResponse>('/api/auth/verify-login-code', {
     method: 'POST', body: { email, code: code.replace(/\D/g, '').slice(0, 6), verificationToken: token }
   });
-  const session = normalizeSession(result);
+  const session = normalizeSession(await completeRefreshCookieMigration(result));
   saveSession(session);
   return session;
 }
@@ -214,7 +233,8 @@ export async function checkSession(session: SurveyorSession): Promise<SurveyorSe
   const refresh = await apiRequest<AuthenticationResponse>('/api/auth/refresh', {
     method: 'POST', body: session.refreshToken ? { refreshToken: session.refreshToken } : {}
   });
-  const updated = normalizeSession({ ...refresh, user: refresh.user || session.user });
+  const completedRefresh = await completeRefreshCookieMigration(refresh);
+  const updated = normalizeSession({ ...completedRefresh, user: completedRefresh.user || session.user });
   saveSession(updated, false);
   return updated;
 }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { CheckSquare, Download, FileSpreadsheet, FileText, FolderKanban, Map, PanelsTopLeft, Printer, RefreshCw, Sparkles, Square } from 'lucide-react';
 import { GlobalLoading } from '../../components/GlobalLoading';
 import { DocumentWorkflowBar } from '../../components/layout/DocumentWorkflowBar';
+import { GenerationPreviewEmptyState } from '../../components/layout/GenerationPreviewEmptyState';
 import { ProjectSourcePicker } from '../../components/ProjectSourcePicker';
 import { useAuth } from '../auth/AuthContext';
 import { getDocumentCustomization } from '../customization/customizationApi';
@@ -624,7 +625,7 @@ export function LotCenterPage() {
           <aside className="doc-sidebar" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div ref={projectPanelRef} tabIndex={-1} className="doc-panel" style={{ display: 'grid', gap: 14, flex: '1 1 auto', minHeight: 0, overflowY: 'auto' }}>
               {currentStep === 0 && <>
-                <strong>1. Projeto</strong>
+                <strong>Seleção do projeto</strong>
                 <ProjectSourcePicker
                   scope="lot-center"
                   projects={projects}
@@ -750,7 +751,12 @@ export function LotCenterPage() {
             </div>
           </aside>
 
-          <div className="doc-main" style={{ minWidth: 0, padding: 12, overflowY: 'auto' }}>
+          <div className="doc-main lot-center-main">
+            <div className="generation-preview-toolbar">
+              <strong>{currentStep === 2 ? 'Documentos do lote' : 'Prévia dos documentos'}</strong>
+              <span>Central de lotes · geração técnica</span>
+            </div>
+            <div className="lot-center-main-content">
             {currentStep === 2 ? <>
             <section ref={documentsRef} tabIndex={-1} style={{ minWidth: 0, background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 16, display: 'grid', gap: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
@@ -849,19 +855,14 @@ export function LotCenterPage() {
               </Link>
             </section>
             </> : (
-              <section className="doc-empty" style={{ flex: 1, minHeight: 220, padding: 24, borderRadius: 12, border: '1px solid #e2e8f0', background: '#fff' }}>
-                <div>
-                  <strong style={{ display: 'block', marginBottom: 8, color: '#173a66', fontSize: 15 }}>
-                    {currentStep === 0 ? 'Etapa 1 · Projeto' : 'Etapa 2 · Glebas'}
-                  </strong>
-                  <span style={{ color: '#64748b', fontSize: 13 }}>
-                    {currentStep === 0
-                      ? 'Selecione ou importe um projeto no painel à esquerda para começar.'
-                      : 'Marque as glebas que deseja gerar e avance para personalizar os documentos.'}
-                  </span>
-                </div>
-              </section>
+              <GenerationPreviewEmptyState
+                title={currentStep === 0 ? 'A prévia será exibida aqui' : 'Selecione as glebas'}
+                message={currentStep === 0
+                  ? 'Selecione ou importe um projeto no painel à esquerda para começar.'
+                  : 'Marque as glebas que deseja gerar e avance para personalizar os documentos.'}
+              />
             )}
+            </div>
           </div>
         </div>
       </div>

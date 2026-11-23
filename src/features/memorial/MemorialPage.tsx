@@ -3,13 +3,15 @@ import { projectOwners } from '../projects/projectOwners';
 import {GlobalLoading} from '../../components/GlobalLoading';
 import { FileUploadField } from '../../components/FileUploadField';
 import { ProjectSourcePicker } from '../../components/ProjectSourcePicker';
+import { GenerationPreviewEmptyState } from '../../components/layout/GenerationPreviewEmptyState';
 import { readOfflineDraft, writeOfflineDraft } from '../../lib/offlineDraftStore';
 import { readFileAsDataUrl } from '../../lib/readFileAsDataUrl';
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type PointerEvent as ReactPointerEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, ChevronDown, Download, Expand, FileText, MapPinned, RotateCcw, Save, Settings, Signature } from 'lucide-react';
 import { PortableCroquiSvg } from '../../components/PortableCroquiSvg';
 import { useAuth } from '../auth/AuthContext';
+import { projectIdFromSearch, readWorkspaceProjectContext, withProjectSearch, writeWorkspaceProjectContext } from '../../lib/workspaceProjectContext';
 import { getDocumentCustomization, updateDocumentCustomization } from '../customization/customizationApi';
 import { getProject, listProjects, projectTitle, type Project, type ProjectFull } from '../projects/projectsApi';
 import {
@@ -43,6 +45,7 @@ import { mergeConfrontantsIntoProperties } from '../documents/confrontantRegistr
 import {parsePublicMapData,publicMapUrlForProject} from '../public/publicMapData';
 import {qrCodeDataUrl} from '../../lib/qrCode';
 import './memorial.css';
+import '../../styles/generation-workspace.css';
 import officialCroquiTemplate from './official-croqui-template.svg?raw';
 
 type Prefs = {
@@ -397,7 +400,7 @@ export function TileMap({ polygon, zoom, base, showConfrontants }: { polygon: Su
       })}
     </svg>
     <CompassRose />
-    <div className="mem-map-banner">{base === 'satellite' ? 'IMAGEM DE SATÉLITE (MESMA BASE DO MAPA)' : 'MAPA VIÁRIO (MESMA BASE DO MAPA)'} • COORDENADAS DD • SIRGAS 2000 • ZOOM {map.zoom}</div>
+    <div className="mem-map-banner">{base === 'satellite' ? 'IMAGEM DE SATÉLITE (MESMA BASE DO MAPA)' : 'MAPA VIÁRIO (MESMA BASE DO MAPA)'} • COORDENADAS DD • WGS 84 • ZOOM {map.zoom}</div>
   </div>;
 }
 
@@ -487,8 +490,12 @@ body{margin:0;background:#fff;color:#17253a;font:12px Arial,sans-serif}
 
 export function MemorialPage() {
   const { session } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const accountId = String(session?.user?.id || session?.user?.email || '');
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectId, setProjectId] = useState('');
+  const routeProjectAttempt = useRef('');
   const [full, setFull] = useState<ProjectFull | null>(null);
   const [prefs, setPrefs] = useState<Prefs>({});
   const [loading, setLoading] = useState(false);
@@ -650,6 +657,8 @@ export function MemorialPage() {
   }, [session]);
 
   const selectProject = useCallback(async (id: string) => {
+    writeWorkspaceProjectContext(accountId, id);
+    navigate(withProjectSearch(`${location.pathname}${location.search}`, id), { replace: true });
     setProjectId(id);
     setFull(null);
     setMessage('');
@@ -744,7 +753,17 @@ export function MemorialPage() {
     } finally {
       setLoading(false);
     }
-  }, [session, userKey, prefs]);
+  }, [session, userKey, prefs, accountId, navigate, location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!session) return;
+    const requested = projectIdFromSearch(location.search) || readWorkspaceProjectContext(accountId);
+    if (!requested || requested === projectId) return;
+    const attempt = `${accountId}:${requested}`;
+    if (routeProjectAttempt.current === attempt) return;
+    routeProjectAttempt.current = attempt;
+    void selectProject(requested);
+  }, [session, accountId, location.search, projectId, selectProject]);
 
   const setField = (key: keyof MemorialFields, value: string) => {
     setFields(current => ({ ...current, [key]: value }));
@@ -954,6 +973,8 @@ export function MemorialPage() {
                 <strong>Projeto</strong>
                 <ProjectSourcePicker scope="memorial" projects={projects} projectId={projectId} loading={loading} onProjectChange={id => { setWorkflowStep(1); void selectProject(id); }} onImport={data => {
                   const id=data.project?.id||'';const localPolygons=getPolygons(data.features);
+                  writeWorkspaceProjectContext(accountId,id);
+                  navigate(withProjectSearch(`${location.pathname}${location.search}`,id),{replace:true});
                   setWorkflowStep(1);
                   setProjectId(id);setFull(data);setFeatureId(localPolygons[0]?.id||'');setShowAll(localPolygons.length>1);
                   setFields(initialFields(data.project||{id}));setSaved(false);setMessage('Projeto importado e salvo neste navegador.');
@@ -1133,13 +1154,13 @@ export function MemorialPage() {
                 </button>
               </div>
             </div>
-            <div className={`mem-stage-scroll${fitToScreen ? ' is-fit' : ''}`}>
+            <div className={`mem-stage-scroll${fitToScreen ? ' is-fit' : ''}${!loading && !chosen.length ? ' is-empty' : ''}`}>
               {loading && <div className="mem-empty"><span className="loader" /> Carregando dados...</div>}
-              {!loading && !chosen.length && <div className="mem-preview-empty-state">
-                <FileText size={22} strokeWidth={1.8} aria-hidden="true" />
-                <strong>{projectId ? 'Selecione uma gleba' : 'A prévia será exibida aqui'}</strong>
-                <span>{projectId ? 'Escolha uma gleba válida para montar o memorial.' : 'Selecione um projeto para começar.'}</span>
-              </div>}
+              {!loading && !chosen.length && <GenerationPreviewEmptyState
+                className="mem-preview-empty-state"
+                title={projectId ? 'Selecione uma gleba' : undefined}
+                message={projectId ? 'Escolha uma gleba válida para montar o memorial.' : undefined}
+              />}
               {!loading && showAll && chosen.length > 1 && (() => {
                 const first = chosen[0];
                 const totalArea = chosen.reduce((total, poly) => total + poly.areaM2, 0);

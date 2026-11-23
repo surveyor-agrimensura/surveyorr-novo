@@ -2,6 +2,7 @@ import { GlobalLoading } from '../../components/GlobalLoading';
 import { ProjectSourcePicker } from '../../components/ProjectSourcePicker';
 import {requestConfirmation} from '../../components/ConfirmDialogHost';
 import { DocumentWorkflowBar } from '../../components/layout/DocumentWorkflowBar';
+import { GenerationPreviewEmptyState } from '../../components/layout/GenerationPreviewEmptyState';
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { ChevronDown, Download, Printer, RotateCcw, Save } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
@@ -414,7 +415,7 @@ export function ConfrontationPage() {
           <aside className="doc-sidebar doc-sidebar--workflow confrontation-editor" ref={sidebarRef}>
             <div className="doc-panel doc-panel--workflow confrontation-panel">
               {currentStep === 0 && <section className="confrontation-section">
-                <h2>Projeto e imóvel</h2>
+                <h2 className="generation-panel-title">Seleção do projeto</h2>
                 <ProjectSourcePicker scope="confrontation" projects={projects} projectId={projectId} loading={loadingProjects||loading} onProjectChange={next => void open(next)} onImport={(data,fileName) => void open(data.project?.id||`local-upload:confrontation:${encodeURIComponent(fileName)}`,data)} onClearImport={() => void open('')} />
                 {!projectId&&!full&&!loadingProjects&&!loading&&<p className="doc-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</p>}
                 {polygons.length > 1 && (
@@ -505,7 +506,7 @@ export function ConfrontationPage() {
             </div>
           </aside>
           <div className="doc-main">
-            <div className="confrontation-preview-heading">
+            <div className="confrontation-preview-heading generation-preview-toolbar">
               <strong>Prévia da carta</strong>
               <span>A4 · atualização em tempo real</span>
             </div>
@@ -568,7 +569,7 @@ export function ConfrontationPage() {
                   </footer>
                 </div>
               ) : (
-                <div className="doc-empty">Selecione um projeto para visualizar o documento.</div>
+                <GenerationPreviewEmptyState message="Selecione um projeto para começar." />
               )}
             </div>
           </div>
@@ -591,15 +592,17 @@ export function ConfrontationPage() {
         .confrontation-page .confrontation-section {
           display: grid;
           gap: 12px;
-          padding: 14px;
-          border: 1px solid #cbd5e1;
-          border-radius: 6px;
-          background: #fff;
+          padding: 0;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
         }
         .confrontation-page .confrontation-section h2 {
-          margin: 0;
-          color: #17365b;
-          font-size: 15px;
+          margin: 0 0 8px;
+          padding: 0 0 10px;
+          border-bottom: 1px solid #dbe5ef;
+          color: #102a43;
+          font-size: 16px;
           font-weight: 700;
           line-height: 1.35;
         }
@@ -629,14 +632,14 @@ export function ConfrontationPage() {
         }
         .confrontation-page .confrontation-preview-heading {
           display: flex;
-          min-height: 48px;
+          min-height: 46px;
           align-items: center;
           justify-content: space-between;
           gap: 12px;
           padding: 0 16px;
           border-bottom: 1px solid #cbd5e1;
           background: #fff;
-          color: #17365b;
+          color: #102a43;
         }
         .confrontation-page .confrontation-preview-heading span {
           color: #64748b;
@@ -650,15 +653,6 @@ export function ConfrontationPage() {
         .confrontation-page .doc-viewer {
           flex: 1;
           min-height: 0;
-        }
-        @media (max-width: 720px) {
-          .confrontation-page .confrontation-preview-heading {
-            align-items: flex-start;
-            flex-direction: column;
-            justify-content: center;
-            gap: 2px;
-            padding: 8px 12px;
-          }
         }
       `}</style>
     </main>

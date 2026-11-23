@@ -1,5 +1,6 @@
 import { GlobalLoading } from '../../components/GlobalLoading';
 import { DocumentWorkflowBar } from '../../components/layout/DocumentWorkflowBar';
+import { GenerationPreviewEmptyState } from '../../components/layout/GenerationPreviewEmptyState';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Download, Printer } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
@@ -241,7 +242,7 @@ export function EnvironmentalReportPage() {
         <div className="doc-layout">
           <aside className="doc-sidebar doc-sidebar--workflow" ref={sidebarRef}>
             <div className="doc-panel doc-panel--workflow">
-              <strong>{['Projeto', 'Análise', 'Relatório', 'Assinatura'][currentStep]}</strong>
+              <strong>{['Seleção do projeto', 'Análise', 'Relatório', 'Assinatura'][currentStep]}</strong>
               {currentStep === 0 && <>
                 <ProjectSourcePicker scope="environmental-report" projects={projects} projectId={id} loading={loadingProjects||loading} onProjectChange={next => void open(next)} onImport={(data,fileName) => void open(data.project?.id||`local-upload:environmental-report:${encodeURIComponent(fileName)}`,data)} onClearImport={() => void open('')} />
                 {!id&&!full&&!loadingProjects&&!loading&&<p className="doc-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</p>}
@@ -300,11 +301,12 @@ export function EnvironmentalReportPage() {
             </div>
           </aside>
           <div className="doc-main">
+            <div className="generation-preview-toolbar"><strong>Prévia do documento</strong><span>Relatório ambiental · atualização em tempo real</span></div>
             <div className="doc-viewer" ref={previewRef} tabIndex={-1}>
               {loading ? (
                 <div className="doc-empty">Carregando...</div>
               ) : !full ? (
-                <div className="doc-empty">Selecione um projeto para visualizar o relatório.</div>
+                <GenerationPreviewEmptyState message="Selecione um projeto para começar." />
               ) : (
                 <div className="env-paper">
                   <header className="env-header">

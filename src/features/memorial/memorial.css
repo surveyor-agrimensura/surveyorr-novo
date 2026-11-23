@@ -225,6 +225,8 @@
 .workspace-shell.memorial-workspace .mem-stage{width:auto;height:100%;min-height:0;overflow:hidden;border:0;border-radius:0;background:#e9eef3}
 .workspace-shell.memorial-workspace .mem-stage-toolbar{flex:0 0 46px;height:46px;padding:0 16px;border-bottom:1px solid #cbd5e1}
 .workspace-shell.memorial-workspace .mem-stage-scroll{flex:1 1 auto;height:auto;min-height:0;overflow:auto!important;padding:22px 18px 28px;align-items:center!important;justify-content:flex-start!important;background:#e9eef3}
+.workspace-shell.memorial-workspace .mem-stage-scroll.is-empty{justify-content:center!important}
+.workspace-shell.memorial-workspace .mem-preview-empty-state{width:min(672px,100%);box-sizing:border-box}
 .workspace-shell.memorial-workspace .mem-document{width:100%;align-items:center;gap:20px}
 .workspace-shell.memorial-workspace .mem-stage-scroll.is-fit .mem-document{zoom:.62!important}
 .workspace-shell.memorial-workspace .mem-stage-scroll:not(.is-fit) .mem-document{zoom:1!important}

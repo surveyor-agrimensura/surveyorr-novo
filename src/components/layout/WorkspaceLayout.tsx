@@ -2,12 +2,14 @@ import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type R
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Cookie, Crown, Database, Folder, GraduationCap, Grid2X2, Headphones, LogOut, Map, Search, ShieldCheck, UserRound, X } from 'lucide-react';
 import { RoundLogo } from '../Brand';
+import { EnvironmentNotice, ENVIRONMENT_NOTICE_VISIBLE } from './EnvironmentNotice';
 import { useAuth } from '../../features/auth/AuthContext';
 import { InstallPwaButton } from '../../features/pwa/InstallPwaButton';
 import { filterToolGroups, toolGroups, type ToolItem } from '../../data/navigation';
 import {NotificationCenter} from './NotificationCenter';
 import { openCookiePreferences } from '../CookiePreferences';
 import { dispatchRouteTransitionRequest, requestRouteTransition, resolveRouteTransitionRequest } from '../../lib/routeTransitions';
+import { readWorkspaceProjectContext, projectIdFromSearch, withProjectSearch } from '../../lib/workspaceProjectContext';
 
 const initials = (text: string) => (text.match(/[A-Za-zÀ-ÖØ-öø-ÿ0-9]+/g)?.slice(0,2).map(w=>w[0]).join('') || 'U').toUpperCase();
 const firstName = (text: string) => (text.trim().split(/\s+/)[0] || 'usuário').toUpperCase();
@@ -123,7 +125,9 @@ export function WorkspaceLayout({ children, home = false }: { children: ReactNod
     void requestRouteTransition().then(allowed=>{
       if(!allowed)return;
       setToolsOpen(false);
-      navigate(tool.href);
+      const accountId=String(user?.id||user?.email||'');
+      const projectId=projectIdFromSearch(location.search)||readWorkspaceProjectContext(accountId);
+      navigate(withProjectSearch(tool.href,projectId));
     });
   }
   function toggleTools() {
@@ -132,7 +136,7 @@ export function WorkspaceLayout({ children, home = false }: { children: ReactNod
     setProfileOpen(false);
   }
 
-  return <div className={`app-shell workspace-shell ${home ? 'home-shell' : ''} ${isTerritorialMap ? 'map-entry-workspace' : ''} ${isMemorialWorkspace ? 'memorial-workspace' : ''} ${isCroquiWorkspace ? 'croqui-workspace' : ''} ${isDocumentWorkflow ? 'document-workflow' : ''} ${isAdminWorkspace ? 'admin-workspace' : ''}`} onClickCapture={guardWorkspaceLink}>
+  return <div className={`app-shell workspace-shell ${home ? 'home-shell' : ''} ${isTerritorialMap ? 'map-entry-workspace' : ''} ${isMemorialWorkspace ? 'memorial-workspace' : ''} ${isCroquiWorkspace ? 'croqui-workspace' : ''} ${isDocumentWorkflow ? 'document-workflow' : ''} ${isAdminWorkspace ? 'admin-workspace' : ''} ${ENVIRONMENT_NOTICE_VISIBLE ? 'has-environment-notice' : ''}`} onClickCapture={guardWorkspaceLink}>
     {!isTerritorialMap && <>
     <header className="home-header workspace-header" ref={headerRef}>
       <Link className="home-header-brand workspace-header-brand home-brand" to="/" aria-label="Surveyor — Georreferenciamento e Agrimensura">
@@ -192,6 +196,7 @@ export function WorkspaceLayout({ children, home = false }: { children: ReactNod
       </div>}
     </header>
     </>}
+    <EnvironmentNotice />
     {children}
   </div>;
 }

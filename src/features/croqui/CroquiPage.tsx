@@ -3,6 +3,7 @@ import {polygonSourceColors} from '../../lib/polygonSourceColors';
 import {projectOwners} from '../projects/projectOwners';
 import {maskBrazilianDocumentInput,formatBrazilianRg} from '../../lib/documentIdentity';
 import {GlobalLoading} from '../../components/GlobalLoading';
+import {GenerationPreviewEmptyState} from '../../components/layout/GenerationPreviewEmptyState';
 import { ProjectSourcePicker } from '../../components/ProjectSourcePicker';
 import {requestConfirmation} from '../../components/ConfirmDialogHost';
 import {addRouteTransitionConfirmation} from '../../lib/routeTransitions';
@@ -10,7 +11,7 @@ import { FileUploadField } from '../../components/FileUploadField';
 import { readFileAsDataUrl } from '../../lib/readFileAsDataUrl';
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type PointerEvent as ReactPointerEvent, type MouseEvent as ReactMouseEvent } from 'react';
 import { ArrowLeft, ChevronDown, Download, Eye, EyeOff, FileImage, MousePointer2, PenLine, Printer, RotateCcw, Save, Trash2, WandSparkles, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { getDocumentCustomization, updateDocumentCustomization } from '../customization/customizationApi';
 import { listProjects, getProject, projectTitle, type Project, type ProjectFull } from '../projects/projectsApi';
@@ -34,9 +35,11 @@ import { readConfrontants } from '../documents/confrontantRegistry';
 import { SignaturePadControl } from '../../components/SignaturePadControl';
 import { ConfrontantImportDialog } from '../../components/ConfrontantImportDialog';
 import './croqui.css';
+import '../../styles/generation-workspace.css';
 // Editor 2D carrega apenas quando um rótulo é selecionado, sem afetar o mapa.
 const KonvaLabelEditor = lazy(() => import('./KonvaLabelEditor'));
 import {embedSvgSatellite} from '../../lib/satelliteSvg';
+import { readWorkspaceProjectContext, writeWorkspaceProjectContext, projectIdFromSearch, withProjectSearch } from '../../lib/workspaceProjectContext';
 
 const icons: Record<ElementKey,string>={cotas:'Cotas',gleba:'Cotas da gleba',vertices:'Vértices',confrontantes:'Confrontantes',norte:'Norte'};
 const clamp=(n:number,min:number,max:number)=>Math.min(max,Math.max(min,n));
@@ -49,7 +52,7 @@ function Setting({label,children}:{label:string;children:ReactNode}){return <lab
 function Toggle({checked,onChange,label}:{checked:boolean;onChange:(v:boolean)=>void;label:string}){return <label className="cq-toggle"><input type="checkbox" checked={checked} onChange={e=>onChange(e.target.checked)}/>{label}</label>;}
 export function CroquiPage(){
  const [loadingProjects,setLoadingProjects]=useState(true);
- const {session}=useAuth();const [projects,setProjects]=useState<Project[]>([]);
+ const {session}=useAuth();const location=useLocation();const navigate=useNavigate();const [projects,setProjects]=useState<Project[]>([]);
  const [projectId,setProjectId]=useState('');const [full,setFull]=useState<ProjectFull|null>(null);
  const [featureId,setFeatureId]=useState('');
  const [areaSettings,setAreaSettings]=useState<Record<string,CroquiSettings>>({});
@@ -308,6 +311,7 @@ export function CroquiPage(){
    if(loadSequence!==projectLoadSequence.current)return;
    clearRoadDraft();
    setWorkflowStep(1);
+  writeWorkspaceProjectContext(userId,id);navigate(withProjectSearch(`${location.pathname}${location.search}`,id),{replace:true});
   setProjectId(id);setFull(null);setFeatureId('');setAreaSettings({});setDirtyAreaIds([]);setMode('none');setMessage('');setSaved(false);setDirty(false);setSignatureFileName('');setSelectedSegment(null);
   if(!id||!session){setLoading(false);return;}
   setLoading(true);
@@ -328,11 +332,14 @@ export function CroquiPage(){
    setAreaSettings(each);areaSettingsRef.current=each;setDirtyAreaIds([]);
   }catch(e){if(loadSequence===projectLoadSequence.current)setMessage(e instanceof Error?e.message:'Não foi possível abrir o projeto na API.');}
   finally{if(loadSequence===projectLoadSequence.current)setLoading(false);}
-  },[session,prefs,dirty,saving,preparePolygonSettings,projectId,clearRoadDraft]);
+  },[session,prefs,dirty,saving,preparePolygonSettings,projectId,clearRoadDraft,userId,navigate,location.pathname,location.search]);
+ const routeProjectAttempt=useRef('');
+ useEffect(()=>{if(!session)return;const requested=projectIdFromSearch(location.search)||readWorkspaceProjectContext(userId);if(!requested||requested===projectId)return;const key=`${userId}:${requested}`;if(routeProjectAttempt.current===key)return;routeProjectAttempt.current=key;void openProject(requested);},[session,userId,location.search,projectId,openProject]);
  const importProject=useCallback((data:ProjectFull)=>{
   const id=data.project?.id||'';
   const importedPolygons=getPolygons(data.features);
   ++projectLoadSequence.current;
+  writeWorkspaceProjectContext(userId,id);navigate(withProjectSearch(`${location.pathname}${location.search}`,id),{replace:true});
   clearRoadDraft();
   setWorkflowStep(1);setProjectId(id);setFull(data);setLoading(false);setFeatureId(importedPolygons.length>1?'all':(importedPolygons[0]?.id||''));
   if(importedPolygons.length>1)setFramingMode('all');
@@ -340,7 +347,7 @@ export function CroquiPage(){
   const each=Object.fromEntries(importedPolygons.map(item=>[item.id,preparePolygonSettings(id,item,data,prefs,importedPolygons.length===1)]));
   setAreaSettings(each);areaSettingsRef.current=each;setDirtyAreaIds([]);setMode('none');setSignatureFileName('');setSelectedSegment(null);
   setSaved(false);setDirty(false);setMessage('Projeto importado e salvo neste navegador.');
- },[clearRoadDraft,preparePolygonSettings,prefs]);
+ },[clearRoadDraft,preparePolygonSettings,prefs,userId,navigate,location.pathname,location.search]);
  const selectPolygon=async(id:string)=>{
    if(id===featureId)return;
   if(saving){setMessage('Aguarde a confirmação do salvamento antes de trocar de polígono.');return;}
@@ -826,7 +833,7 @@ export function CroquiPage(){
   <div className="cq-grid"><aside className="cq-side">
   <div className="cq-panel cq-config cq-panel-scroll">
    {workflowStep===1&&<section className="cq-project-card" aria-label="Projeto">
-  <h2>Projeto</h2>
+  <h2 className="generation-panel-title">Seleção do projeto</h2>
   <ProjectSourcePicker scope="croqui" projects={projects} projectId={projectId} loading={loadingProjects||loading} onProjectChange={id=>{setWorkflowStep(1);void openProject(id);}} onImport={importProject} onClearImport={()=>{setWorkflowStep(1);void openProject('');}} />
   {!projectId&&!full&&!loadingProjects&&!loading&&<div className="cq-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</div>}
   {projectId&&full&&<div className="cq-project-identification"><span>Projeto selecionado</span><strong>{projectTitle(full.project||{id:projectId})}</strong><small>{[text(full.project?.municipality||full.project?.city),text(full.project?.uf||full.project?.stateCode)].filter(Boolean).join(' / ')||`${polys.length} gleba${polys.length===1?'':'s'} disponível${polys.length===1?'':'is'}`}</small></div>}
@@ -907,7 +914,7 @@ export function CroquiPage(){
 
  {!isComposite&&<><Setting label="Tipo de identificação"><select value={settings.prefix} onChange={e=>{const selected=e.target.value as CroquiSettings['prefix'];update({prefix:selected,names:selected==='auto'?[]:polygon?.vertices.map((_,i)=>`${selected}-${String(i+1).padStart(2,'0')}`)||[]});setMessage('Identificação dos vértices atualizada no rascunho. Confira o desenho antes de salvar.');}}><option value="auto">Automático pelo projeto</option><option value="V">V · Vértice</option><option value="P">P · Ponto</option></select></Setting>
  {polygon&&polygon.vertices.map((_,i)=><div key={i} className="cq-neighbor-row"><label>De {vertexNames[i]} a {vertexNames[(i+1)%vertexNames.length]}</label><input value={settings.neighbors[i]!==undefined&&settings.neighbors[i]!=='[object Object]'?settings.neighbors[i]:readConfrontation(polygon.properties,i,polygon.vertices.length)} onChange={e=>neighbors(i,e.target.value)} placeholder="Nome do confrontante"/><button className="cq-more" type="button" title="Cadastrar confrontante e selecionar até qual vértice" onClick={()=>{setNeighborDialog(i);setNeighborUntil((i+1)%polygon.vertices.length);setNeighborDirection('auto');const label=settings.neighbors[i]!==undefined&&settings.neighbors[i]!=='[object Object]'?settings.neighbors[i]:readConfrontation(polygon.properties,i,polygon.vertices.length);setNeighborDraft({...emptyNeighbor(),...settings.neighborDetails[String(i)],property:settings.neighborDetails[String(i)]?.property||label});}}>⋯</button></div>)}
- <p className="cq-hint">Uma identificação por confrontação contínua. Use ⋯ para cadastrar um intervalo.</p></>}
+ </>}
  {!isComposite&&<details className="cq-vertex-visibility"><summary>Ocultar vértices</summary><div className="sv-vertex-auto-actions"><button type="button" className="cq-outline" onClick={autoHideStraight}>Ocultar alinhados</button><button type="button" className="cq-outline" onClick={restoreHiddenVertices}>Exibir todos</button></div><div className="cq-vertex-checks">{vertexNames.map((name,index)=><label key={index}><input type="checkbox" checked={settings.hiddenVertices.includes(index)} onChange={e=>update({hiddenVertices:e.target.checked?[...settings.hiddenVertices,index]:settings.hiddenVertices.filter(item=>item!==index)})}/>{name}</label>)}</div></details>}
  </div></details>
  <details className="cq-accordion" data-group="4"><summary>Linhas técnicas</summary><div className="cq-accordion-body"><div className="cq-toolrow"><button type="button" aria-label="Desenhar linha" aria-pressed={mode==='line'} className={mode==='line'?'on':''} onClick={()=>switchMode('line')} title="Desenhar linha"><PenLine size={16}/></button><button type="button" aria-label="Editar linhas" aria-pressed={mode==='edit'} className={mode==='edit'?'on':''} onClick={()=>switchMode('edit')} title="Editar extremidade"><MousePointer2 size={16}/></button><button type="button" aria-label="Desfazer última linha" onClick={()=>update({lines:settings.lines.slice(0,-1)})} disabled={!settings.lines.length} title="Desfazer última linha"><RotateCcw size={16}/></button><button type="button" aria-label="Remover todas as linhas" onClick={()=>update({lines:[]})} disabled={!settings.lines.length} title="Remover todas as linhas"><Trash2 size={16}/></button></div>
@@ -946,11 +953,11 @@ export function CroquiPage(){
     </div>
    </div>
  </aside>
-  <div className="cq-workspace"><div className="cq-stage-toolbar"><strong>Prévia do croqui</strong><span>{settings.paper} · atualização em tempo real</span></div><div className="cq-viewer" ref={viewerRef}>
+  <div className="cq-workspace"><div className="cq-stage-toolbar generation-preview-toolbar"><strong>Prévia do documento</strong><span>{settings.paper} · atualização em tempo real</span></div><div className="cq-viewer" ref={viewerRef}>
   {loading?<div className="cq-empty">Carregando projeto...</div>:polygon?<div className={`cq-paper ${settings.paper==='A3'?'cq-paper-a3':''} ${mode==='line'||mode==='road'?'cq-interaction-mode':''}`} style={{width:`${previewBaseWidth*previewZoom/100}px`} as CSSProperties} ref={previewRef} onContextMenu={handleContextMenu} onMouseOver={hoverCroquiDivision} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerCancel} onDoubleClick={()=>{if(workflowStep>1&&mode==='road'&&latestRoad.current.length>1)finishRoad();}}>
  <div className="cq-svg" dangerouslySetInnerHTML={{__html:strip}}/>
 
-  </div>:<div className="cq-empty">Selecione ou importe um projeto para visualizar o croqui.</div>}
+  </div>:<GenerationPreviewEmptyState/>}
   </div>{workflowStep>1&&segmentTableOpen&&polygon&&!isComposite&&<section className="cq-segment-panel" aria-label="Quadro de rumos e distâncias">
  <div className="cq-segment-head"><div><strong>Rumos, azimutes e distâncias</strong><small>{technicalSegments.length} trechos · Perímetro aprox. {fmt(technicalTotal,2)} m</small></div><div className="cq-segment-tools"><button type="button" onClick={exportSegmentTableCsv} title="Exportar o quadro em CSV"><Download size={14}/> CSV</button><button type="button" onClick={()=>{setSelectedSegment(null);setSegmentTableOpen(false);}} aria-label="Fechar quadro"><X size={16}/></button></div></div>
  <div className="cq-segment-scroll"><table className="cq-segment-table"><thead><tr><th>Trecho</th><th>Azimute</th><th>Rumo</th><th>Distância</th><th>Confrontante</th></tr></thead><tbody>{technicalSegments.map(row=><tr key={row.index} className={selectedSegment===row.index?'cq-segment-selected':''}><td><button type="button" aria-pressed={selectedSegment===row.index} title="Destacar trecho no croqui" onClick={()=>setSelectedSegment(selectedSegment===row.index?null:row.index)}>{row.from} → {row.to}</button></td><td>{row.azimuthLabel}</td><td>{row.bearingLabel}</td><td className="cq-segment-number">{fmt(row.distanceM,2)} m</td><td title={row.neighbor}>{row.neighbor||'—'}</td></tr>)}</tbody></table></div>

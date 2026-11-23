@@ -4,6 +4,11 @@ import {getDocumentCustomization, saveDocumentCustomization} from '../src/featur
 import {saveProjectBundle, getProject} from '../src/features/projects/projectsApi';
 import type {SurveyorSession} from '../src/features/auth/authService';
 
+vi.hoisted(() => {
+ vi.stubEnv('VITE_SURVEYOR_ENV', 'production');
+ vi.stubEnv('VITE_SURVEYOR_ALLOW_REMOTE_LOCAL', 'true');
+});
+
 const session={accessToken:'token-de-teste',user:{id:'usuario'},tokenType:'Bearer',updatedAt:'2026-01-01T00:00:00Z'} as SurveyorSession;
 const mockResponse=(body:object,status=200)=>({ok:status<400,status,text:async()=>JSON.stringify(body)} as Response);
 afterEach(()=>vi.unstubAllGlobals());

@@ -944,3 +944,8 @@ body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-title{fl
 .workspace-shell .projects-page>.projects-container>.page-error{flex:0 0 auto}
 .workspace-shell .projects-page .projects-list{min-height:0;flex:1 1 auto;overflow-x:hidden;overflow-y:auto;align-content:start;scrollbar-gutter:stable}
 .workspace-shell .projects-page .surveyor-pagination{position:sticky;bottom:0;z-index:5;flex:0 0 auto;margin:0;box-shadow:0 -4px 14px rgba(16,42,67,.08)}
+
+/* Preserve one compact environment-notice row in full-screen workspaces. */
+body .workspace-shell.has-environment-notice.memorial-workspace,
+body .workspace-shell.has-environment-notice.croqui-workspace,
+body .workspace-shell.has-environment-notice.document-workflow{grid-template-rows:22px minmax(0,1fr)!important}

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
+import '../../styles/generation-workspace.css';
 
 type DocumentWorkflowBarProps = {
   label: string;

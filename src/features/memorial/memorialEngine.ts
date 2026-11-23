@@ -21,12 +21,13 @@ export function getPolygons(features:ProjectFeature[]):SurveyPolygon[]{
    if(!Array.isArray(part)||!Array.isArray(part[0]))return [];
    const vertices=readOpenLonLatRing(part[0]);
    if(vertices.length<3)return [];
+   const holes=(part as unknown[]).slice(1).map(readOpenLonLatRing);
+   if(holes.some(ring=>ring.length<3))return [];
    const props=record(feature.properties);
    const rawId=text(feature.id)||String(i);
    const id=partIndex===0?rawId:`${rawId}:parte-${partIndex+1}`;
    const baseName=text(props.name)||text(feature.name)||`Feição ${i+1}`;
    const name=partIndex===0?baseName:`${baseName} — Parte ${partIndex+1}`;
-   const holes=(part as unknown[]).slice(1).map(readOpenLonLatRing).filter(ring=>ring.length>=3);
    const areaM2=Math.max(0,polygonArea(vertices)-holes.reduce((total,ring)=>total+polygonArea(ring),0));
    const perimeterM=[vertices,...holes].reduce((total,ring)=>total+ring.reduce((sum,p,k)=>sum+distance(p,ring[(k+1)%ring.length]),0),0);
    return [{id,name,vertices,holes,properties:{...props,sourceFeatureId:rawId,partIndex},areaM2,perimeterM}];
@@ -49,10 +50,10 @@ export function formatVertexCoord(v:Vertex,mode:CoordinateDisplayMode='wgs84'){
  if(mode==='wgs84')return geo;
  try{
   const u=projectWgs84ToUtm([v[0],v[1]]);
-  const utmText=`coordenadas planas UTM E = ${fmt(u.east,3)} m e N = ${fmt(u.north,3)} m (Fuso ${u.zone}${u.hemisphere} · SIRGAS 2000 / WGS 84)`;
+  const utmText=`coordenadas planas UTM E = ${fmt(u.east,3)} m e N = ${fmt(u.north,3)} m (Fuso ${u.zone}${u.hemisphere} · WGS 84)`;
   return mode==='utm'?utmText:`${geo} / ${utmText}`;
  }catch{
-  return geo;
+  return `${geo} (UTM indisponível fora da cobertura UTM)`;
  }
 }
 export function memorialNarrative(p:SurveyPolygon, vertexNames?:string[], coordMode:CoordinateDisplayMode='wgs84'){

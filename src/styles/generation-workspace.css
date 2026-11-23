@@ -1,0 +1,254 @@
+/* Padrão visual compartilhado por todos os fluxos de geração. */
+.workspace-shell.memorial-workspace .memorial-workflow-bar,
+.workspace-shell.croqui-workspace .cq-workflow-bar,
+.workspace-shell.document-workflow .doc-root .doc-workflow-bar {
+  box-sizing: border-box;
+  flex: 0 0 64px;
+  min-height: 64px;
+  padding: 0 16px;
+  border-bottom: 1px solid #cbd5e1;
+  background: #fff;
+  color: #102a43;
+}
+
+.workspace-shell.document-workflow .gen-root .gen-columns {
+  grid-template-columns: minmax(340px, clamp(380px, 32vw, 620px)) minmax(0, 1fr);
+}
+
+.workspace-shell.document-workflow .doc-root .doc-layout {
+  display: grid !important;
+  grid-template-columns: minmax(340px, clamp(380px, 32vw, 620px)) minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 0 !important;
+  overflow: hidden;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #fff;
+}
+
+.workspace-shell.document-workflow .doc-root .doc-layout.doc-layout--editing-closed {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.workspace-shell.document-workflow .doc-root .doc-sidebar {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  max-height: none !important;
+  flex-direction: column;
+  overflow: hidden;
+  border: 0;
+  border-right: 1px solid #cbd5e1;
+  border-radius: 0;
+  background: #fff;
+}
+
+.workspace-shell.document-workflow .doc-root .doc-panel {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 20px 16px;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.workspace-shell.document-workflow .doc-root .doc-panel .doc-step-navigation {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  flex: 0 0 auto;
+  margin-top: auto;
+  padding: 12px 0 8px;
+  background: #fff;
+  box-shadow: 0 -5px 12px #102a430f;
+}
+
+.workspace-shell.document-workflow .doc-root .doc-main > .doc-step-navigation,
+.workspace-shell.document-workflow .doc-root .doc-main > .doc-preview-step-navigation {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 12px 16px;
+  background: #fff;
+  box-shadow: 0 -5px 12px #102a430f;
+}
+
+.workspace-shell.document-workflow .doc-root .doc-viewer:has(> .generation-preview-empty-state) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workspace-shell.document-workflow .doc-root .doc-panel > strong:first-child {
+  display: block;
+  box-sizing: border-box;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #dbe5ef;
+  color: #102a43;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.workspace-shell.document-workflow .doc-root .lot-center-main {
+  min-height: 0;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.lot-center-main-content {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  overflow: auto;
+  padding: 12px;
+}
+
+.mem-panel-title,
+.cq-project-card > .generation-panel-title,
+.doc-panel--workflow > strong,
+.doc-panel--workflow > .generation-panel-title,
+.gen-sidebar-title {
+  display: block;
+  box-sizing: border-box;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
+  border: 0;
+  border-bottom: 1px solid #dbe5ef;
+  color: #102a43;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.gen-sidebar-title { margin: 0; padding: 14px 16px 10px; }
+
+.mem-stage-toolbar,
+.cq-stage-toolbar,
+.generation-preview-toolbar {
+  box-sizing: border-box;
+  flex: 0 0 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 16px;
+  border-bottom: 1px solid #cbd5e1;
+  background: #fff;
+  color: #102a43;
+}
+
+.mem-stage-toolbar strong,
+.cq-stage-toolbar strong,
+.generation-preview-toolbar strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mem-stage-toolbar span,
+.cq-stage-toolbar span,
+.generation-preview-toolbar span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.memorial-panel-footer,
+.cq-panel-footer,
+.technical-sheet-workspace .doc-step-navigation,
+.gen-wizard-navigation {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  border-top: 1px solid #cbd5e1;
+  background: #fff;
+  box-shadow: 0 -3px 10px #102a4308;
+}
+
+.mem-bottom,
+.cq-bottom,
+.technical-sheet-workspace .doc-toolbar,
+.gen-toolbar {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  min-height: 48px;
+  border-top: 1px solid #cbd5e1;
+  background: #fff;
+}
+
+.generation-preview-empty-state {
+  width: min(672px, calc(100% - 32px));
+  min-height: 132px;
+  box-sizing: border-box;
+  margin: auto;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #c6d7ec;
+  border-radius: 4px;
+  background: #fff;
+  color: #173254;
+  text-align: center;
+}
+
+.generation-preview-empty-state > svg { color: #1266d5; }
+.generation-preview-empty-state > strong { font-size: 15px; font-weight: 700; }
+.generation-preview-empty-state > span { color: #586f89; font-size: 13px; line-height: 1.45; }
+
+.workspace-shell.memorial-workspace .mem-stage-scroll.is-empty { justify-content: center !important; }
+.workspace-shell.memorial-workspace .mem-preview-empty-state { width: min(672px, calc(100% - 32px)); }
+.workspace-shell.croqui-workspace .cq-viewer:has(> .generation-preview-empty-state),
+.workspace-shell.document-workflow .technical-sheet-workspace .doc-viewer:has(> .generation-preview-empty-state),
+.workspace-shell.document-workflow .gen-viewer:has(> .generation-preview-empty-state) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 720px) {
+  .workspace-shell.memorial-workspace .memorial-workflow-bar,
+  .workspace-shell.croqui-workspace .cq-workflow-bar,
+  .workspace-shell.document-workflow .doc-root .doc-workflow-bar {
+    flex-basis: auto;
+    min-height: 62px;
+    padding: 7px 8px;
+  }
+
+  .mem-stage-toolbar,
+  .cq-stage-toolbar,
+  .generation-preview-toolbar { padding: 0 10px; }
+  .workspace-shell.document-workflow .gen-root .gen-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(220px, 42%) minmax(0, 1fr);
+  }
+  .workspace-shell.document-workflow .gen-root .gen-sidebar { max-height: none; }
+  .workspace-shell.document-workflow .gen-root .gen-viewer { min-height: 0; }
+  .workspace-shell.document-workflow .doc-root .doc-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(220px, 42%) minmax(0, 1fr) !important;
+  }
+  .workspace-shell.document-workflow .doc-root .doc-layout.doc-layout--editing-closed {
+    grid-template-rows: minmax(0, 1fr) !important;
+  }
+  .workspace-shell.document-workflow .doc-root .doc-sidebar { min-height: 0; }
+  .workspace-shell.document-workflow .doc-root .doc-main,
+  .workspace-shell.document-workflow .doc-root .doc-viewer { min-height: 0; }
+  .memorial-panel-footer,
+  .cq-panel-footer,
+  .technical-sheet-workspace .doc-step-navigation,
+  .gen-wizard-navigation { padding: 9px 12px; }
+  .generation-preview-empty-state { width: calc(100% - 20px); padding: 18px 14px; }
+}

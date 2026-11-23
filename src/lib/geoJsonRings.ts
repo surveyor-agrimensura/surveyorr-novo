@@ -10,7 +10,8 @@ export const isValidLonLat = (point:unknown):point is LonLat =>
 /** Converte para números e remove só o último ponto quando fecha explicitamente o anel. */
 export function readOpenLonLatRing(raw:unknown):LonLat[]{
  if(!Array.isArray(raw))return [];
- const vertices=raw.filter(isValidLonLat).map(point=>[Number(point[0]),Number(point[1])] as LonLat);
+ if(raw.some(point=>!isValidLonLat(point)))return [];
+ const vertices=raw.map(point=>[Number((point as LonLat)[0]),Number((point as LonLat)[1])] as LonLat);
  if(vertices.length>3&&vertices[0][0]===vertices[vertices.length-1][0]&&vertices[0][1]===vertices[vertices.length-1][1])vertices.pop();
  return vertices.length>=3?vertices:[];
 }

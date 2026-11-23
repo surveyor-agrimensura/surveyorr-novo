@@ -25,8 +25,8 @@ export function readProjectDivisions(features:readonly ProjectFeature[]):Project
    if(!Array.isArray(part))return [];
    const sourceRings=part.map(readOpenLonLatRing);
    const exterior=sourceRings[0];
-   if(!exterior||exterior.length<3)return [];
-   const rings=[exterior,...sourceRings.slice(1).filter(ring=>ring.length>=3)];
+   if(!exterior||exterior.length<3||sourceRings.slice(1).some(ring=>ring.length<3))return [];
+   const rings=sourceRings;
    const props=feature.properties||{};
    const perimeterM=rings.reduce((total,ring)=>total+ring.reduce((sum,pt,i)=>sum+distance(pt,ring[(i+1)%ring.length]),0),0);
    return [{featureId:String(feature.id||index),partIndex,category:String(props.category||''),properties:props,name:String(props.name||feature.name||`Área ${index+1}`),areaM2:Math.max(0,polygonArea(rings[0])-rings.slice(1).reduce((sum,ring)=>sum+polygonArea(ring),0)),perimeterM,labelLon:typeof props.areaLabelLng==='number'?props.areaLabelLng:undefined,labelLat:typeof props.areaLabelLat==='number'?props.areaLabelLat:undefined,color:typeof props.fillColor==='string'?props.fillColor:typeof props.lotColor==='string'?props.lotColor:undefined,rings}];

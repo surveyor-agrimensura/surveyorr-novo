@@ -2,8 +2,8 @@ import { useState, type FormEvent } from 'react';
 import { BookOpen, CheckCircle2, Clock3, Headphones, Mail, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { SUPPORT_EMAIL } from '../../lib/config';
-const ENDPOINT=(import.meta.env.VITE_SURVEYOR_SUPPORT_API_URL || 'https://6a46d3d0003091f98222.nyc.appwrite.run').replace(/\/+$/,'');
+import { SUPPORT_API_BASE_URL, SUPPORT_EMAIL } from '../../lib/config';
+const ENDPOINT=SUPPORT_API_BASE_URL;
 const types=[['ajuda','Preciso de ajuda / suporte'],['erro','Reportar erro ou bug'],['contratacao','Contratação de plano / proposta comercial'],['renovacao','Renovação de plano / acesso bloqueado'],['acesso','Problema de acesso ou login'],['privacidade','Privacidade / solicitação sobre meus dados'],['nova_funcao','Pedir função nova'],['outro','Outro assunto']];
 export function SupportPage(){
  const {session}=useAuth();
@@ -19,6 +19,7 @@ export function SupportPage(){
   if(details.trim().length<min){setFeedback({type:'error',message:`Escreva pelo menos ${min} caracteres na mensagem.`});return;}
   setSending(true);
   try {
+   if(!ENDPOINT)throw new Error('Suporte não configurado para este ambiente. Defina VITE_SURVEYOR_SUPPORT_API_URL.');
    const response=await fetch(`${ENDPOINT}/api/support/request`,{
     method:'POST',mode:'cors',headers:{'Content-Type':'application/json',Accept:'application/json'},
     body:JSON.stringify({name:name.trim(),email:email.trim(),type,details:details.trim(),page:window.location.href,createdAt:new Date().toISOString()})

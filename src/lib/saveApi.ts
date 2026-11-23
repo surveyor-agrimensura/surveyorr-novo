@@ -16,6 +16,7 @@ type SaveOptions = {
 type SaveReply = { ok?: boolean; project?: { id?: string }; features?: unknown[]; error?: string; message?: string; details?: { code?: string }; code?: string };
 
 export async function saveFunctionRequest<T>(path: string, payload: Record<string, unknown>, options: SaveOptions): Promise<T> {
+  if (!SAVE_API_BASE_URL) throw new ApiError('Salvamento não configurado para este ambiente. Defina VITE_SURVEYOR_SAVE_API_URL.', 0, 'SAVE_NOT_CONFIGURED');
   if (!options.accessToken.trim()) throw new ApiError('Entre novamente para salvar o projeto.', 401, 'SAVE_AUTH_TOKEN_MISSING');
   if (!/^\/api\/projects(?:\/[^/]+\/bundle)?$/.test(path)) throw new ApiError('Rota de salvamento inválida.', 400);
   const controller = new AbortController();
@@ -55,6 +56,7 @@ export async function saveFunctionRequest<T>(path: string, payload: Record<strin
 
 /** Apenas disponibilidade e CORS; nunca testa credenciais nem permissões de escrita. */
 export async function checkSaveFunctionHealth(): Promise<string> {
+  if (!SAVE_API_BASE_URL) return 'Function Save não configurada para este ambiente.';
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 9000);
   try {

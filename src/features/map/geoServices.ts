@@ -1,5 +1,6 @@
 /** Serviços públicos identificados no SURVEYOR RC185.72, sem tokens embutidos. */
-export const GEOSERVICES_BASE = (import.meta.env.VITE_GEOSERVICES_URL || 'https://tiny-king-d719georural-geoservices.kaualucasfrancasantos.workers.dev').replace(/\/$/, '');
+import { GEOSERVICES_BASE_URL } from '../../lib/config';
+export const GEOSERVICES_BASE = GEOSERVICES_BASE_URL;
 export type OfficialLayer = {id:string;name:string;group:string;source:string;url:string;layers:string;uf?:string; color?:string};
 const INEMA = 'https://geoserver.inema.ba.gov.br/geoserver/wms';
 const SICAR = 'https://geoserver.car.gov.br/geoserver/sicar/wms';

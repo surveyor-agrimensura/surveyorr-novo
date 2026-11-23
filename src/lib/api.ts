@@ -18,6 +18,7 @@ export type RequestOptions = {
 };
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  if (!API_BASE_URL) throw new ApiError('API não configurada para este ambiente. Defina VITE_SURVEYOR_API_URL.', 0, 'API_NOT_CONFIGURED');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 20000);
   const onAbort = () => controller.abort();
@@ -63,6 +64,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
 /** Diagnóstico público: não envia senha, cookies ou token. Não confirma permissões de gravação. */
 export async function checkApiHealth(): Promise<string> {
+  if (!API_BASE_URL) return 'API não configurada para este ambiente.';
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 9000);
   try {

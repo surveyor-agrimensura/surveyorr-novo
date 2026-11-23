@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {azimuth,distance,formatAzimuth,getPolygons,mapLayout,memorialNarrative,polygonArea,segmentNeighbor} from '../src/features/memorial/memorialEngine';
+import {azimuth,distance,formatAzimuth,formatVertexCoord,getPolygons,mapLayout,memorialNarrative,polygonArea,segmentNeighbor} from '../src/features/memorial/memorialEngine';
 import {readProjectDivisions} from '../src/features/croqui/projectDivisions';
 const square:[number,number][]=[[-39,-13],[-38.999,-13],[-38.999,-12.999],[-39,-12.999],[-39,-13]];
 const f=[{name:'Imóvel A',geoJson:{type:'Polygon',coordinates:[square]},properties:{name:'Sítio das Palmeiras',confrontantes:['Fazenda vizinha','Estrada rural']}}];
@@ -12,6 +12,15 @@ describe('Memorial: geometria e documentos',()=>{
   expect(polygon.areaM2).toBeLessThan(polygonArea(square.slice(0,-1) as [number,number][]));
   expect(polygon.perimeterM).toBeGreaterThan(getPolygons([{geoJson:{type:'Polygon',coordinates:[square]}}])[0].perimeterM);
   expect(mapLayout(polygon).holePoints[0]).toHaveLength(4);
+ });
+ it('rejeita geometria com coordenada inválida no anel exterior ou em buraco',()=>{
+  const exterior=[[-39,-13],[-38.999,-13],['inválida',-12.999],[-39,-12.999],[-39,-13]];
+  const hole=[[-38.9998,-12.9998],[-38.9992,-12.9998],['inválida',-12.9992],[-38.9998,-12.9992],[-38.9998,-12.9998]];
+  for(const coordinates of [[exterior],[square,hole]]){
+   const feature={geoJson:{type:'Polygon',coordinates}};
+   expect(getPolygons([feature])).toHaveLength(0);
+   expect(readProjectDivisions([feature])).toHaveLength(0);
+  }
  });
  it('descreve os contornos internos e mantém o perímetro igual no Croqui e Memorial',()=>{
   const hole:[number,number][]=[[-38.9998,-12.9998],[-38.9992,-12.9998],[-38.9992,-12.9992],[-38.9998,-12.9992],[-38.9998,-12.9998]];
@@ -27,6 +36,8 @@ describe('Memorial: geometria e documentos',()=>{
  it('gera distância positiva, perímetro e área coerentes',()=>{const p=getPolygons(f)[0];expect(p.areaM2).toBeGreaterThan(11000);expect(p.areaM2).toBeLessThan(13000);expect(p.perimeterM).toBeGreaterThan(400);expect(p.perimeterM).toBeLessThan(500);expect(distance(square[0] as [number,number],square[1] as [number,number])).toBeGreaterThan(100);});
  it('confrontante por trecho é associado ao lado correto',()=>{const p=getPolygons(f)[0];expect(segmentNeighbor(p,0)).toBe('Fazenda vizinha');expect(segmentNeighbor(p,1)).toBe('Estrada rural');expect(segmentNeighbor(p,3)).toBe('');});
  it('fecha a descrição e inclui coordenadas e confrontantes reais',()=>{const narrative=memorialNarrative(getPolygons(f)[0]);expect(narrative).toContain('V-04');expect(narrative).toContain('V-01');expect(narrative).toContain('Fazenda vizinha');expect(narrative).toContain('WGS 84');});
+ it('identifica a projeção UTM como WGS 84 sem alegar transformação SIRGAS 2000',()=>{const utm=formatVertexCoord([-39,-13],'utm');expect(utm).toContain('WGS 84');expect(utm).not.toContain('SIRGAS 2000');});
+ it('avisa explicitamente quando coordenadas estão fora da cobertura UTM',()=>{expect(formatVertexCoord([-39,85],'utm')).toContain('UTM indisponível fora da cobertura UTM');});
  it('mapa preserva referências dos vértices e carrega no máximo 20 tiles',()=>{const l=mapLayout(getPolygons(f)[0]);expect(l.points).toHaveLength(4);expect(l.tiles.length).toBeGreaterThan(1);expect(l.tiles.length).toBeLessThanOrEqual(20);expect(l.tiles[0].url).toContain('MapServer/tile/');});
  it('azimute é circular e área não depende do primeiro vértice',()=>{expect(azimuth([-40,-12],[-39,-12])).toBeGreaterThan(80);expect(azimuth([-40,-12],[-39,-12])).toBeLessThan(100);expect(polygonArea(square.slice(0,4) as [number,number][])).toBeGreaterThan(0);});
  it('arredonda segundos de azimute com transporte para os minutos',()=>{

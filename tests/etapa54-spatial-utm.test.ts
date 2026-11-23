@@ -1,9 +1,12 @@
 import {describe,it,expect} from 'vitest';
 import {buildUtmGrid,utmFromWgs84} from '../src/features/documents/utmGrid';
+import {projectWgs84ToUtm} from '../src/lib/wgs84Utm';
 import {compareParcels,validateParcel,checkNearGaps, type Parcel} from '../src/features/analysis/topology';
 const sq=(id:string,x:number,y:number,d:number):Parcel=>({id,name:id,geometry:{type:'Polygon',coordinates:[[[x,y],[x+d,y],[x+d,y+d],[x,y+d],[x,y]]]}});
 describe('Etapa 54 — grade UTM',()=>{
  it('retorna zona 24S e linha central 500000 m em longitude -39°',()=>{const data=utmFromWgs84([-39,-13]);expect(data.zone).toBe(24);expect(data.hemisphere).toBe('S');expect(data.east).toBeCloseTo(500000,2);});
+ it('rejeita latitude fora da cobertura UTM também no projetor compartilhado',()=>{expect(()=>projectWgs84ToUtm([0,84])).toThrow(/cobertura UTM/i);expect(()=>projectWgs84ToUtm([0,-80])).toThrow(/cobertura UTM/i);});
+ it('rejeita override de fuso que não seja inteiro entre 1 e 60',()=>{expect(()=>projectWgs84ToUtm([0,0],0)).toThrow(/fuso UTM/i);expect(()=>projectWgs84ToUtm([0,0],60.5)).toThrow(/fuso UTM/i);});
  it('respeita fuso e gera grade, sem alterar os vértices',()=>{const vertices:[number,number][]=[[-39,-13],[-38.999,-13],[-38.999,-12.999],[-39,-12.999]];const copy=structuredClone(vertices);const result=buildUtmGrid(vertices,p=>({x:112+(p[0]+39)*800000,y:885-(p[1]+13)*800000}),{x:112,y:40,w:800,h:845});expect(result.svg).toContain('surveyor-utm-grid');expect(result.svg).toContain('UTM 24S');expect(result.step).toBeGreaterThan(0);expect(vertices).toEqual(copy);});
 });
 describe('Etapa 54 — validação e comparação',()=>{

@@ -17,6 +17,8 @@ import { makeScopedDraftPatch, validateScopedDraftInput, compactMirroredDocument
 import { escapeHtml, googleDriveConnectErrorPage } from './security/html.js';
 import { attemptPasswordResetDelivery, passwordResetRequestMessage, passwordResetSubject, transientAuthBodyPayload } from './security/auth-messages.js';
 import { publicCustomizationView } from './projects/public-share.js';
+import { rejectRefreshReplay } from './auth/refresh-replay.js';
+import { corsHeadersForOrigin, corsOriginForRequest, hostRefreshCookieHeader, isOfficialWebOrigin, legacyRefreshCookieClearHeader, refreshCredentialFromRequest, refreshTokenDelivery } from './auth/origin-policy.js';
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -523,13 +525,13 @@ async function rotateRefreshSession({ payload, appwriteUser = null }) {
   const sessionIndex = sessions.findIndex((item) => String(item.jti) === String(payload.jti || ''));
   if (sessionIndex < 0) {
     const revokedAt = new Date().toISOString();
-    await updateAppwriteUserSurveyorPrefs(userId, {
-      authSessions: [],
-      remoteLogoutAt: revokedAt,
-      sessionVersion: appwriteId(),
-      refreshReplayDetectedAt: revokedAt
-    }).catch(() => null);
-    throw statusError(401, 'Refresh token já utilizado ou revogado. Entre novamente.', { code: 'REFRESH_TOKEN_REPLAY' });
+    return rejectRefreshReplay({
+      payload,
+      revokedAt,
+      updateUserPrefs: updateAppwriteUserSurveyorPrefs,
+      appwriteId,
+      statusError
+    });
   }
   const familyId = String(sessions[sessionIndex].familyId || payload.fid || appwriteId());
   const now = new Date().toISOString();
@@ -1779,25 +1781,27 @@ function requestCookies(request) {
   return cookies;
 }
 
-const REFRESH_COOKIE_NAME = '__Secure-surveyor_refresh';
+const REFRESH_COOKIE_NAME = '__Host-surveyor_refresh';
+const LEGACY_REFRESH_COOKIE_NAME = '__Secure-surveyor_refresh';
 const LOGIN_VERIFY_COOKIE_NAME = '__Secure-surveyor_login_verify';
 const FIRST_ACCESS_COOKIE_NAME = '__Secure-surveyor_first_access';
 const PASSWORD_RESET_COOKIE_NAME = '__Secure-surveyor_password_reset';
 const PASSWORD_RESET_AUTH_COOKIE_NAME = '__Secure-surveyor_password_reset_auth';
 
-function secureAuthCookieHeader(name, token = '', { clear = false, maxAge = 600, path = '/api/auth', domainWide = false } = {}) {
+function secureAuthCookieHeader(name, token = '', { clear = false, maxAge = 600, path = '/api/auth' } = {}) {
   const ttl = clear ? 0 : Math.max(60, Math.min(24 * 60 * 60, Number(maxAge) || 600));
   const value = clear ? '' : encodeURIComponent(String(token || ''));
-  const domain = domainWide ? ' Domain=.surveyorr.com.br;' : '';
-  return `${String(name || '').trim()}=${value}; Path=${path};${domain} Max-Age=${ttl}; HttpOnly; Secure; SameSite=Strict`;
+  return `${String(name || '').trim()}=${value}; Path=${path}; Max-Age=${ttl}; HttpOnly; Secure; SameSite=Strict`;
 }
 
 function refreshCookieHeader(token = '', { clear = false } = {}) {
-  return secureAuthCookieHeader(REFRESH_COOKIE_NAME, token, { clear, maxAge: 14 * 24 * 60 * 60, path: '/api/auth', domainWide: true });
+  return hostRefreshCookieHeader(token, { clear });
 }
 
 function refreshTokenFromRequest(request, input = {}) {
-  return String(requestCookies(request)[REFRESH_COOKIE_NAME] || input.refreshToken || '').trim();
+  const cookies = requestCookies(request);
+  const origin = String(headerValue(request, 'origin') || '').trim();
+  return refreshCredentialFromRequest(origin, cookies, input.refreshToken);
 }
 
 function transientAuthTokenFromRequest(request, input = {}, cookieName, inputKeys = []) {
@@ -1824,28 +1828,15 @@ function transientAuthDelivery(request, token, { cookieName, cookieFlag, payload
   };
 }
 
-function isOfficialWebOrigin(origin = '') {
-  try {
-    const parsed = new URL(String(origin || ''));
-    const host = parsed.hostname.toLowerCase();
-    return parsed.protocol === 'https:' && (host === 'surveyorr.com.br' || host.endsWith('.surveyorr.com.br'));
-  } catch { return false; }
-}
-
 function assertTrustedMutationOrigin(request) {
   const origin = String(headerValue(request, 'origin') || '').trim().replace(/\/+$/, '');
   if (!origin) return;
-  if (configuredCorsOrigins().includes(origin) || isOfficialWebOrigin(origin) || isLocalDevelopmentOrigin(origin)) return;
+  if (corsOriginForRequest(origin, { configuredOrigins: configuredCorsOrigins(), isLocalDevelopmentOrigin })) return;
   throw statusError(403, 'Origem não autorizada para esta operação.');
 }
 
 function refreshTokenResponse(request, token) {
-  const origin = String(headerValue(request, 'origin') || '').trim();
-  const cookieMode = isOfficialWebOrigin(origin);
-  return {
-    payload: cookieMode ? { refreshCookie: true } : { refreshToken: token, refreshCookie: false },
-    headers: cookieMode ? { 'Set-Cookie': refreshCookieHeader(token) } : {}
-  };
+  return refreshTokenDelivery(String(headerValue(request, 'origin') || '').trim(), token);
 }
 
 function bearerToken(value) {
@@ -1997,13 +1988,7 @@ function featureBbox(feature) {
 
 function sendText(res, request, status, text, contentType = 'text/plain; charset=utf-8', extraHeaders = {}) {
   const headers = {
-    'Access-Control-Allow-Origin': corsOrigin(request),
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, Origin, X-Requested-With, Cache-Control, Pragma, X-Share-Password, X-Request-ID, Idempotency-Key, If-Match, X-Expected-Updated-At',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Expose-Headers': 'Content-Type, X-Request-ID, Retry-After',
-    'Vary': 'Origin',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    'Access-Control-Max-Age': '86400',
+    ...corsHeaders(request),
     'Content-Type': contentType,
     ...(String(contentType).toLowerCase().startsWith('text/html') ? {
       'Content-Security-Policy': "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'"
@@ -2140,11 +2125,15 @@ function isLocalDevelopmentOrigin(origin) {
 }
 
 function corsOrigin(request) {
-  const allowed = configuredCorsOrigins();
   const origin = String(headerValue(request, 'origin') || '').trim().replace(/\/+$/, '');
-  if (!origin) return '';
-  if (allowed.includes(origin) || isOfficialWebOrigin(origin) || isLocalDevelopmentOrigin(origin)) return origin;
-  return '';
+  return corsOriginForRequest(origin, { configuredOrigins: configuredCorsOrigins(), isLocalDevelopmentOrigin });
+}
+
+function corsHeaders(request) {
+  return corsHeadersForOrigin(headerValue(request, 'origin'), {
+    configuredOrigins: configuredCorsOrigins(),
+    isLocalDevelopmentOrigin
+  });
 }
 
 const requestIdCache = new WeakMap();
@@ -2181,15 +2170,8 @@ function baseSecurityHeaders(request) {
 }
 
 function send(res, request, status, payload, extraHeaders = {}) {
-  const allowedCorsOrigin = corsOrigin(request);
   const headers = {
-    ...(allowedCorsOrigin ? { 'Access-Control-Allow-Origin': allowedCorsOrigin } : {}),
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, Origin, X-Requested-With, Cache-Control, Pragma, X-Share-Password, X-Request-ID, Idempotency-Key, If-Match, X-Expected-Updated-At',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Expose-Headers': 'Content-Type, X-Request-ID, Retry-After',
-    'Vary': 'Origin',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    'Access-Control-Max-Age': '86400',
+    ...corsHeaders(request),
     'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
     ...baseSecurityHeaders(request),
     ...sensitiveApiNoStoreHeaders(request),
@@ -7154,7 +7136,16 @@ async function route(request, response) {
       status: 'ok',
       message: 'Usuário saiu do sistema.'
     });
-    return send(response, request, 204, null, { 'Set-Cookie': refreshCookieHeader('', { clear: true }), 'Cache-Control': 'no-store' });
+    const logoutCookies = requestCookies(request);
+    const logoutOrigin = String(headerValue(request, 'origin') || '').trim();
+    const cookieToClear = isOfficialWebOrigin(logoutOrigin)
+      ? (logoutCookies[REFRESH_COOKIE_NAME] ? refreshCookieHeader('', { clear: true })
+        : logoutCookies[LEGACY_REFRESH_COOKIE_NAME] ? legacyRefreshCookieClearHeader() : refreshCookieHeader('', { clear: true }))
+      : (logoutCookies[LEGACY_REFRESH_COOKIE_NAME] ? legacyRefreshCookieClearHeader() : '');
+    return send(response, request, 204, null, {
+      ...(cookieToClear ? { 'Set-Cookie': cookieToClear } : {}),
+      'Cache-Control': 'no-store'
+    });
   }
 
   if (path === '/api/integrations/google-drive/callback' && httpMethod === 'GET') {
@@ -8256,10 +8247,7 @@ async function route(request, response) {
     if (!driveResponse.ok) throw statusError(driveResponse.status >= 500 ? 502 : driveResponse.status, 'Não foi possível baixar o arquivo do Google Drive.');
     const arrayBuffer = await driveResponse.arrayBuffer();
     return response.send(Buffer.from(arrayBuffer), 200, {
-      'Access-Control-Allow-Origin': corsOrigin(request),
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept, Origin, X-Requested-With, Cache-Control, Pragma',
-    'Vary': 'Origin',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+      ...corsHeaders(request),
       'Content-Type': mimeType,
       'Content-Disposition': `attachment; filename="${encodeURIComponent(fileName)}"`
     });

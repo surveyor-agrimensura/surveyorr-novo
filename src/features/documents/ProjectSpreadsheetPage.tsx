@@ -1,6 +1,7 @@
 import { GlobalLoading } from '../../components/GlobalLoading';
 import { ProjectSourcePicker } from '../../components/ProjectSourcePicker';
 import { DocumentWorkflowBar } from '../../components/layout/DocumentWorkflowBar';
+import { GenerationPreviewEmptyState } from '../../components/layout/GenerationPreviewEmptyState';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Download, FileSpreadsheet, Paintbrush, Palette, RotateCcw } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
@@ -276,7 +277,7 @@ export function ProjectSpreadsheetPage() {
           <aside ref={projectEditorRef} className="doc-sidebar doc-sidebar--workflow">
             <div className="doc-panel doc-panel--workflow">
               {currentStep === 0 && <>
-              <strong>Projeto</strong>
+              <strong>Seleção do projeto</strong>
               <ProjectSourcePicker scope="project-spreadsheet" projects={projects} projectId={projectId} loading={loadingProjects||loading} onProjectChange={next => void open(next)} onImport={(data,fileName) => void open(data.project?.id||`local-upload:project-spreadsheet:${encodeURIComponent(fileName)}`,data)} onClearImport={() => void open('')} />
               {!full&&!projectId&&!loadingProjects&&!loading&&<p className="doc-project-empty">Selecione um projeto para carregar os dados do imóvel e as glebas.</p>}
               <nav className="doc-step-navigation" aria-label="Navegação da planilha">
@@ -341,11 +342,12 @@ export function ProjectSpreadsheetPage() {
             </div>
           </aside>
           <div ref={spreadsheetEditorRef} className="doc-main" tabIndex={-1}>
+            <div className="generation-preview-toolbar"><strong>Prévia do documento</strong><span>Planilha ODS · atualização em tempo real</span></div>
             <div className="doc-viewer doc-spreadsheet-viewer">
               {loading ? (
                 <div className="doc-empty">Carregando...</div>
               ) : !full ? (
-                <div className="doc-empty">Selecione um projeto para visualizar a planilha.</div>
+                <GenerationPreviewEmptyState message="Selecione um projeto para começar." />
               ) : (
                 <div className="doc-spreadsheet-paper" style={{ backgroundColor: appearance.paperColor }}>
                   {currentStep === 2 && <div className="doc-export-guide"><strong>Planilha pronta para exportação</strong><span>Use ODS para manter as cores da tabela, do cabeçalho e os destaques. CSV exporta apenas os dados da aba atual.</span></div>}
