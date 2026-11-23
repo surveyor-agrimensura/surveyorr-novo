@@ -417,6 +417,80 @@ function notificationExpiryKey(expiresAt = '') {
   return String(expiresAt || '').replace(/[^0-9]/g, '').slice(0, 14) || 'sem-vencimento';
 }
 
+export function pendingPlanExpiryEmailDays(daysLeft, expiresAt, sentHistory = {}) {
+  if (!Number.isInteger(daysLeft) || ![7, 1].includes(daysLeft) || !expiresAt) return [];
+  const key = notificationExpiryKey(expiresAt);
+  return [daysLeft].filter((day) => {
+    const record = sentHistory?.[key]?.[String(day)];
+    if (record?.sentAt) return false;
+    const reservedAt = Date.parse(record?.reservedAt || '');
+    return !Number.isFinite(reservedAt) || Date.now() - reservedAt > 36 * 60 * 60 * 1000;
+  });
+}
+
+let planExpiryEmailRun = null;
+async function sendDuePlanExpiryEmails() {
+  if (planExpiryEmailRun) return planExpiryEmailRun;
+  planExpiryEmailRun = (async () => {
+    const users = await listAdminUsers();
+    const counts = { eligible: 0, sent: 0, failed: 0, skipped: 0, checkedAt: new Date().toISOString() };
+    for (const summary of users) {
+      if (!summary?.id || !normalizeEmail(summary.email) || ![7, 1].includes(loginExpirationDaysLeft(summary.expiresAt)) || String(summary.role || '').toLowerCase() === 'admin' || String(summary.status || '').toLowerCase() === 'blocked') continue;
+      const profile = await findProfileForLogin(summary.id, summary.email).catch(() => null) || await findProfileByUserId(summary.id).catch(() => null) || summary;
+      const appwriteUser = await getAppwriteUserById(summary.id).catch(() => null);
+      if (!appwriteUser) { counts.skipped += 1; continue; }
+      const surveyorPrefs = userPrefs(appwriteUser).surveyor || {};
+      const history = surveyorPrefs.planExpiryEmailNotifications && typeof surveyorPrefs.planExpiryEmailNotifications === 'object' ? surveyorPrefs.planExpiryEmailNotifications : {};
+      const daysLeft = loginExpirationDaysLeft(profileExpiresAt(profile, appwriteUser));
+      const dueDays = pendingPlanExpiryEmailDays(daysLeft, profileExpiresAt(profile, appwriteUser), history);
+      if (!dueDays.length) continue;
+      counts.eligible += dueDays.length;
+      for (const days of dueDays) {
+        const expiry = profileExpiresAt(profile, appwriteUser);
+        const expiryKey = notificationExpiryKey(expiry);
+        const reservedHistory = {
+          ...history,
+          [expiryKey]: { ...(history[expiryKey] || {}), [String(days)]: { reservedAt: new Date().toISOString() } }
+        };
+        try {
+          await updateAppwriteUserSurveyorPrefs(summary.id, { planExpiryEmailNotifications: reservedHistory });
+        } catch (error) {
+          counts.failed += 1;
+          console.warn('[notifications] plan expiry email reservation failed', { userId: summary.id, days, message: String(error?.message || 'reservation failed').slice(0, 120) });
+          continue;
+        }
+        const planName = String(profile.planName || profile.planSlug || profile.plan || summary.planName || 'Surveyor').slice(0, 120);
+        const title = days === 1 ? 'Seu plano vence amanhã' : 'Seu plano vence em 7 dias';
+        const date = new Date(expiry);
+        const formatted = Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(date) : String(expiry);
+        try {
+          const sent = await dispatchAccountChangeNoticeEmail({
+            to: normalizeEmail(appwriteUser.email || profile.email || summary.email),
+            name: profile.name || appwriteUser.name || summary.name || '',
+            kind: 'plan', title,
+            message: `O plano ${planName} vence em ${formatted}. Para manter o acesso, procure a área de renovação ou o suporte do Surveyor. O pagamento automático ainda não está disponível.`
+          });
+          const latestUser = await getAppwriteUserById(summary.id).catch(() => appwriteUser);
+          const latestPrefs = userPrefs(latestUser).surveyor || {};
+          const latestHistory = latestPrefs.planExpiryEmailNotifications && typeof latestPrefs.planExpiryEmailNotifications === 'object' ? latestPrefs.planExpiryEmailNotifications : {};
+          await updateAppwriteUserSurveyorPrefs(summary.id, {
+            planExpiryEmailNotifications: {
+              ...latestHistory,
+              [expiryKey]: { ...(latestHistory[expiryKey] || {}), [String(days)]: { reservedAt: reservedHistory[expiryKey][String(days)].reservedAt, sentAt: new Date().toISOString(), provider: sent.provider || null, messageId: sent.id || null } }
+            }
+          });
+          counts.sent += 1;
+        } catch (error) {
+          counts.failed += 1;
+          console.warn('[notifications] plan expiry email failed', { userId: summary.id, days, message: String(error?.message || 'delivery failed').slice(0, 120) });
+        }
+      }
+    }
+    return counts;
+  })().finally(() => { planExpiryEmailRun = null; });
+  return planExpiryEmailRun;
+}
+
 function conectaPlusPendingDays(user = {}, requestedDays = null) {
   if (!user.whatsapp || !user.whatsappOptIn || !user.expiresAt || user.status === 'blocked') return [];
   const daysLeft = loginExpirationDaysLeft(user.expiresAt);
@@ -5826,6 +5900,82 @@ function systemNoticesForAuth(staticNotices = [], auth = {}) {
   return cleanNoticeList([...loginExpirationNoticeForAuth(auth), ...visibleStatic]);
 }
 
+export function isMaintenanceNoticeEmailCandidate(notice = {}) {
+  return !notice.deletedAt && notice.isActive !== false && notice.type === 'maintenance';
+}
+
+export function hasMaintenanceNoticeEmailChanges(previous = {}, next = {}) {
+  const fields = ['title', 'message', 'audience', 'targetPlanSlug', 'targetUserId', 'startsAt', 'endsAt', 'isActive', 'deletedAt'];
+  return fields.some((field) => String(previous[field] ?? '') !== String(next[field] ?? ''));
+}
+
+export function maintenanceNoticeRecipients(notice = {}, users = []) {
+  const audienceNotice = { ...notice, startsAt: null, endsAt: null };
+  const unique = new Map();
+  for (const user of Array.isArray(users) ? users : []) {
+    const id = String(user?.id || user?.userId || '').trim();
+    const email = normalizeEmail(user?.email);
+    if (!id || !/^\S+@\S+\.\S+$/.test(email)) continue;
+    const auth = { sub: id, user: { ...user, id } };
+    if (!unique.has(email) && noticeAppliesToAuth(audienceNotice, auth)) unique.set(email, { id, email, name: String(user.name || email).slice(0, 160) });
+  }
+  return [...unique.values()];
+}
+
+async function emailScheduledMaintenanceNotice(notice = {}) {
+  if (!isMaintenanceNoticeEmailCandidate(notice)) return { eligible: 0, sent: 0, failed: 0 };
+  const recipients = maintenanceNoticeRecipients(notice, await listAdminUsers());
+  const datePart = (value) => {
+    if (!value) return '';
+    const date = new Date(value);
+    return Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(date) : '';
+  };
+  const schedule = [notice.startsAt ? `Início previsto: ${datePart(notice.startsAt)}.` : 'A manutenção começará assim que o aviso for publicado.', notice.endsAt ? `Término previsto: ${datePart(notice.endsAt)}.` : 'O término será informado quando confirmado.'].join(' ');
+  let sent = 0;
+  for (let offset = 0; offset < recipients.length; offset += 10) {
+    const batch = recipients.slice(offset, offset + 10);
+    const results = await Promise.all(batch.map(async (recipient) => {
+      try {
+        await dispatchAccountChangeNoticeEmail({
+          to: recipient.email, name: recipient.name, kind: 'maintenance', title: notice.title,
+          message: `${notice.message}\n\n${schedule}`
+        });
+        return true;
+      } catch (error) {
+        console.warn('[notifications] maintenance email delivery failed', { userId: recipient.id, message: String(error?.message || 'delivery failed').slice(0, 120) });
+        return false;
+      }
+    }));
+    sent += results.filter(Boolean).length;
+  }
+  return { eligible: recipients.length, sent, failed: recipients.length - sent };
+}
+
+async function syncMaintenanceAdvanceBellNotice(notice = {}) {
+  const advanceId = `maintenance-advance-${notice.id}`;
+  const notices = await readSystemNotices({ includeDeleted: true });
+  const startsAt = Date.parse(notice.startsAt || '');
+  const now = new Date();
+  const isUpcoming = isMaintenanceNoticeEmailCandidate(notice) && Number.isFinite(startsAt) && startsAt > now.getTime();
+  if (isUpcoming) {
+    const formatted = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(startsAt));
+    const advance = normalizeNotice({
+      id: advanceId, title: `Manutenção agendada: ${notice.title}`.slice(0, 160),
+      message: `${notice.message}\n\nManutenção prevista para ${formatted}. Este é um aviso antecipado; o bloqueio começa no horário agendado.`,
+      type: 'warning', audience: notice.audience, targetPlanSlug: notice.targetPlanSlug,
+      targetUserId: notice.targetUserId, deliveryMode: 'notification', isActive: true,
+      blocksApp: false, startsAt: now.toISOString(), endsAt: new Date(startsAt).toISOString(),
+      createdBy: notice.createdBy || 'system:maintenance-advance', metadata: { automatic: true, maintenanceId: notice.id }
+    });
+    await writeSystemNotices([advance, ...notices.filter((item) => item.id !== advanceId)]);
+    return;
+  }
+  if (notices.some((item) => item.id === advanceId && !item.deletedAt)) {
+    const archived = normalizeNotice({ id: advanceId, isActive: false, deletedAt: now.toISOString() }, notices.find((item) => item.id === advanceId));
+    await writeSystemNotices([archived, ...notices.filter((item) => item.id !== advanceId)]);
+  }
+}
+
 async function enforceServerMaintenanceLock(auth = {}, path = '') {
   if (String(auth?.user?.role || '').toLowerCase() === 'admin') return;
   const allowedDuringMaintenance = new Set([
@@ -5852,7 +6002,9 @@ async function createSystemNoticeFromAdmin(input = {}, auth = {}) {
   if (notice.audience === 'user' && !notice.targetUserId) throw statusError(400, 'Selecione o usuário de destino.');
   const notices = await readSystemNotices({ includeDeleted: true });
   await writeSystemNotices([notice, ...notices.filter((item) => String(item.id) !== String(notice.id))]);
-  return notice;
+  await syncMaintenanceAdvanceBellNotice(notice).catch((error) => console.warn('[notifications] could not persist maintenance advance notice', { noticeId: notice.id, message: String(error?.message || '').slice(0, 120) }));
+  const emailDelivery = await emailScheduledMaintenanceNotice(notice);
+  return { notice, emailDelivery };
 }
 
 async function updateSystemNoticeFromAdmin(noticeId, input = {}) {
@@ -5867,7 +6019,13 @@ async function updateSystemNoticeFromAdmin(noticeId, input = {}) {
   if (notice.audience === 'plan' && !notice.targetPlanSlug) throw statusError(400, 'Selecione o plano de destino.');
   if (notice.audience === 'user' && !notice.targetUserId) throw statusError(400, 'Selecione o usuário de destino.');
   await writeSystemNotices([notice, ...notices.filter((item) => String(item.id) !== id)]);
-  return notice;
+  if (hasMaintenanceNoticeEmailChanges(current, notice)) {
+    await syncMaintenanceAdvanceBellNotice(notice).catch((error) => console.warn('[notifications] could not update maintenance advance notice', { noticeId: notice.id, message: String(error?.message || '').slice(0, 120) }));
+  }
+  const emailDelivery = isMaintenanceNoticeEmailCandidate(notice) && hasMaintenanceNoticeEmailChanges(current, notice)
+    ? await emailScheduledMaintenanceNotice(notice)
+    : { eligible: 0, sent: 0, failed: 0 };
+  return { notice, emailDelivery };
 }
 
 async function archiveSystemNoticeFromAdmin(noticeId) {
@@ -6225,6 +6383,24 @@ async function dispatchAccountEmailChangedEmail(input = {}) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw statusError(response.status >= 500 ? 502 : response.status, data?.error || data?.message || 'A Function de e-mail recusou a notificação.', data);
   return { sent: true, requested: true, to, provider: data?.provider || null, id: data?.id || null };
+}
+
+async function dispatchAccountChangeNoticeEmail(input = {}) {
+  const to = normalizeEmail(input.to || input.email);
+  const emailFunctionUrl = String(env('EMAIL_FUNCTION_URL', '') || '').replace(/\/+$/, '');
+  const emailFunctionSecret = env('EMAIL_FUNCTION_SECRET');
+  if (!to || !/^\S+@\S+\.\S+$/.test(to)) throw statusError(400, 'E-mail inválido para notificação de conta.');
+  if (!['plan', 'password_admin', 'password_user', 'maintenance'].includes(String(input.kind || ''))) throw statusError(400, 'Tipo de notificação inválido.');
+  if (!emailFunctionUrl || !emailFunctionSecret) throw statusError(503, 'Function de e-mail não configurada para notificações de conta.');
+  const endpoint = `${emailFunctionUrl}${env('EMAIL_FUNCTION_ACCOUNT_CHANGE_NOTICE_PATH', '/api/admin/send-account-change-notice')}`;
+  const response = await fetchWithTimeout(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Surveyor-Internal-Secret': emailFunctionSecret },
+    body: JSON.stringify({ to, name: String(input.name || '').slice(0, 160), kind: input.kind, title: String(input.title || '').slice(0, 180), message: String(input.message || '').slice(0, 1600) })
+  }, Number(env('EMAIL_UPSTREAM_TIMEOUT_MS', '12000')) || 12000);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw statusError(response.status >= 500 ? 502 : response.status, data?.error || data?.message || 'A Function de e-mail recusou a notificação.', data);
+  return { sent: true, to, provider: data?.provider || null, id: data?.id || null };
 }
 
 async function dispatchWorkspaceWelcomeEmail(input = {}) {
@@ -7300,6 +7476,11 @@ async function route(request, response) {
       return send(response, request, 200, { ok: true, integration: 'Conecta+', version: APP_VERSION, capabilities: ['users:list', 'users:create', 'users:update', 'plans:list', 'plans:upsert', 'users:expiring', 'notifications:mark-sent', 'support:create'], reminderDays: [7, 1] });
     }
 
+    if (path === '/api/integrations/conecta-plus/notifications/plan-expiry-email' && httpMethod === 'POST') {
+      const result = await sendDuePlanExpiryEmails();
+      return send(response, request, 200, { ok: true, ...result }, { 'Cache-Control': 'no-store, max-age=0' });
+    }
+
     if (path === '/api/integrations/conecta-plus/users' && httpMethod === 'GET') {
       const query = String(queryValue(request, 'query') || '').trim().toLowerCase();
       const users = (await listAdminUsers())
@@ -7741,6 +7922,19 @@ async function route(request, response) {
     return send(response, request, 200, { ok: true, account }, { 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
   }
 
+  // Catálogo público mínimo para a tela de renovação. Sem dados de usuários,
+  // permissões ou configuração interna.
+  if (path === '/api/public/plans' && httpMethod === 'GET') {
+    const plans = await listPlansSafe({ includeInactive: false });
+    return send(response, request, 200, {
+      ok: true,
+      plans: plans.filter((plan) => plan?.isActive !== false).map((plan) => ({
+        slug: String(plan.slug || ''), name: String(plan.name || ''),
+        priceCents: Number(plan.priceCents) || 0, billingCycle: String(plan.billingCycle || 'monthly')
+      }))
+    }, { 'Cache-Control': 'public, max-age=300, stale-while-revalidate=600' });
+  }
+
   const auth = await authFromRequest(request);
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(httpMethod)) assertTrustedMutationOrigin(request);
 
@@ -7790,9 +7984,37 @@ async function route(request, response) {
       ip: requestIp(request), userAgent: requestUserAgent(request), status: 'ok',
       message: 'Senha alterada pelo próprio usuário na área autenticada.'
     }).catch(() => null);
+    const passwordNotice = {
+      title: 'Sua senha foi alterada',
+      message: 'A senha da sua conta Surveyor foi alterada por você. Se não reconhece esta alteração, entre em contato com o suporte imediatamente.'
+    };
+    const passwordNotification = { internal: false, email: false };
+    try {
+      const notice = normalizeNotice({
+        id: `account-password-user-${auth.sub}-${changedAt.replace(/\D/g, '')}`,
+        ...passwordNotice, type: 'warning', audience: 'user', targetUserId: auth.sub,
+        deliveryMode: 'notification', startsAt: changedAt,
+        endsAt: new Date(Date.now() + 90 * 86400000).toISOString(), isActive: true,
+        createdBy: auth.sub
+      });
+      const notices = await readSystemNotices({ includeDeleted: true });
+      await writeSystemNotices([notice, ...notices.filter((item) => item.id !== notice.id)]);
+      passwordNotification.internal = true;
+    } catch (error) {
+      passwordNotification.internalError = String(error?.message || 'Falha ao registrar aviso.').slice(0, 200);
+    }
+    try {
+      const sent = await dispatchAccountChangeNoticeEmail({
+        to: auth.user.email, name: auth.user.name, kind: 'password_user', ...passwordNotice
+      });
+      passwordNotification.email = Boolean(sent.sent);
+    } catch (error) {
+      passwordNotification.emailError = String(error?.message || 'Falha ao enviar e-mail.').slice(0, 200);
+    }
     return send(response, request, 200, {
       ok: true,
       user: { ...auth.user, mustChangePassword: false },
+      notifications: passwordNotification,
       message: 'Senha alterada com sucesso.'
     }, { 'Cache-Control': 'no-store', 'Pragma': 'no-cache' });
   }
@@ -8789,10 +9011,62 @@ async function route(request, response) {
       }
     }
 
+    const accountNotifications = { internal: [], email: [] };
+    const priorPlan = String(baseProfile.planSlug || baseProfile.plan || '').trim();
+    const nextPlan = String(profile.planSlug || profile.plan || '').trim();
+    const priorExpiry = String(profileExpiresAt(baseProfile, appwriteUser) || '').slice(0, 10);
+    const nextExpiry = String(profileExpiresAt(profile, refreshedAppwriteUser) || '').slice(0, 10);
+    const accountChanges = [];
+    if ((Object.prototype.hasOwnProperty.call(input, 'planSlug') || Object.prototype.hasOwnProperty.call(input, 'plan')) && priorPlan !== nextPlan) {
+      accountChanges.push(`Plano: ${baseProfile.planName || priorPlan || 'não informado'} → ${profile.planName || nextPlan || 'não informado'}.`);
+    }
+    if (Object.prototype.hasOwnProperty.call(input, 'expiresAt') && priorExpiry !== nextExpiry) {
+      accountChanges.push(`Validade: ${priorExpiry || 'não informada'} → ${nextExpiry || 'sem vencimento'}.`);
+    }
+    if (Object.prototype.hasOwnProperty.call(input, 'allowedMemorialTemplateIds')) {
+      accountChanges.push('A disponibilidade dos modelos exclusivos de memorial foi atualizada. Confira os modelos disponíveis na sua conta.');
+    }
+    const eventNow = new Date().toISOString();
+    const notifyAccountChange = async ({ kind, title, message }) => {
+      try {
+        const notice = normalizeNotice({
+          id: `account-${kind}-${userId}-${eventNow.replace(/\D/g, '')}`,
+          title, message, type: kind === 'password_admin' ? 'warning' : 'info',
+          audience: 'user', targetUserId: userId, deliveryMode: 'notification',
+          startsAt: eventNow, endsAt: new Date(Date.now() + 90 * 86400000).toISOString(),
+          isActive: true, createdBy: auth.sub || 'system:admin-change'
+        });
+        const existingNotices = await readSystemNotices({ includeDeleted: true });
+        await writeSystemNotices([notice, ...existingNotices.filter((item) => item.id !== notice.id)]);
+        accountNotifications.internal.push({ sent: true, id: notice.id });
+      } catch (error) {
+        accountNotifications.internal.push({ sent: false, error: String(error?.message || 'Falha ao salvar aviso interno.').slice(0, 240) });
+      }
+      try {
+        accountNotifications.email.push(await dispatchAccountChangeNoticeEmail({
+          to: refreshedAppwriteUser.email || profile.email,
+          name: profile.name || refreshedAppwriteUser.name || '',
+          kind, title, message
+        }));
+      } catch (error) {
+        accountNotifications.email.push({ sent: false, error: String(error?.message || 'Falha ao enviar e-mail.').slice(0, 240) });
+      }
+    };
+    if (accountChanges.length) {
+      await notifyAccountChange({ kind: 'plan', title: 'Seu plano foi atualizado', message: accountChanges.join('\n') });
+    }
+    if (passwordUpdated) {
+      await notifyAccountChange({
+        kind: 'password_admin', title: 'Sua senha foi alterada pelo administrador',
+        message: 'A senha da sua conta foi alterada por um administrador do Surveyor. Por segurança, será necessário definir uma nova senha no próximo acesso. Se você não reconhece esta alteração, entre em contato com o suporte.'
+      });
+    }
+
     return send(response, request, 200, {
       ok: true,
       repaired: !Boolean(baseProfile.$id || baseProfile.id),
       passwordUpdated,
+      notifications: accountNotifications,
       user: adminUserFromProfile(profile, refreshedAppwriteUser)
     });
   }
@@ -9270,8 +9544,8 @@ async function route(request, response) {
 
   if ((path === '/api/admin/notices' || path === '/api/admin/system-notices' || path === '/api/system/admin/notices') && httpMethod === 'POST') {
     requireAdminAccess(auth);
-    const notice = await createSystemNoticeFromAdmin(await bodyJson(request), auth);
-    return send(response, request, 201, { ok: true, notice });
+    const result = await createSystemNoticeFromAdmin(await bodyJson(request), auth);
+    return send(response, request, 201, { ok: true, notice: result.notice, emailDelivery: result.emailDelivery });
   }
 
   const adminNoticeHardDeleteMatch = path.match(/^\/api\/(?:admin\/(?:notices|system-notices)|system\/admin\/notices)\/([^/]+)\/(?:hard-delete|delete|permanent)$/);
@@ -9284,8 +9558,8 @@ async function route(request, response) {
   const adminNoticeMatch = path.match(/^\/api\/(?:admin\/(?:notices|system-notices)|system\/admin\/notices)\/([^/]+)$/);
   if (adminNoticeMatch && httpMethod === 'PATCH') {
     requireAdminAccess(auth);
-    const notice = await updateSystemNoticeFromAdmin(decodeURIComponent(adminNoticeMatch[1]), await bodyJson(request));
-    return send(response, request, 200, { ok: true, notice });
+    const result = await updateSystemNoticeFromAdmin(decodeURIComponent(adminNoticeMatch[1]), await bodyJson(request));
+    return send(response, request, 200, { ok: true, notice: result.notice, emailDelivery: result.emailDelivery });
   }
 
   if (adminNoticeMatch && httpMethod === 'DELETE') {

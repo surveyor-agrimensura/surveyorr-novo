@@ -26,6 +26,7 @@ import {qrCodeDataUrl} from '../../lib/qrCode';
 import { LatestRequestSequence } from '../../lib/latestRequestSequence';
 import { docxBytes, downloadBytes, makeZip } from './exportOffice';
 import '../documents/documents.css';
+import '../../styles/generation-workspace.css';
 
 type DocKey = 'memorialDocx' | 'memorialTxt' | 'pranchaSvg' | 'pranchaHtml' | 'croquiSvg' | 'croquiHtml' | 'confrontantesHtml' | 'ods' | 'csv' | 'geojson' | 'kml' | 'dxf' | 'shp';
 
@@ -578,7 +579,7 @@ export function LotCenterPage() {
   };
 
   return (
-    <main className="workspace-main doc-root lot-center-page">
+    <main className="workspace-main doc-root lot-center-page generation-workspace-page generation-workspace-page--lot-center">
       <GlobalLoading active={loading || loadingProjects || generating} />
       <DocumentWorkflowBar
         label="Central de lotes"

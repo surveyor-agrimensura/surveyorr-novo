@@ -61,7 +61,7 @@ export function GenerationWorkspace({kind,heading,data,children,interpolationCon
   {stage==='prancha'?<button type="button" className="doc-workflow-action doc-primary" disabled={!canGenerate} onClick={generatePreview}>{generated?'Atualizar prévia':'Gerar prancha'}</button>:<button type="button" className="doc-workflow-action doc-primary" disabled={!data.project||data.busy} onClick={()=>setStage(nextStage)}><ArrowRight size={15}/> Próximo</button>}
  </nav>;
  useEffect(()=>{if(!canExport)setDownloadOpen(false);},[canExport]);
- return <main className="workspace-main doc-root gen-root"><DocumentWorkflowBar
+ return <main className="workspace-main doc-root gen-root generation-workspace-page"><DocumentWorkflowBar
   label={heading}
   variant="croqui"
   steps={wizard?.steps ?? stageNames}

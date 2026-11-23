@@ -949,3 +949,4 @@ body .workspace-shell.document-workflow .doc-workflow-bar .doc-workflow-title{fl
 body .workspace-shell.has-environment-notice.memorial-workspace,
 body .workspace-shell.has-environment-notice.croqui-workspace,
 body .workspace-shell.has-environment-notice.document-workflow{grid-template-rows:22px minmax(0,1fr)!important}
+.renewal-plan-list{display:grid;gap:8px;margin:12px 0;padding:0;list-style:none}.renewal-plan-list li{display:flex;justify-content:space-between;gap:12px;padding:12px;border:1px solid var(--gov-border,#cbd5e1);border-radius:7px;background:#f8fbff}.renewal-plan-list span{font-weight:700;white-space:nowrap}.renewal-qr-placeholder{margin:12px 0;padding:14px;border:1px dashed #8ea6bf;border-radius:7px;background:#f5f8fc;color:#455b72;text-align:center;font-weight:700}

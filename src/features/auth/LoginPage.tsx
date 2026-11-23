@@ -9,6 +9,8 @@ import {
   completeFirstAccess, confirmPasswordReset, requestPasswordReset, verifyResetCode
 } from './authService';
 import { OFFICIAL_SITE, SUPPORT_EMAIL } from '../../lib/config';
+import { Dialog } from '../../components/Dialog';
+import { ApiError, apiRequest } from '../../lib/api';
 
 type View = 'login' | 'verification' | 'first-access' | 'reset-email' | 'reset-code' | 'reset-password';
 const errorText = (e: unknown) => e instanceof Error ? e.message : 'Não foi possível concluir a solicitação.';
@@ -32,6 +34,8 @@ export function LoginPage() {
   const [working, setWorking] = useState(false);
   const [privacyChoiceSaved, setPrivacyChoiceSaved] = useState(() => hasSavedPrivacyChoice());
   const [resendDelay, setResendDelay] = useState(0);
+  const [expiredPlan, setExpiredPlan] = useState(false);
+  const [renewalPlans, setRenewalPlans] = useState<{slug:string;name:string;priceCents:number;billingCycle:string}[]>([]);
   useEffect(() => {
     const updatePrivacyChoice = () => setPrivacyChoiceSaved(hasSavedPrivacyChoice());
     window.addEventListener(PRIVACY_PREFERENCES_SAVED_EVENT, updatePrivacyChoice);
@@ -47,7 +51,7 @@ export function LoginPage() {
     const reason = new URLSearchParams(window.location.search).get('reason');
     if (reason === 'idle_timeout') setMessage('Sua sessão expirou após 30 minutos sem atividade. Entre novamente.');
     if (reason === 'session_revoked') setMessage('Sua sessão foi encerrada. Entre novamente para continuar.');
-    if (reason === 'plan_expired') setMessage('Seu plano está expirado. Entre em contato com o suporte.');
+    if (reason === 'plan_expired') { setExpiredPlan(true); setMessage('Seu plano expirou e o acesso foi bloqueado.'); }
   }, []);
 
   if (status === 'ready' && session) return <Navigate to="/" replace />;
@@ -71,7 +75,15 @@ export function LoginPage() {
       if (result.kind === 'first-access') {
         setPendingToken(result.token); setNewPassword(''); setConfirmPassword(''); go('first-access');
       }
-    } catch (e) { setError(errorText(e)); }
+    } catch (e) {
+      if (e instanceof ApiError && e.code === 'PLAN_EXPIRED') {
+        setExpiredPlan(true);
+        setError('Seu plano venceu. O acesso à conta foi bloqueado até a renovação.');
+        void apiRequest<{plans?:{slug:string;name:string;priceCents:number;billingCycle:string}[]}>('/api/public/plans')
+          .then(result => setRenewalPlans(Array.isArray(result.plans) ? result.plans : []))
+          .catch(() => setRenewalPlans([]));
+      } else setError(errorText(e));
+    }
     finally { setWorking(false); }
   }
   async function onVerify(event: FormEvent<HTMLFormElement>) {
@@ -135,6 +147,12 @@ export function LoginPage() {
   const isLogin = view === 'login';
   return (
     <div className="app-shell login-shell">
+      <Dialog open={expiredPlan} title="Plano vencido: acesso bloqueado" description="Renove seu plano para voltar a usar o Surveyor." onClose={()=>setExpiredPlan(false)}>
+        <p>Seu plano venceu. Escolha uma opção para ver os valores e falar com o suporte.</p>
+        {renewalPlans.length ? <ul className="renewal-plan-list">{renewalPlans.map(plan=><li key={plan.slug}><strong>{plan.name}</strong><span>{(plan.priceCents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})} · {plan.billingCycle}</span></li>)}</ul> : <p>Não foi possível carregar os planos agora. Consulte o suporte para ver as opções disponíveis.</p>}
+        <div className="renewal-qr-placeholder" role="status">QR Code disponível após a ativação do pagamento Pix.</div>
+        <a className="button primary submit-btn" href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent('Renovação do plano Surveyor')}`}>Falar com o suporte para renovar</a>
+      </Dialog>
       <GlobalLoading active={working || status==='checking'} />
       <main className="login-main">
         <aside className="login-visual" aria-label="Sobre o Surveyor">

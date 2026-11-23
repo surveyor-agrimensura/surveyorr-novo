@@ -13,6 +13,7 @@ import { downloadText, kmlFeatures, toCsv, toKml } from '../map/mapFormats';
 import { toShapefileZip, downloadBytes as downloadShpBytes } from '../map/shapefileExport';
 import { makeZip, downloadBytes } from './exportOffice';
 import '../documents/documents.css';
+import '../../styles/generation-workspace.css';
 
 function readUploadText(file: File, reportProgress: UploadProgressReporter): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -343,7 +344,7 @@ export function GlebaDivisionPage() {
     : 0;
 
   return (
-    <main className="workspace-main doc-root">
+    <main className="workspace-main doc-root generation-workspace-page generation-workspace-page--division">
       <GlobalLoading active={loading || loadingProjects || savingCloud} />
       <div className="workspace-container doc-container">
         <div className="doc-title">

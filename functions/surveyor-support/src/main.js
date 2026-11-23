@@ -670,6 +670,38 @@ async function handleAccountEmailChangedEmail(request) {
   return { ok: true, sent: true, provider: sent.provider, id: sent.id || null, to: maskEmailForResponse(content.to) };
 }
 
+export function buildAccountChangeEmail(payload = {}) {
+  const to = normalizeEmail(payload.to || payload.email);
+  const name = sanitizeText(payload.name || '', 160) || 'usuário';
+  const kind = String(payload.kind || '').trim().toLowerCase();
+  const titleByKind = {
+    plan: 'Seu plano do Surveyor foi atualizado',
+    password_admin: 'Sua senha do Surveyor foi alterada pelo administrador',
+    password_user: 'Sua senha do Surveyor foi alterada por você',
+    maintenance: 'Aviso de manutenção do Surveyor'
+  };
+  if (!to || !/^\S+@\S+\.\S+$/.test(to)) throw statusError(400, 'E-mail de destino inválido.');
+  if (!Object.prototype.hasOwnProperty.call(titleByKind, kind)) throw statusError(400, 'Tipo de notificação inválido.');
+  const subject = titleByKind[kind];
+  const heading = sanitizeText(payload.title || subject, 180);
+  const message = sanitizeText(payload.message || '', 1600);
+  if (!message) throw statusError(400, 'Informe o conteúdo da notificação.');
+  const safeName = escapeHtml(name);
+  const safeHeading = escapeHtml(heading);
+  const safeMessage = escapeHtml(message).replace(/\n/g, '<br>');
+  const htmlContent = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"></head><body style="font-family:Arial,sans-serif;background:#f5f8fc;padding:24px;color:#102a43"><main style="max-width:640px;margin:auto;background:#fff;padding:28px;border:1px solid #dbe4f0;border-radius:12px"><h1 style="font-size:21px">${safeHeading}</h1><p>Olá, ${safeName}.</p><p>${safeMessage}</p><p>Se precisar de ajuda, entre em contato com o suporte oficial do Surveyor.</p><p>Equipe Surveyor</p></main></body></html>`;
+  return { to, subject, htmlContent, textContent: `Olá, ${name}.\n\n${heading}\n\n${message}\n\nEquipe Surveyor` };
+}
+
+async function handleAccountChangeEmail(request) {
+  requireInternalSecret(request);
+  const content = buildAccountChangeEmail(await readJson(request));
+  let sent = await sendWithBrevo({ to: content.to, subject: content.subject, htmlContent: content.htmlContent, textContent: content.textContent, senderName: 'Equipe Surveyor', senderEmail: securityFromEmail() });
+  if (!sent) sent = await sendWithResend({ to: content.to, subject: content.subject, htmlContent: content.htmlContent, textContent: content.textContent });
+  if (!sent) throw statusError(501, 'Nenhum provedor de e-mail configurado para notificações de conta.');
+  return { ok: true, sent: true, provider: sent.provider, id: sent.id || null, to: maskEmailForResponse(content.to) };
+}
+
 function buildWorkspaceWelcomeEmail(payload = {}) {
   const to = normalizeEmail(payload.to || payload.email);
   const name = sanitizeText(payload.name || '', 180) || 'colaborador';
@@ -756,6 +788,11 @@ async function handler(request) {
     return jsonResponse(request, 200, result);
   }
 
+  if (method === 'POST' && (url.pathname === '/api/admin/send-account-change-notice' || url.pathname === '/admin/send-account-change-notice')) {
+    const result = await handleAccountChangeEmail(request);
+    return jsonResponse(request, 200, result);
+  }
+
   if (method === 'POST' && (url.pathname === '/api/admin/send-subuser-welcome' || url.pathname === '/admin/send-subuser-welcome')) {
     const result = await handleWorkspaceWelcomeEmail(request);
     return jsonResponse(request, 200, result);
@@ -774,7 +811,7 @@ async function handler(request) {
   return jsonResponse(request, 404, {
     ok: false,
     error: 'Rota não encontrada.',
-    routes: ['GET /api/health', 'POST /api/support/request', 'POST /api/security/send-login-code', 'POST /api/security/send-first-access', 'POST /api/admin/send-plan-document', 'POST /api/admin/send-account-email-changed', 'POST /api/admin/send-subuser-welcome']
+    routes: ['GET /api/health', 'POST /api/support/request', 'POST /api/security/send-login-code', 'POST /api/security/send-first-access', 'POST /api/admin/send-plan-document', 'POST /api/admin/send-account-email-changed', 'POST /api/admin/send-account-change-notice', 'POST /api/admin/send-subuser-welcome']
   });
 }
 
