@@ -40,7 +40,7 @@ import { tarefaCaption, tarefaUnitForState } from '../../lib/agrarianMeasure';
 import { openRing, closeRing, insertVertexOnEdge, removeVertexAt, replaceExteriorRing, segmentMetadataAfterInsert, segmentMetadataAfterRemove } from './vertexEditing';
 import { getVertexAppearance, updateVertexAppearance, shiftVertexAppearance, copyVertexAppearanceToAll } from './vertexAppearance';
 import { svgTextOutline } from '../../lib/svgTextContrast';
-import {toShapefileZip,toTechnicalPackage,downloadBytes,zipFiles} from './shapefileExport';
+import {toShapefileZip,toTechnicalPackage,downloadBytes,zipFiles,type ShapeTarget} from './shapefileExport';
 import { AdvancedTerrainModal, reversePolygonRing, featuresToDxf, type AdvancedToolKind } from './advancedTerrainTools';
 import {resolveUndoRedoAction} from '../../lib/undoRedoShortcuts';
 type Tool = 'pan'|'point'|'line'|'polygon'|'rectangle'|'circle'|'arc'|'measure';
@@ -180,7 +180,7 @@ export function OperationalMap(){
  const loadedProjectRef=useRef<string|null>(null);
  const loadedProjectAccountRef=useRef<string|null>(null);
  const cloudConflictRef=useRef(false);
- const [shapeProfile,setShapeProfile]=useState<import('./shapefileExport').ShapeTarget>('seia-cefir-ba');
+ const [shapeProfile,setShapeProfile]=useState<ShapeTarget>(()=>place?.uf?.toUpperCase()==='BA'?'seia-cefir-ba':'qgis-arcgis');
  const [shapeDialog,setShapeDialog]=useState(false);
  const appliedRefs=useRef(new Map<string,L.TileLayer.WMS>());
  officialLayersRef.current=officialLayers;
@@ -256,6 +256,7 @@ export function OperationalMap(){
   const changeTool=useCallback(async(next:Tool,discardDraft=false):Promise<boolean>=>{
    const pendingVertices=draftRef.current.length;
    if(pendingVertices&&!discardDraft&&!await requestConfirmation({title:'Descartar desenho em andamento?',message:`O desenho em andamento com ${pendingVertices} ${pendingVertices===1?'vértice':'vértices'} será descartado ao trocar de ferramenta.`,confirmLabel:'Descartar desenho',destructive:true}))return false;
+  if(next!=='pan'){officialQuerySequence.current++;setOfficialInfo(null);setInfoExpanded(false);}
   setVertexRemovalMode(false);setVertexMenu(null);
   if(glebaDrawingRef.current&&next!==glebaDrawingRef.current)glebaDrawingRef.current=null;
   toolRef.current=next;setTool(next);setActiveLegacy(next==='point'?'point':next);draftRef.current=[];setDraft([]);setMapContext(null);
@@ -321,7 +322,7 @@ export function OperationalMap(){
   }
  };
 
- const addFeature=useCallback((value:MapFeature)=>{setFeatures(current=>{const polygonCount=current.filter(f=>f.geometry.type==='Polygon'||f.geometry.type==='MultiPolygon').length;const styled=(value.geometry.type==='Polygon'||value.geometry.type==='MultiPolygon')?{...value,properties:{...value.properties,fillColor:value.properties?.fillColor||lotColors[polygonCount%lotColors.length],strokeColor:value.properties?.strokeColor||lotColors[polygonCount%lotColors.length],fillOpacity:value.properties?.fillOpacity??.26}}:value;const result=[...current,styled];featureRef.current=result;return result;});},[]);
+ const addFeature=useCallback((value:MapFeature)=>{officialQuerySequence.current++;setOfficialInfo(null);setInfoExpanded(false);setFeatures(current=>{const polygonCount=current.filter(f=>f.geometry.type==='Polygon'||f.geometry.type==='MultiPolygon').length;const styled=(value.geometry.type==='Polygon'||value.geometry.type==='MultiPolygon')?{...value,properties:{...value.properties,fillColor:value.properties?.fillColor||lotColors[polygonCount%lotColors.length],strokeColor:value.properties?.strokeColor||lotColors[polygonCount%lotColors.length],fillOpacity:value.properties?.fillOpacity??.26}}:value;const result=[...current,styled];featureRef.current=result;return result;});},[]);
  const endDrawing=useCallback(()=>{
   const points=draftRef.current;const kind=toolRef.current;
   if(!['line','polygon','rectangle','circle','arc','measure'].includes(kind))return;
@@ -766,7 +767,15 @@ export function OperationalMap(){
   officialQuerySequence.current++;setOfficialInfo(null);setLayerUF(uf);setOfficialLayers(prev=>[...prev.map(x=>({...x,visible:false})),...selected.filter(x=>!prev.some(y=>x.id===y.id)).map((x,i)=>({...x,visible:i===selected.length-1,opacity:100,state:'carregando' as const}))].map(x=>selected.some(y=>y.id===x.id)?{...x,visible:x.id===selected.at(-1)?.id}:x));
   setPanel('layers');setStatus(`${selected.length} camada(s) adicionada(s). Carregando serviço Cloudflare.`);
  };
- const toggleLayer=(id:string)=>{officialQuerySequence.current++;setOfficialInfo(null);setOfficialLayers(a=>{const isVisible=a.find(x=>x.id===id)?.visible;return a.map(x=>({...x,visible:x.id===id?!isVisible:false}));});};
+ const toggleLayer=(id:string)=>{officialQuerySequence.current++;setOfficialInfo(null);setOfficialLayers(a=>a.map(x=>x.id===id?{...x,visible:!x.visible}:x));};
+ const toggleRecommendedLayer=(layer:OfficialLayer)=>{
+  officialQuerySequence.current++;setOfficialInfo(null);setLayerUF(layer.uf||place?.uf||projectData.uf);
+  setOfficialLayers(current=>{
+   const existing=current.find(item=>item.id===layer.id);
+   if(existing?.visible)return current.filter(item=>item.id!==layer.id);
+   return existing?current.map(item=>item.id===layer.id?{...item,visible:true}:item):[...current,{...layer,visible:true,opacity:100,state:'carregando'}];
+  });
+ };
  const removeLayer=(id:string)=>{officialQuerySequence.current++;setOfficialInfo(null);setOfficialLayers(a=>a.filter(x=>x.id!==id));};
  const opacityLayer=(id:string,n:number)=>setOfficialLayers(a=>a.map(x=>x.id===id?{...x,opacity:n}:x));
  const refreshOfficialLayer=(id:string)=>{const tile=appliedRefs.current.get(id);if(!tile){notify('A camada ainda não está pronta para atualização.');return;}setOfficialLayers(current=>current.map(layer=>layer.id===id?{...layer,state:'carregando'}:layer));tile.redraw();notify('Solicitação de atualização enviada ao serviço oficial.');};
@@ -788,7 +797,7 @@ export function OperationalMap(){
  const continuePendingExport=()=>{const run=pendingExport;closePreflight();run?.();};
  const exportContextPackage=()=>{
   const selected=contextAt&&featureRef.current.find(item=>String(item.id)===contextAt.id);if(!selected)return;
-  beginExportPreflight(()=>{downloadBytes(`surveyor-desenho-${selected.id}.zip`,zipFiles({'dados.txt':Object.entries(selected.properties||{}).map(([k,v])=>`${k}: ${String(v)}`).join('\n'),'feicao.geojson':JSON.stringify({type:'FeatureCollection',features:[selected]},null,2),'feicao.kml':toKml([selected]),'feicao.dxf':featuresToDxf([selected]),'feicao.csv':toCsv([selected]),'shapefile.zip':toShapefileZip([selected])}));setContextAt(null);},[selected]);
+  beginExportPreflight(()=>{try{downloadBytes(`surveyor-desenho-${selected.id}.zip`,zipFiles({'dados.txt':Object.entries(selected.properties||{}).map(([k,v])=>`${k}: ${String(v)}`).join('\n'),'feicao.geojson':JSON.stringify({type:'FeatureCollection',features:[selected]},null,2),'feicao.kml':toKml([selected]),'feicao.dxf':featuresToDxf([selected]),'feicao.csv':toCsv([selected]),'shapefile.zip':toShapefileZip([selected],shapeProfile)}));setContextAt(null);}catch(error){notify(error instanceof Error?error.message:'Não foi possível exportar o Shapefile.');}},[selected]);
  };
  // A inicialização acontece após o commit do React. O agendamento também evita
  // a montagem dupla do Leaflet no mesmo elemento durante React.StrictMode.
@@ -825,12 +834,12 @@ export function OperationalMap(){
     baseLayers.current[mapMode].addTo(map);if(mapMode==='hybrid')referenceOverlay.current.addTo(map);
     L.control.scale({imperial:false,metric:true,position:'bottomright'}).addTo(map);
     const drawingPane=map.createPane('surveyor-editable-drawings');const rotatingOverlay=map.getPane('overlayPane');if(rotatingOverlay)rotatingOverlay.appendChild(drawingPane);drawingPane.style.zIndex='450';drawingPane.style.pointerEvents='auto';
-    const rendered=L.geoJSON(undefined,{pane:'surveyor-editable-drawings',interactive:true,pointToLayer:(f,latlng)=>L.marker(latlng,{icon:f.properties?.hasMonument?monumentPointPin:regularPointPin,title:String(f.properties?.name||'Ponto marcado'),riseOnHover:true}),style:(f)=>{const color=String(f?.properties?.strokeColor||f?.properties?.lotColor||'#e9a405');return {className:'surveyor-editable-feature-hit-target',color,weight:Number(f?.properties?.lineWeight??3),fill:true,fillColor:String(f?.properties?.fillColor||f?.properties?.lotColor||color),fillOpacity:Number(f?.properties?.fillOpacity??.20)};},onEachFeature:(f,layer)=>{layer.on('click',(event:L.LeafletMouseEvent)=>{L.DomEvent.stopPropagation(event.originalEvent);if(toolRef.current!=='pan'){map.fire('click',event);return;}officialQuerySequence.current++;setOfficialInfo(null);setInfoExpanded(false);setSelectedFeature(String(f.id));setDetailsFeatureId(String(f.id));setEditingFeature(null);setContextAt(null);setMapContext(null);setPanel('layers');});
+    const rendered=L.geoJSON(undefined,{pane:'surveyor-editable-drawings',interactive:true,bubblingMouseEvents:false,pointToLayer:(f,latlng)=>L.marker(latlng,{icon:f.properties?.hasMonument?monumentPointPin:regularPointPin,title:String(f.properties?.name||'Ponto marcado'),riseOnHover:true,bubblingMouseEvents:false}),style:(f)=>{const color=String(f?.properties?.strokeColor||f?.properties?.lotColor||'#e9a405');return {className:'surveyor-editable-feature-hit-target',color,weight:Number(f?.properties?.lineWeight??3),fill:true,fillColor:String(f?.properties?.fillColor||f?.properties?.lotColor||color),fillOpacity:Number(f?.properties?.fillOpacity??.20)};},onEachFeature:(f,layer)=>{layer.on('click',(event:L.LeafletMouseEvent)=>{L.DomEvent.stop(event.originalEvent);if(toolRef.current!=='pan'){map.fire('click',event);return;}officialQuerySequence.current++;setOfficialInfo(null);setInfoExpanded(false);setSelectedFeature(String(f.id));setDetailsFeatureId(String(f.id));setEditingFeature(null);setContextAt(null);setMapContext(null);setPanel('layers');});
       layer.on('contextmenu',(event:L.LeafletMouseEvent)=>{
        L.DomEvent.stop(event.originalEvent);const rect=element.getBoundingClientRect();const x=event.originalEvent.clientX-rect.left,y=event.originalEvent.clientY-rect.top;
        if(toolRef.current!=='pan'){setContextAt(null);setMapContext({x:Math.max(8,Math.min(x,rect.width-236)),y:Math.max(75,Math.min(y,rect.height-235)),lat:event.latlng.lat,lng:event.latlng.lng});return;}
        if(f.geometry.type!=='Polygon')return;
-       setMapContext(null);setSelectedFeature(String(f.id));setDetailsFeatureId(String(f.id));setInfoExpanded(false);setEditingFeature(null);setPanel('layers');setContextAt({x:Math.max(12,Math.min(x,rect.width-220)),y:Math.max(76,Math.min(y,rect.height-290)),id:String(f.id),lat:event.latlng.lat,lng:event.latlng.lng});
+       officialQuerySequence.current++;setOfficialInfo(null);setInfoExpanded(false);setMapContext(null);setSelectedFeature(String(f.id));setDetailsFeatureId(String(f.id));setEditingFeature(null);setPanel('layers');setContextAt({x:Math.max(12,Math.min(x,rect.width-220)),y:Math.max(76,Math.min(y,rect.height-290)),id:String(f.id),lat:event.latlng.lat,lng:event.latlng.lng});
       });}}).addTo(map);
     editMarkersRef.current=L.layerGroup().addTo(map);
     measureRef.current=L.layerGroup().addTo(map);
@@ -870,7 +879,11 @@ export function OperationalMap(){
     });
     map.on('click',(e:L.LeafletMouseEvent)=>{
      setContextAt(null);setMapContext(null);const currentTool=toolRef.current;
-     if(currentTool==='pan'){queryFeatureRef.current(e.latlng);return;}
+     if(currentTool==='pan'){
+      const target=e.originalEvent?.target;
+      if(target instanceof Element&&target.closest('.leaflet-surveyor-editable-drawings-pane, .surveyor-editable-feature-hit-target'))return;
+      queryFeatureRef.current(e.latlng);return;
+     }
      const snap=snapAt.current(e.latlng);const picked=snap?L.latLng(snap.position[0],snap.position[1]):e.latlng;
      if(currentTool==='point'){const point=feature('Point',[[picked.lat,picked.lng]]);point.properties={...point.properties,pointOrigin:'mapa',pointClass:'P',hasMonument:false};addFeature(point);return;}
      // Fechar clicando nas proximidades do primeiro vértice, inclusive quando
@@ -1107,7 +1120,7 @@ export function OperationalMap(){
     if(vertexRemovalMode)marker.on('click',async()=>{
      try{const closed=removeVertexAt(ring,index);if(!await requestConfirmation({title:`Remover vértice V-${String(index+1).padStart(2,'0')}?`,message:'Isso modifica o perímetro e pode alterar a área. Confira as medidas e os confrontantes após a remoção.',confirmLabel:'Remover vértice',destructive:true}))return;
      setFeatures(current=>{const updated=current.map(item=>String(item.id)===editingFeature&&item.geometry.type==='Polygon'?{...item,geometry:{...item.geometry,coordinates:replaceExteriorRing(item.geometry.coordinates,closed)},properties:shiftVertexAppearance(segmentMetadataAfterRemove(item.properties||{},index,ring.length),'remove',index)}:item);featureRef.current=updated;return updated;});
-     setVertexRemovalMode(false);setVertexMenu(null);setStatus('Vértice removido. Confira área e confrontantes dos trechos unidos antes de salvar.');
+     setVertexMenu(null);setStatus('Vértice removido. Confira área e confrontantes dos trechos unidos antes de salvar.');
     }catch(error){notify(error instanceof Error?error.message:'Não foi possível remover o vértice.');}
    });
    marker.on('drag',()=>{const pos=marker.getLatLng();ring[index]=[pos.lng,pos.lat];cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>renderLive());});
@@ -1319,7 +1332,7 @@ export function OperationalMap(){
    ['seia-cefir-ba','SEIA / CEFIR — Bahia'],['sicar-car','SICAR / CAR — Brasil'],['sigef-incra','INCRA / SIGEF — referência'],['qgis-arcgis','QGIS / ArcGIS / software SIG'],['other','Outro sistema']
   ] as [import('./shapefileExport').ShapeTarget,string][]).map(([id,title])=><label className={shapeProfile===id?'selected':''} key={id}><input name="shp-profile" type="radio" value={id} checked={shapeProfile===id} onChange={()=>setShapeProfile(id)}/><span>{title}</span></label>)}</div><footer><button onClick={()=>setShapeDialog(false)}>Cancelar</button><button className="map-primary" onClick={()=>{try{const result=toShapefileZip(featureRef.current,shapeProfile);downloadBytes(shapeProfile==='seia-cefir-ba'?'shapeImovelRural-SEIA-CEFIR.zip':`surveyor-${shapeProfile}.zip`,result);setShapeDialog(false);notify('Shapefile gerado.');}catch(err){notify(err instanceof Error?err.message:'Falha ao exportar Shapefile.');}}}>Validar e gerar</button></footer></section></div>}
   {legacyDraftAvailable&&<div className="map-legacy-recovery" role="status"><strong>Rascunho de versão anterior encontrado neste navegador.</strong> <span>Por segurança, não foi carregado automaticamente nesta conta.</span> <button type="button" onClick={recoverLegacyDraft}>Revisar e recuperar rascunho antigo</button> <button type="button" onClick={()=>setLegacyDraftAvailable(false)}>Ocultar aviso</button></div>}
-  <WorkSidebar panel={panel==='gleba'?null:panel} municipalityState={municipalityState} saveError={saveError} onBackupDraft={exportFile} onClose={()=>setPanel(null)} onCatalog={()=>setModal('catalog')} project={projectData} onProjectChange={setProjectData} onSave={saveProject} cloudPending={cloudPending} activeLayers={officialLayers} onToggleLayer={toggleLayer} onRemoveLayer={removeLayer} onOpacityLayer={opacityLayer} onRefreshLayer={refreshOfficialLayer} features={features} selectedFeature={selectedFeature} onRemoveFeature={removeMapFeature} onStyleFeature={styleFeatureById} onDivideFeature={id=>{setSelectedFeature(id);setPanel('gleba');}} onRenameFeature={(id,name)=>{setFeatures(current=>{const next=current.map(f=>String(f.id)===id?{...f,properties:{...f.properties,name}}:f);featureRef.current=next;return next;});}} onConfrontantFeature={(id,values)=>saveConfrontants(values,id)} onConfrontantDetailFeature={(id,values)=>saveConfrontantDetails(values,id)} />
+  <WorkSidebar panel={panel==='gleba'?null:panel} municipalityState={municipalityState} recommendationUF={place?.uf||projectData.uf} saveError={saveError} onBackupDraft={exportFile} onClose={()=>setPanel(null)} onCatalog={()=>setModal('catalog')} project={projectData} onProjectChange={setProjectData} onSave={saveProject} cloudPending={cloudPending} activeLayers={officialLayers} onToggleLayer={toggleLayer} onToggleRecommendedLayer={toggleRecommendedLayer} onRemoveLayer={removeLayer} onOpacityLayer={opacityLayer} onRefreshLayer={refreshOfficialLayer} features={features} selectedFeature={selectedFeature} onRemoveFeature={removeMapFeature} onStyleFeature={styleFeatureById} onDivideFeature={id=>{setSelectedFeature(id);setPanel('gleba');}} onRenameFeature={(id,name)=>{setFeatures(current=>{const next=current.map(f=>String(f.id)===id?{...f,properties:{...f.properties,name}}:f);featureRef.current=next;return next;});}} onConfrontantFeature={(id,values)=>saveConfrontants(values,id)} onConfrontantDetailFeature={(id,values)=>saveConfrontantDetails(values,id)} />
   {detailsFeature&&<FeatureDetailsPanel feature={detailsFeature} uf={place?.uf||projectData.uf} onClose={()=>setDetailsFeatureId(null)} onBeforeExport={beginExportPreflight} />}
   {panel==='gleba'&&<GlebaPanel features={features} selected={selectedFeature} onClose={()=>setPanel(null)} onChoose={id=>setSelectedFeature(id)} onCreate={createGlebas} onExtractManual={extractDrawnGleba} onStyleFeature={styleFeatureById} onRemoveFeature={removeMapFeature} onDraw={async(kind,parentId)=>{if(!await changeTool(kind))return;glebaDrawingRef.current=kind;glebaParentRef.current=parentId;notify(kind==='polygon'?'Clique no mapa para desenhar a gleba manual.':'Desenhe a linha guia e finalize.');}}/>}
   {officialInfo&&infoExpanded&&<section className="map-official-details" aria-label="Dados de imóvel oficial"><header><strong>Dados oficiais · {officialInfo.layer}</strong><button onClick={()=>setInfoExpanded(false)} aria-label="Fechar detalhes"><X size={16}/></button></header>{officialInfo.loading&&<p className="map-official-progress" role="status">As fontes estão respondendo; os dados aparecem conforme cada consulta termina.</p>}{officialMetrics&&officialMetrics.areaM2>0&&<div className="map-official-area"><strong>Área da geometria retornada</strong><span>{(officialMetrics.areaM2/10000).toLocaleString('pt-BR',{maximumFractionDigits:4})} ha</span>{officialTarefa?<small>≈ {officialTarefa.replace(/\s+tarefas$/,'')} {officialTarefaUnit}</small>:officialInfo.uf&&<small>Conversão regional de tarefa não cadastrada · {officialInfo.uf}</small>}</div>}{officialInfo.sources.map(source=><article className={'map-official-source map-official-source--'+source.status} key={source.id}><header><strong>{source.group}</strong><span>{source.status==='loading'?'Consultando…':source.status==='found'?'Dados encontrados':source.status==='empty'?'Sem registro no ponto':'Fonte indisponível'}</span></header><small>{source.label}</small>{source.status==='loading'?<p role="status">Aguardando retorno desta fonte.</p>:source.status==='empty'?<p>Nenhum registro deste tipo foi informado neste ponto.</p>:source.status==='unavailable'?<p>Esta fonte não respondeu ou não disponibilizou um formato de consulta compatível agora.</p>:<dl>{Object.entries(source.attributes||{}).filter(([_,value])=>value!=null&&String(value).trim()).map(([key,value])=><div key={key}><dt>{key.replace(/_/g,' ')}</dt><dd>{String(value)}</dd></div>)}</dl>}</article>)}<p>Consulta: {officialInfo.lat.toFixed(6)}, {officialInfo.lng.toFixed(6)}</p>{!officialInfo.loading&&officialInfo.attributes&&<button className="map-primary" onClick={()=>void exportOfficialAt(officialInfo.lat,officialInfo.lng)}>Baixar pacote ZIP com dados e geometria disponível</button>}</section>}
@@ -1329,10 +1342,11 @@ export function OperationalMap(){
    {mapContextEditFeature?.geometry.type==='Polygon'&&<button type="button" disabled={mapContextEditFeature.properties?.locked===true} title={mapContextEditFeature.properties?.locked===true?'Desbloqueie o polígono no painel Camadas para editar os vértices':'Editar os vértices do polígono selecionado'} onClick={()=>{if(mapContextEditFeature.id!=null)beginVertexEditing(String(mapContextEditFeature.id));}}>Editar vértices</button>}
    {tool!=='pan'?tool==='point'?<button type="button" onClick={async()=>{if(await changeTool('pan',true)){setPointDialog(false);setMapContext(null);}}}>Concluir marcação de pontos</button>:<>
     {tool!=='rectangle'&&tool!=='circle'&&<button type="button" disabled={draft.length<(tool==='polygon'||tool==='arc'?3:2)} title={draft.length<(tool==='polygon'||tool==='arc'?3:2)?'Marque mais vértices para concluir.':undefined} onClick={()=>{setMapContext(null);endDrawingRef.current();}}><Check size={15}/>Finalizar desenho</button>}
-    <button type="button" onClick={async()=>{if(await changeTool('pan',true)){setPointDialog(false);setMapContext(null);}}}>Cancelar ferramenta atual</button>
+   <button type="button" onClick={async()=>{if(await changeTool('pan',true)){setPointDialog(false);setMapContext(null);}}}>Cancelar ferramenta atual</button>
    </>:<>
     <button type="button" onClick={()=>{mapRef.current?.invalidateSize();baseLayers.current?.[mapMode].redraw();appliedRefs.current.forEach(t=>t.redraw());setMapContext(null);}}>Atualizar mapa</button>
     {officialLayers.some(layer=>layer.visible)&&<><button type="button" onClick={()=>{queryFeatureRef.current(L.latLng(mapContext.lat,mapContext.lng));setMapContext(null);}}>Identificar imóvel oficial</button><button type="button" onClick={()=>{void exportOfficialAt(mapContext.lat,mapContext.lng);setMapContext(null);}}>Baixar pacote ZIP · imóvel oficial</button></>}
+    {(tool!=='pan'||editingFeature||vertexRemovalMode||editMidpointsEnabled)&&<button type="button" onClick={()=>{void changeTool('pan',true);setEditingFeature(null);setVertexRemovalMode(false);setEditMidpointsEnabled(false);setPointDialog(false);setMapContext(null);setVertexMenu(null);notify('Ferramenta desativada.');}}>Desativar função</button>}
     <button type="button" onClick={()=>setMapContext(null)}>Fechar</button>
    </>}
   </div>}

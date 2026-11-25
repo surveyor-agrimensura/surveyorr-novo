@@ -1,4 +1,5 @@
 import type {Feature,Geometry,GeoJsonProperties} from 'geojson';
+import proj4 from 'proj4';
 import {downloadBlob,toCsv,toKml} from './mapFormats';
 
 type Geodata=Feature<Geometry,GeoJsonProperties>;
@@ -6,11 +7,18 @@ type XY=[number,number];
 type ShapeRecord={id:string;name:string;paths:XY[][];category:string;municipio:string;uf:string};
 const encoder=new TextEncoder();
 const prj='GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]]';
+const seiaPrj='GEOGCS["SIRGAS 2000",DATUM["Sistema_de_Referencia_Geocentrico_para_as_Americas_2000",SPHEROID["GRS 1980",6378137,298.257222101]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433],AUTHORITY["EPSG","4674"]]';
+const wgs84='+proj=longlat +datum=WGS84 +no_defs +type=crs';
+const sirgas2000='+proj=longlat +ellps=GRS80 +no_defs +type=crs';
 const utf8=(s:string)=>encoder.encode(s);
 
 export type ShapeTarget='seia-cefir-ba'|'sicar-car'|'sigef-incra'|'qgis-arcgis'|'other';
 
 const pointValid=(p:unknown):p is XY=>Array.isArray(p)&&p.length>=2&&p.slice(0,2).every(v=>typeof v==='number'&&Number.isFinite(v))&&Math.abs(p[0])<=180&&Math.abs(p[1])<=90;
+function toSirgasCoordinates(value:unknown):unknown{
+ if(pointValid(value))return [...proj4(wgs84,sirgas2000,[value[0],value[1]]),...value.slice(2)];
+ return Array.isArray(value)?value.map(toSirgasCoordinates):value;
+}
 function close(ring:XY[]):XY[]{if(!ring.length)return ring;const [f,l]=[ring[0],ring[ring.length-1]];return f[0]===l[0]&&f[1]===l[1]?ring:[...ring,f];}
 function ringArea(ring:XY[]){return ring.slice(1).reduce((a,p,i)=>a+ring[i][0]*p[1]-p[0]*ring[i][1],0);}
 function records(features:Geodata[]){
@@ -121,15 +129,14 @@ export function toShapefileZip(features:Geodata[],target:ShapeTarget='qgis-arcgi
  let selected=features;
  if(seia){const polys=features.filter(f=>f.geometry.type==='Polygon'||f.geometry.type==='MultiPolygon');if(!polys.length)throw new Error('Selecione um polígono para o SEIA/CEFIR.');
   const perimeter=polys.find(f=>/per[ií]metro|im[oó]vel|propriedade/i.test(String(f.properties?.name||f.properties?.category||'')))||polys[0];
-  if(perimeter.geometry.type==='MultiPolygon')throw new Error('O SEIA/CEFIR exige um perímetro poligonal simples.');
-  selected=[perimeter];
+  if(perimeter.geometry.type!=='Polygon')throw new Error('O SEIA/CEFIR exige um perímetro poligonal simples.');
+  selected=[{...perimeter,geometry:{...perimeter.geometry,coordinates:toSirgasCoordinates(perimeter.geometry.coordinates)} as Geometry}];
  }
  const groups=records(selected);
  for(const [code,data] of groups)if(data.length){if(seia&&code!==5)continue;
   const prefix=seia?'shapeImovelRural':code===1?'pontos':code===3?'linhas':'poligonos';
-  // Geometrias de entrada são WGS84 lon/lat; não rotular como SIRGAS 2000
-  // sem transformação explícita das coordenadas.
-  Object.assign(files,vectorFiles(code,data,prefix,prj,!seia,seia));
+  // O perfil SEIA entrega coordenadas geográficas SIRGAS 2000 (EPSG:4674).
+  Object.assign(files,vectorFiles(code,data,prefix,seia?seiaPrj:prj,!seia,seia));
  }
  if(!Object.keys(files).length)throw new Error('Não há geometrias compatíveis com Shapefile.');
 

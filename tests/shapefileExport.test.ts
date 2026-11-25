@@ -39,7 +39,7 @@ function unzipStored(bytes: Uint8Array): Map<string, Uint8Array> {
 }
 
 describe('exportação Shapefile', () => {
-  it('gera um pacote SEIA/CEFIR com os quatro arquivos vetoriais e os campos de imóvel', () => {
+  it('gera um pacote SEIA/CEFIR em SIRGAS 2000 com os quatro arquivos e campos de imóvel', () => {
     const files = unzipStored(toShapefileZip([polygon], 'seia-cefir-ba'));
     expect([...files.keys()].sort()).toEqual([
       'shapeImovelRural.dbf', 'shapeImovelRural.prj', 'shapeImovelRural.shp', 'shapeImovelRural.shx',
@@ -50,9 +50,19 @@ describe('exportação Shapefile', () => {
     const fieldNames = Array.from({ length: 8 }, (_, index) => new TextDecoder().decode(dbf.subarray(32 + index * 32, 32 + index * 32 + 11)).replace(/\0.*$/, ''));
     expect(fieldNames).toEqual(['ID', 'NOME', 'CATEGORIA', 'MUNICIPIO', 'UF', 'AREA_HA', 'PERIM_M', 'VERTICES']);
     const prj = new TextDecoder().decode(files.get('shapeImovelRural.prj'));
-    expect(prj).toContain('WGS_1984');
-    expect(prj).not.toContain('SIRGAS 2000');
+    expect(prj).toContain('SIRGAS 2000');
+    expect(prj).toContain('4674');
     expect(files.get('shapeImovelRural.shp')!.byteLength).toBeGreaterThan(100);
+  });
+
+  it('reprojeta as coordenadas do perfil SEIA para longitude/latitude SIRGAS 2000', () => {
+    const files = unzipStored(toShapefileZip([polygon], 'seia-cefir-ba'));
+    const shp = files.get('shapeImovelRural.shp')!;
+    const view = new DataView(shp.buffer, shp.byteOffset, shp.byteLength);
+    const firstX = view.getFloat64(100 + 8 + 44 + 4, true);
+    const firstY = view.getFloat64(100 + 8 + 44 + 12, true);
+    expect(firstX).toBeCloseTo(-39.65, 7);
+    expect(firstY).toBeCloseTo(-13.05, 7);
   });
 
   it('recusa geometria multipart no perfil SEIA e permite exportá-la em perfil SIG', () => {

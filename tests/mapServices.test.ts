@@ -1,5 +1,5 @@
 import {describe,it,expect,vi} from 'vitest';
-import {layersForUF,polygonMeasures,layerProxyUrl} from '../src/features/map/geoServices';
+import {layersForUF,recommendedLayersForUF,polygonMeasures,layerProxyUrl} from '../src/features/map/geoServices';
 import {csvFeatures,kmlFeatures,toKml,toCsv} from '../src/features/map/mapFormats';
 import type {Feature,Geometry} from 'geojson';
 describe('SURVEYOR · ferramentas cartográficas',()=>{
@@ -7,6 +7,12 @@ describe('SURVEYOR · ferramentas cartográficas',()=>{
   const layers=layersForUF('BA');expect(layers.length).toBeGreaterThan(10);
   expect(layers[0].layers).toContain('cefir_imovel_rural_limite_inema');
   expect(layerProxyUrl(layers[0])).toContain('/wms?target=');
+ });
+ it('recomenda somente as camadas do estado atual, com três opções na Bahia',()=>{
+  expect(recommendedLayersForUF('BA').map(layer=>layer.id)).toEqual(['cefir-limite','cefir-app','cefir-reserva']);
+  expect(recommendedLayersForUF('SP').map(layer=>layer.id)).toEqual(['sicar-sp']);
+  expect(recommendedLayersForUF('SP').every(layer=>layer.uf==='SP')).toBe(true);
+  expect(recommendedLayersForUF('XX')).toEqual([]);
  });
  it('calcula medidas aproximadas não negativas',()=>{
   const result=polygonMeasures([[-39.6,-13],[-39.59,-13],[-39.59,-12.99],[-39.6,-13]]);

@@ -5,6 +5,7 @@ export type OfficialLayer = {id:string;name:string;group:string;source:string;ur
 const INEMA = 'https://geoserver.inema.ba.gov.br/geoserver/wms';
 const SICAR = 'https://geoserver.car.gov.br/geoserver/sicar/wms';
 const src='Vetor_Recortes_Tematicos:';
+const BRAZIL_UFS=new Set(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']);
 const officialColors:Record<string,string>={
  'cefir-limite':'#d7ae05','cefir-app':'#41ad57','cefir-reserva':'#159765',
  'cefir-vegetacao':'#198c48','cefir-atividade':'#d88b35','cefir-rppn':'#1b81aa',
@@ -14,7 +15,7 @@ const officialColors:Record<string,string>={
 };
 const item=(id:string,name:string,group:string,layer:string):OfficialLayer=>({id,name,group,source:'INEMA / GeoBahia',url:INEMA,layers:src+layer,uf:'BA',color:officialColors[id]||'#497caf'});
 export const BAHIA_LAYERS:OfficialLayer[] = [
- item('cefir-limite','Imóvel Rural – Limites de Propriedade','CAR / SICAR – Limites de Propriedade','cefir_imovel_rural_limite_inema'),
+ item('cefir-limite','Limite de propriedade','CAR / SICAR – Limites de Propriedade','cefir_imovel_rural_limite_inema'),
  item('cefir-app','Áreas de Preservação Permanente (APP)','1. CEFIR – Imóveis Rurais','cefir_imovel_rural_app_inema'),
  item('cefir-reserva','Reserva Legal','1. CEFIR – Imóveis Rurais','cefir_imovel_rural_reserva_legal_inema'),
  item('cefir-vegetacao','Vegetação Nativa','1. CEFIR – Imóveis Rurais','cefir_imovel_rural_vegetacao_nativa_inema'),
@@ -33,6 +34,13 @@ export function layersForUF(uf:string):OfficialLayer[]{
  if(uf.toUpperCase()==='BA')return BAHIA_LAYERS;
  if(!/^[A-Z]{2}$/.test(uf.toUpperCase()))return [];
  return [{id:`sicar-${uf.toLowerCase()}`,name:`Imóveis rurais – SICAR / ${uf.toUpperCase()}`,group:GEO_GROUPS[0],source:'SICAR / SFB',url:SICAR,layers:`sicar:sicar_imoveis_${uf.toLowerCase()}`,uf,color:'#d0b200'}];
+}
+/** Camadas de referência mostradas no painel principal para o estado do projeto. */
+export function recommendedLayersForUF(uf:string):OfficialLayer[]{
+ const code=uf.trim().toUpperCase();
+ if(code==='BA')return BAHIA_LAYERS.filter(layer=>['cefir-limite','cefir-app','cefir-reserva'].includes(layer.id));
+ if(!BRAZIL_UFS.has(code))return [];
+ return [{id:`sicar-${code.toLowerCase()}`,name:'Limite de propriedade',group:GEO_GROUPS[0],source:'SICAR / SFB',url:SICAR,layers:`sicar:sicar_imoveis_${code.toLowerCase()}`,uf:code,color:'#d0b200'}];
 }
 /** O Worker permite /wms?target=<endpoint>, com opções WMS na query externa. */
 export function layerProxyUrl(layer:OfficialLayer){return `${GEOSERVICES_BASE}/wms?target=${encodeURIComponent(layer.url)}`;}

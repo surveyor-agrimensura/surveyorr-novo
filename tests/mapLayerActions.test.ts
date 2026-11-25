@@ -22,15 +22,18 @@ describe('ações das camadas oficiais do mapa', () => {
     expect(panel).toContain('Abrir serviço WMS');
   });
 
-  it('oferece o índice municipal uma vez no painel geral e limita a ação à Bahia', () => {
-    const actions = panel.match(/<div className="map-layer-actions">([\s\S]*?)<\/div>/)?.[1] ?? '';
+  it('mostra as camadas recomendadas e remove o atalho do índice municipal do painel', () => {
+    expect(panel).toContain('Camadas recomendadas');
+    expect(panel).toContain('recommendedLayersForUF(recommendationUF||project.uf)');
+    expect(panel).toContain('onToggleRecommendedLayer(layer)');
+    expect(panel).not.toContain('Guardar índice no navegador · Bahia');
+    expect(panel).not.toContain('LayerIndexDownload');
+    expect(css).toContain('.map-recommended-layer');
+  });
 
-    expect(actions).not.toContain('Índice municipal');
-    expect(panel).toContain('Guardar índice no navegador · Bahia');
-    expect(panel).toContain("disabled={project.uf.toUpperCase()!=='BA'}");
-    expect(panel).toContain('onClick={()=>setMunicipalIndexOpen(true)}');
-    expect(panel).toContain('<LayerIndexDownload uf={project.uf}');
-    expect(css).toContain('.map-layer-global-actions button{width:100%}');
+  it('remove a camada recomendada da lista ativa ao desmarcar o checkbox', () => {
+    expect(page).toContain('if(existing?.visible)return current.filter(item=>item.id!==layer.id)');
+    expect(page).toContain("return existing?current.map(item=>item.id===layer.id?{...item,visible:true}:item):[...current,{...layer,visible:true,opacity:100,state:'carregando'}]");
   });
 
   it('permite atualizar apenas camada visível que não esteja carregando e reinicia seu estado', () => {
@@ -55,6 +58,11 @@ describe('ações das camadas oficiais do mapa', () => {
     expect(featureDetails).toContain('SEIA / CEFIR — Bahia');
     expect(featureDetails).toContain('toShapefileZip([feature], shapeProfile)');
     expect(featureDetails).not.toContain('toShapefileZip([feature]));');
+  });
+
+  it('usa o perfil de destino escolhido também no ZIP da feição pelo clique direito', () => {
+    expect(page).toContain("toShapefileZip([selected],shapeProfile)");
+    expect(page).toContain("useState<ShapeTarget>(()=>place?.uf?.toUpperCase()==='BA'?'seia-cefir-ba':'qgis-arcgis')");
   });
 
   it('oferece edição direta de vértices para polígonos desbloqueados selecionados no mapa', () => {

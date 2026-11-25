@@ -182,6 +182,11 @@
   overflow: hidden !important;
 }
 
+.workspace-shell.document-workflow .generation-workspace-page--lot-center .doc-sidebar > .doc-panel {
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
 .lot-center-main-content {
   display: flex;
   flex: 1 1 auto;
@@ -280,7 +285,16 @@
   text-align: center;
 }
 
-.generation-preview-empty-state > svg { color: #1266d5; }
+.generation-preview-empty-state > svg {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  min-height: 22px;
+  max-width: 22px;
+  max-height: 22px;
+  color: #1266d5;
+}
 .generation-preview-empty-state > strong { font-size: 15px; font-weight: 700; }
 .generation-preview-empty-state > span { color: #586f89; font-size: 13px; line-height: 1.45; }
 

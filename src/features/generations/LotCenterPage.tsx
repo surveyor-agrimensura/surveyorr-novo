@@ -624,7 +624,7 @@ export function LotCenterPage() {
 
         <div className="doc-layout" style={{ gridTemplateColumns: 'minmax(280px, 320px) minmax(0, 1fr)', gap: 12 }}>
           <aside className="doc-sidebar" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div ref={projectPanelRef} tabIndex={-1} className="doc-panel" style={{ display: 'grid', gap: 14, flex: '1 1 auto', minHeight: 0, overflowY: 'auto' }}>
+            <div ref={projectPanelRef} tabIndex={-1} className="doc-panel" style={{ display: currentStep === 0 ? 'flex' : 'grid', flexDirection: currentStep === 0 ? 'column' : undefined, gap: 14, flex: '1 1 auto', minHeight: 0, overflowY: 'auto' }}>
               {currentStep === 0 && <>
                 <strong>Seleção do projeto</strong>
                 <ProjectSourcePicker
